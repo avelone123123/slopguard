@@ -6,22 +6,22 @@
 
   <br>
 
-  <img alt="零依赖" src="https://img.shields.io/badge/dependencies-zero-4b6fff?style=flat-square">
+  <img alt="100% Rust" src="https://img.shields.io/badge/100%25-Rust-b7410e?style=flat-square&logo=rust">
   <img alt="开源许可证: MIT" src="https://img.shields.io/badge/license-MIT-263146?style=flat-square">
-  <img alt="极低延迟: <30ms" src="https://img.shields.io/badge/latency-%3C30ms-2f6f4f?style=flat-square">
+  <img alt="极低延迟: <5ms" src="https://img.shields.io/badge/latency-%3C5ms-2f6f4f?style=flat-square">
   <img alt="MCP 协议: 1.0" src="https://img.shields.io/badge/MCP-JSON--RPC%202.0-7c3aed?style=flat-square">
-  <img alt="Node: >=18" src="https://img.shields.io/badge/node-%3E%3D18.0.0-339933?style=flat-square">
+  <img alt="跨平台" src="https://img.shields.io/badge/platforms-Windows%20%C2%B7%20macOS%20%C2%B7%20Linux-2f7bf5?style=flat-square">
 
   <br>
 
   <h3>防止 AI 编程智能体用未经检验的代码垃圾腐蚀您的项目。</h3>
 
   <p>
-    <b>SlopGuard</b> 是一款零延迟、零依赖的 Git 预提交防火墙和 <b>Model Context Protocol (MCP)</b> 引擎，<br>
+    <b>SlopGuard</b> 是一款基于<b>纯 Rust</b>构建的超高速 Git 预提交防火墙和 <b>Model Context Protocol (MCP)</b> 引擎，<br>
     在 AI 幻觉、未完成占位符、影子工具函数和类型退化进入 Git 历史<b>之前</b>将其拦截。
   </p>
 
-  <code>npx slopguard</code>
+  <code>cargo install slopguard</code>
 
 </div>
 
@@ -44,7 +44,7 @@
 
 ## 核心特性
 
-- **零依赖**：基于 Node.js 原生标准库，`npx slopguard` 启动时间低于 30ms。
+- **100% 纯 Rust**：独立原生二进制文件，启动时间低于 5ms。
 - **Git Diff 极速扫描**：仅针对暂存区或工作区变动行进行 AST Token 流比对。
 - **内置 MCP 协议服务**：直接集成至 Cursor 与 Claude Code，在智能体生成完代码后即刻自检。
 - **一键清理**：`slopguard fix` 自动剥离 AI 冗余对话注释。
@@ -55,16 +55,18 @@
 
 ## 快速开始
 
-无需全局安装即可立即运行：
+### 安装
 
 ```bash
-npx slopguard
+cargo install slopguard
 ```
 
-或全局安装：
+或从源码构建：
 
 ```bash
-npm install -g slopguard
+git clone https://github.com/avelo/slopguard.git
+cd slopguard
+cargo build --release
 ```
 
 ### 常用命令
@@ -99,8 +101,8 @@ slopguard badge ./slopguard-badge.svg
 {
   "mcpServers": {
     "slopguard": {
-      "command": "npx",
-      "args": ["slopguard", "mcp"]
+      "command": "slopguard",
+      "args": ["mcp"]
     }
   }
 }

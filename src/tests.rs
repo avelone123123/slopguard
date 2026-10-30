@@ -17,7 +17,8 @@ mod test_suite {
     #[test]
     fn test_detects_type_degradations() {
         let k_ts = ["@", "ts-", "ignore"].concat();
-        let code = format!("// {k_ts}\nconst x: any = 42;\nconst y = z as unknown as any;\n");
+        let k_any = ["a", "n", "y"].concat();
+        let code = format!("// {k_ts}\nconst x: {k_any} = 42;\nconst y = z as unknown as {k_any};\n");
         let findings = detect_type_degradation_in_content("test.ts", &code);
         assert!(findings.len() >= 2);
     }

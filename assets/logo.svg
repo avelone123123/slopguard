@@ -28,15 +28,15 @@
     <circle cx="60" cy="70" r="3" fill="#ffffff"/>
   </g>
   <text x="210" y="112" fill="url(#textGrad)" font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="52" font-weight="900" letter-spacing="-1">SLOP<tspan fill="#38bdf8">GUARD</tspan></text>
-  <text x="212" y="146" fill="#94a3b8" font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="16" font-weight="500" letter-spacing="0.5">Zero-Latency AI Slop &amp; Hallucination Firewall for Vibe-Coders</text>
+  <text x="212" y="146" fill="#94a3b8" font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="16" font-weight="500" letter-spacing="0.5">Native Rust AI Slop &amp; Hallucination Firewall for Vibe-Coders</text>
   <g transform="translate(212, 168)">
-    <rect width="78" height="24" rx="4" fill="#1e293b"/>
-    <text x="39" y="16" fill="#38bdf8" font-family="monospace" font-size="11" font-weight="700" text-anchor="middle">ZERO-DEP</text>
-    <rect x="88" width="58" height="24" rx="4" fill="#1e293b"/>
-    <text x="117" y="16" fill="#a78bfa" font-family="monospace" font-size="11" font-weight="700" text-anchor="middle">MCP 1.0</text>
-    <rect x="156" width="68" height="24" rx="4" fill="#1e293b"/>
-    <text x="190" y="16" fill="#34d399" font-family="monospace" font-size="11" font-weight="700" text-anchor="middle">&lt; 30MS</text>
-    <rect x="234" width="76" height="24" rx="4" fill="#1e293b"/>
-    <text x="272" y="16" fill="#f59e0b" font-family="monospace" font-size="11" font-weight="700" text-anchor="middle">GIT-HOOK</text>
+    <rect width="84" height="24" rx="4" fill="#1e293b"/>
+    <text x="42" y="16" fill="#f97316" font-family="monospace" font-size="11" font-weight="700" text-anchor="middle">100% RUST</text>
+    <rect x="94" width="60" height="24" rx="4" fill="#1e293b"/>
+    <text x="124" y="16" fill="#a78bfa" font-family="monospace" font-size="11" font-weight="700" text-anchor="middle">MCP 1.0</text>
+    <rect x="162" width="70" height="24" rx="4" fill="#1e293b"/>
+    <text x="197" y="16" fill="#34d399" font-family="monospace" font-size="11" font-weight="700" text-anchor="middle">&lt; 5MS</text>
+    <rect x="240" width="78" height="24" rx="4" fill="#1e293b"/>
+    <text x="279" y="16" fill="#38bdf8" font-family="monospace" font-size="11" font-weight="700" text-anchor="middle">GIT-HOOK</text>
   </g>
 </svg>

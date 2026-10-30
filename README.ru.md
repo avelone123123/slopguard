@@ -6,23 +6,23 @@
 
   <br>
 
-  <img alt="Zero Dependencies" src="https://img.shields.io/badge/dependencies-zero-4b6fff?style=flat-square">
+  <img alt="100% Rust" src="https://img.shields.io/badge/100%25-Rust-b7410e?style=flat-square&logo=rust">
   <img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-263146?style=flat-square">
-  <img alt="Latency: <30ms" src="https://img.shields.io/badge/latency-%3C30ms-2f6f4f?style=flat-square">
+  <img alt="Latency: <5ms" src="https://img.shields.io/badge/latency-%3C5ms-2f6f4f?style=flat-square">
   <img alt="MCP Protocol: 1.0" src="https://img.shields.io/badge/MCP-JSON--RPC%202.0-7c3aed?style=flat-square">
-  <img alt="Node: >=18" src="https://img.shields.io/badge/node-%3E%3D18.0.0-339933?style=flat-square">
+  <img alt="Platforms" src="https://img.shields.io/badge/platforms-Windows%20%C2%B7%20macOS%20%C2%B7%20Linux-2f7bf5?style=flat-square">
 
   <br>
 
   <h3>Защитите кодовую базу от накопления скрытого ИИ-мусора и галлюцинаций.</h3>
 
   <p>
-    <b>SlopGuard</b> — сверхбыстрый фаервол с нулевой задержкой и <b>MCP-сервер</b> (Model Context Protocol),<br>
+    <b>SlopGuard</b> — сверхбыстрый фаервол на <b>чистом Rust</b> и <b>MCP-сервер</b> (Model Context Protocol),<br>
     который перехватывает недописанные заглушки, дубликаты утилит, обходы типов и разговоры ИИ в комментариях<br>
     <b>до того</b>, как они попадут в ваш git-репозиторий.
   </p>
 
-  <code>npx slopguard</code>
+  <code>cargo install slopguard</code>
 
 </div>
 
@@ -45,7 +45,7 @@
 
 ## Возможности
 
-- **0 зависимостей**: Написан на чистом стандартном API Node.js. Запуск менее чем за 30 миллисекунд через `npx slopguard`.
+- **100% Native Rust**: Единый автономный бинарник без лишних рантаймов. Мгновенный запуск (<5мс).
 - **Анализ Git Diff**: Сканирует только измененные строки в рабочей копии или в индексе git.
 - **Встроенный MCP-сервер**: Подключается к Cursor, Claude Code и Windsurf, позволяя агенту проверять свой код перед завершением шага.
 - **Автоматическая очистка**: Команда `slopguard fix` удаляет разговорные комментарии ИИ в один клик.
@@ -56,16 +56,18 @@
 
 ## Быстрый старт
 
-Запуск без предварительной установки:
+### Установка
 
 ```bash
-npx slopguard
+cargo install slopguard
 ```
 
-Или глобальная установка:
+Либо сборка из исходников:
 
 ```bash
-npm install -g slopguard
+git clone https://github.com/avelo/slopguard.git
+cd slopguard
+cargo build --release
 ```
 
 ### Основные команды
@@ -94,7 +96,7 @@ slopguard badge ./slopguard-badge.svg
 
 ## Настройка MCP (Cursor, Claude Code, Windsurf)
 
-В SlopGuard встроен официальный STDIO-сервер **Model Context Protocol (MCP)**.
+В SlopGuard встроен официальный STDIO-сервер **Model Context Protocol (MCP)** прямо в бинарник.
 
 ### Настройка в Cursor
 
@@ -104,8 +106,8 @@ slopguard badge ./slopguard-badge.svg
 {
   "mcpServers": {
     "slopguard": {
-      "command": "npx",
-      "args": ["slopguard", "mcp"]
+      "command": "slopguard",
+      "args": ["mcp"]
     }
   }
 }

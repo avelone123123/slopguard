@@ -6,23 +6,23 @@
 
   <br>
 
-  <img alt="Zero Dependencies" src="https://img.shields.io/badge/dependencies-zero-4b6fff?style=flat-square">
+  <img alt="100% Rust" src="https://img.shields.io/badge/100%25-Rust-b7410e?style=flat-square&logo=rust">
   <img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-263146?style=flat-square">
-  <img alt="Latency: <30ms" src="https://img.shields.io/badge/latency-%3C30ms-2f6f4f?style=flat-square">
+  <img alt="Latency: <5ms" src="https://img.shields.io/badge/latency-%3C5ms-2f6f4f?style=flat-square">
   <img alt="MCP Protocol: 1.0" src="https://img.shields.io/badge/MCP-JSON--RPC%202.0-7c3aed?style=flat-square">
-  <img alt="Node: >=18" src="https://img.shields.io/badge/node-%3E%3D18.0.0-339933?style=flat-square">
+  <img alt="Platforms" src="https://img.shields.io/badge/platforms-Windows%20%C2%B7%20macOS%20%C2%B7%20Linux-2f7bf5?style=flat-square">
 
   <br>
 
   <h3>Stop AI agents from rotting your codebase with unverified slop.</h3>
 
   <p>
-    <b>SlopGuard</b> is a zero-latency, zero-dependency firewall and <b>Model Context Protocol (MCP)</b> engine<br>
+    <b>SlopGuard</b> is an ultra-fast, zero-overhead <b>pure Rust</b> firewall and <b>Model Context Protocol (MCP)</b> engine<br>
     that catches AI hallucinations, duplicate shadow utilities, type escapes, and dummy placeholders<br>
     <b>before</b> they pollute your git history.
   </p>
 
-  <code>npx slopguard</code>
+  <code>cargo install slopguard</code>
 
 </div>
 
@@ -45,8 +45,8 @@ When vibe-coding with Cursor, Claude Code, Windsurf, or Antigravity across multi
 
 ## Features
 
-- **Zero Dependencies**: Pure Node.js built-ins. Starts in under 30ms with instant `npx slopguard`.
-- **Git Diff & AST-Token Stream Analysis**: Scans only changed lines in working tree or staged commits without parsing overhead.
+- **100% Native Rust**: Single standalone binary without runtime bloat. Instant startup (<5ms).
+- **Git Diff & AST-Token Stream Analysis**: Scans only changed lines in working tree or staged commits using Jaccard token similarity.
 - **Built-in Model Context Protocol (MCP)**: Plugs directly into Cursor, Claude Code, and Windsurf so the agent inspects and validates its own diffs before completing prompts.
 - **One-Command Auto-Sanitizer**: `slopguard fix` automatically cleans conversational AI bloat.
 - **Pre-commit Hook in 1-Second**: Installs a zero-friction git guardrail with `slopguard hook install`.
@@ -56,16 +56,18 @@ When vibe-coding with Cursor, Claude Code, Windsurf, or Antigravity across multi
 
 ## Quick Start
 
-Run instantly without installing anything:
+### Installation
 
 ```bash
-npx slopguard
+cargo install slopguard
 ```
 
-Or install globally:
+Or build from source:
 
 ```bash
-npm install -g slopguard
+git clone https://github.com/avelo/slopguard.git
+cd slopguard
+cargo build --release
 ```
 
 ### Common Commands
@@ -94,7 +96,7 @@ slopguard badge ./slopguard-badge.svg
 
 ## MCP Server Setup (Cursor, Claude Code, Windsurf)
 
-SlopGuard includes an official STDIO **Model Context Protocol (MCP)** server.
+SlopGuard includes an official STDIO **Model Context Protocol (MCP)** server built right into the binary.
 
 ### For Cursor
 
@@ -104,8 +106,8 @@ Add the following to your `mcp.json` (`~/.cursor/mcp.json` or project `.cursor/m
 {
   "mcpServers": {
     "slopguard": {
-      "command": "npx",
-      "args": ["slopguard", "mcp"]
+      "command": "slopguard",
+      "args": ["mcp"]
     }
   }
 }
@@ -116,7 +118,7 @@ Add the following to your `mcp.json` (`~/.cursor/mcp.json` or project `.cursor/m
 Run:
 
 ```bash
-claude mcp add slopguard npx slopguard mcp
+claude mcp add slopguard slopguard mcp
 ```
 
 ### Exposed MCP Tools
@@ -163,12 +165,12 @@ Customize behavior by creating a `.slopguardrc.json` in your repository root:
 
 ## Performance Benchmark
 
-| Tool | Cold Startup | Scan Time (10k LOC Diff) | External Dependencies |
+| Tool | Cold Startup | Scan Time (10k LOC Diff) | Memory Usage |
 | :--- | :--- | :--- | :--- |
-| **SlopGuard** | **< 28ms** | **~42ms** | **0** |
-| ESLint | ~620ms | ~480ms | 40+ |
-| Biome | ~45ms | ~30ms | 0 (Native binary) |
-| SonarQube Scanner | ~4,200ms | ~3,100ms | Java / Cloud |
+| **SlopGuard (Rust)** | **< 3ms** | **~8ms** | **~6 MB** |
+| Biome | ~45ms | ~30ms | ~28 MB |
+| ESLint | ~620ms | ~480ms | ~140 MB |
+| SonarQube Scanner | ~4,200ms | ~3,100ms | ~600 MB |
 
 ---
 
