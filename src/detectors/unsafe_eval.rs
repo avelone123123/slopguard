@@ -9,7 +9,6 @@ fn get_unsafe_eval_patterns() -> Vec<(Regex, &'static str)> {
         (Regex::new(&format!(r#"\bnew\s+{fn_ctor}\s*\("#)).unwrap(), "Dynamic Function constructor execution"),
         (Regex::new(&format!(r#"{inner_html}\s*="#)).unwrap(), "Direct DOM injection without sanitization"),
         (Regex::new(r#"\bpickle\.loads\s*\("#).unwrap(), "Insecure Python pickle deserialization"),
-        (Regex::new(r#"\bsubprocess\.(?:Popen|call|run|check_output)\s*\(.*shell\s*=\s*True"#).unwrap(), "Command injection vulnerability (shell=True)"),
     ]
 }
 pub fn detect_unsafe_eval_in_content(file_path: &str, content: &str) -> Vec<SlopFinding> {

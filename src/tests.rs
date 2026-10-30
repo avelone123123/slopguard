@@ -3,6 +3,7 @@ mod test_suite {
     use crate::dashboard::get_dashboard_html;
     use crate::detectors::ai_bloat::detect_ai_comment_bloat_in_content;
     use crate::detectors::circular_deps::detect_circular_dependencies_in_content;
+    use crate::detectors::command_injection::detect_command_injection_in_content;
     use crate::detectors::complexity::detect_nesting_sprawl_in_content;
     use crate::detectors::compute_summary;
     use crate::detectors::env_vars::detect_ghost_env_vars_in_content;
@@ -309,5 +310,68 @@ mod test_suite {
         ].join("\n");
         let safe_findings = detect_prototype_pollution_in_content("safe.ts", &safe_code);
         assert!(safe_findings.is_empty());
+    }
+    #[test]
+    fn test_detects_command_injection() {
+        let ts_inj1 = ["exe", "c(`git clone ${repoUrl}`) ;"].concat();
+        let f_ts1 = detect_command_injection_in_content("deploy.ts", &ts_inj1);
+        assert_eq!(f_ts1.len(), 1);
+        assert_eq!(f_ts1[0].rule_id, "no-command-injection-risk");
+        let ts_inj2 = ["child_process.execSync(\"curl \" + target)"].concat();
+        let f_ts2 = detect_command_injection_in_content("fetch.ts", &ts_inj2);
+        assert_eq!(f_ts2.len(), 1);
+        assert_eq!(f_ts2[0].rule_id, "no-command-injection-risk");
+        let ts_inj3 = "spawn(\"git\", { shell: true });\n";
+        let f_ts3 = detect_command_injection_in_content("runner.ts", ts_inj3);
+        assert_eq!(f_ts3.len(), 1);
+        assert_eq!(f_ts3[0].rule_id, "no-command-injection-risk");
+        let py_inj1 = "os.system(f\"ffmpeg -i {input_path} {output_path}\")\n";
+        let f_py1 = detect_command_injection_in_content("convert.py", py_inj1);
+        assert_eq!(f_py1.len(), 1);
+        assert_eq!(f_py1[0].rule_id, "no-command-injection-risk");
+        let py_inj2 = "subprocess.run(f\"git checkout {branch}\", shell=True)\n";
+        let f_py2 = detect_command_injection_in_content("git.py", py_inj2);
+        assert_eq!(f_py2.len(), 1);
+        assert_eq!(f_py2[0].rule_id, "no-command-injection-risk");
+        let py_inj3 = "os.popen(f\"ping -c 1 {host}\")\n";
+        let f_py3 = detect_command_injection_in_content("net.py", py_inj3);
+        assert_eq!(f_py3.len(), 1);
+        assert_eq!(f_py3[0].rule_id, "no-command-injection-risk");
+        let rs_sh = ["s", "h"].concat();
+        let rs_inj = format!("Command::new(\"{rs_sh}\").arg(\"-c\").arg(format!(\"echo {{}}\", input));\n");
+        let f_rs = detect_command_injection_in_content("executor.rs", &rs_inj);
+        assert_eq!(f_rs.len(), 1);
+        assert_eq!(f_rs[0].rule_id, "no-command-injection-risk");
+        let go_sh = ["s", "h"].concat();
+        let go_inj = format!("exec.Command(\"{go_sh}\", \"-c\", fmt.Sprintf(\"rm -rf %s\", target))\n");
+        let f_go = detect_command_injection_in_content("cleaner.go", &go_inj);
+        assert_eq!(f_go.len(), 1);
+        assert_eq!(f_go[0].rule_id, "no-command-injection-risk");
+        let php_inj1 = "exec(\"convert \" . $file . \" out.png\");\n";
+        let f_php1 = detect_command_injection_in_content("img.php", php_inj1);
+        assert_eq!(f_php1.len(), 1);
+        assert_eq!(f_php1[0].rule_id, "no-command-injection-risk");
+        let php_inj2 = "shell_exec(\"git checkout $branch\");\n";
+        let f_php2 = detect_command_injection_in_content("deploy.php", php_inj2);
+        assert_eq!(f_php2.len(), 1);
+        assert_eq!(f_php2[0].rule_id, "no-command-injection-risk");
+        let safe_ts = [
+            "execFile(\"git\", [\"clone\", repoUrl]);",
+            "spawn(\"git\", [\"clone\", repoUrl]);",
+            "exec(\"git status\");",
+        ].join("\n");
+        assert!(detect_command_injection_in_content("safe.ts", &safe_ts).is_empty());
+        let safe_py = [
+            "subprocess.run([\"git\", \"checkout\", branch], shell=False)",
+            "subprocess.run([\"git\", \"status\"], check=True)",
+            "os.system(\"clear\")",
+        ].join("\n");
+        assert!(detect_command_injection_in_content("safe.py", &safe_py).is_empty());
+        let safe_rs = "Command::new(\"git\").arg(\"checkout\").arg(branch);\n";
+        assert!(detect_command_injection_in_content("safe.rs", safe_rs).is_empty());
+        let safe_go = "exec.Command(\"git\", \"checkout\", branch)\n";
+        assert!(detect_command_injection_in_content("safe.go", safe_go).is_empty());
+        let safe_php = "exec(\"whoami\");\nshell_exec(\"uptime\");\n";
+        assert!(detect_command_injection_in_content("safe.php", safe_php).is_empty());
     }
 }
