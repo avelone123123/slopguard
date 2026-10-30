@@ -11,6 +11,7 @@ mod test_suite {
     use crate::detectors::ghost_dependencies::detect_ghost_dependencies_in_content;
     use crate::detectors::hallucinated_imports::detect_hallucinated_imports_in_content;
     use crate::detectors::mocks::detect_mocks_in_content;
+    use crate::detectors::path_traversal::detect_path_traversal_in_content;
     use crate::detectors::phantom_routes::detect_phantom_routes_in_content;
     use crate::detectors::placeholders::detect_placeholders_in_content;
     use crate::detectors::prototype_pollution::detect_prototype_pollution_in_content;
@@ -373,5 +374,101 @@ mod test_suite {
         assert!(detect_command_injection_in_content("safe.go", safe_go).is_empty());
         let safe_php = "exec(\"whoami\");\nshell_exec(\"uptime\");\n";
         assert!(detect_command_injection_in_content("safe.php", safe_php).is_empty());
+    }
+    #[test]
+    fn test_detects_path_traversal() {
+        let ts_inj1 = "res.sendFile(path.join(__dirname, \"uploads\", req.query.file));\n";
+        let f_ts1 = detect_path_traversal_in_content("download.ts", ts_inj1);
+        assert_eq!(f_ts1.len(), 1);
+        assert_eq!(f_ts1[0].rule_id, "no-path-traversal-risk");
+        let ts_inj2 = "fs.readFile(path.join(BASE_DIR, req.params.filename));\n";
+        let f_ts2 = detect_path_traversal_in_content("view.ts", ts_inj2);
+        assert_eq!(f_ts2.len(), 1);
+        assert_eq!(f_ts2[0].rule_id, "no-path-traversal-risk");
+        let ts_inj3 = "fs.createReadStream(path.join(\"/tmp\", req.params.id));\n";
+        let f_ts3 = detect_path_traversal_in_content("stream.ts", ts_inj3);
+        assert_eq!(f_ts3.len(), 1);
+        assert_eq!(f_ts3[0].rule_id, "no-path-traversal-risk");
+        let py_inj1 = "open(os.path.join(UPLOAD_DIR, request.args.get(\"file\")))\n";
+        let f_py1 = detect_path_traversal_in_content("upload.py", py_inj1);
+        assert_eq!(f_py1.len(), 1);
+        assert_eq!(f_py1[0].rule_id, "no-path-traversal-risk");
+        let py_inj2 = "send_file(os.path.join(\"/var/reports\", req.params.name))\n";
+        let f_py2 = detect_path_traversal_in_content("report.py", py_inj2);
+        assert_eq!(f_py2.len(), 1);
+        assert_eq!(f_py2[0].rule_id, "no-path-traversal-risk");
+        let py_inj3 = "open(f\"/var/data/{user_path}\")\n";
+        let f_py3 = detect_path_traversal_in_content("data.py", py_inj3);
+        assert_eq!(f_py3.len(), 1);
+        assert_eq!(f_py3[0].rule_id, "no-path-traversal-risk");
+        let rs_op = ["File::", "open"].concat();
+        let rs_fmt = ["for", "mat!"].concat();
+        let rs_inj1 = format!("{rs_op}({rs_fmt}(\"{{}}/{{}}\", base, user_input));\n");
+        let f_rs1 = detect_path_traversal_in_content("reader.rs", &rs_inj1);
+        assert_eq!(f_rs1.len(), 1);
+        assert_eq!(f_rs1[0].rule_id, "no-path-traversal-risk");
+        let rs_rd = ["std::fs::", "read_to_string"].concat();
+        let rs_inj2 = format!("{rs_rd}(Path::new(&base).join(user_input));\n");
+        let f_rs2 = detect_path_traversal_in_content("fetch.rs", &rs_inj2);
+        assert_eq!(f_rs2.len(), 1);
+        assert_eq!(f_rs2[0].rule_id, "no-path-traversal-risk");
+        let go_inj1 = "os.Open(filepath.Join(dir, r.URL.Query().Get(\"file\")))\n";
+        let f_go1 = detect_path_traversal_in_content("server.go", go_inj1);
+        assert_eq!(f_go1.len(), 1);
+        assert_eq!(f_go1[0].rule_id, "no-path-traversal-risk");
+        let go_inj2 = "http.ServeFile(w, r, filepath.Join(dir, filename))\n";
+        let f_go2 = detect_path_traversal_in_content("serve.go", go_inj2);
+        assert_eq!(f_go2.len(), 1);
+        assert_eq!(f_go2[0].rule_id, "no-path-traversal-risk");
+        let php_inj1 = "readfile($dir . \"/\" . $_GET['page']);\n";
+        let f_php1 = detect_path_traversal_in_content("index.php", php_inj1);
+        assert_eq!(f_php1.len(), 1);
+        assert_eq!(f_php1[0].rule_id, "no-path-traversal-risk");
+        let php_inj2 = "include($_GET['page']);\n";
+        let f_php2 = detect_path_traversal_in_content("page.php", php_inj2);
+        assert_eq!(f_php2.len(), 1);
+        assert_eq!(f_php2[0].rule_id, "no-path-traversal-risk");
+        let php_inj3 = "file_get_contents($_POST['filename']);\n";
+        let f_php3 = detect_path_traversal_in_content("api.php", php_inj3);
+        assert_eq!(f_php3.len(), 1);
+        assert_eq!(f_php3[0].rule_id, "no-path-traversal-risk");
+        let safe_ts = [
+            "const safe = path.basename(req.params.file);",
+            "fs.readFile(path.join(DIR, safe));",
+            "fs.readFile(path.join(__dirname, \"public\", \"index.html\"));",
+            "if (resPath.startsWith(DIR)) { fs.readFile(resPath); }",
+        ].join("\n");
+        assert!(detect_path_traversal_in_content("safe.ts", &safe_ts).is_empty());
+        let safe_py = [
+            "fname = secure_filename(request.args.get(\"file\"))",
+            "open(os.path.join(DIR, fname))",
+            "open(\"data.csv\")",
+            "if target.startswith(DIR):",
+            "    open(target)",
+        ].join("\n");
+        assert!(detect_path_traversal_in_content("safe.py", &safe_py).is_empty());
+        let safe_rs = [
+            "let p = base.join(user_input);",
+            "let c = p.canonicalize().unwrap();",
+            "if c.starts_with(&base) {",
+            "    let _ = std::fs::read_to_string(&c);",
+            "}",
+            "let _ = std::fs::read_to_string(\"config.toml\");",
+        ].join("\n");
+        assert!(detect_path_traversal_in_content("safe.rs", &safe_rs).is_empty());
+        let safe_go = [
+            "clean := filepath.Clean(filepath.Join(dir, filename))",
+            "if strings.HasPrefix(clean, dir) {",
+            "    f, _ := os.Open(clean)",
+            "}",
+            "f, _ := os.Open(\"static.json\")",
+        ].join("\n");
+        assert!(detect_path_traversal_in_content("safe.go", &safe_go).is_empty());
+        let safe_php = [
+            "$f = basename($_GET['file']);",
+            "readfile($dir . '/' . $f);",
+            "file_get_contents(\"template.html\");",
+        ].join("\n");
+        assert!(detect_path_traversal_in_content("safe.php", &safe_php).is_empty());
     }
 }

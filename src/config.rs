@@ -17,6 +17,7 @@ pub fn default_config() -> SlopConfig {
     rules.insert("no-floating-promises".to_string(), "error".to_string());
     rules.insert("no-prototype-pollution".to_string(), "error".to_string());
     rules.insert("no-command-injection-risk".to_string(), "error".to_string());
+    rules.insert("no-path-traversal-risk".to_string(), "error".to_string());
     SlopConfig {
         ignore: vec![
             "target".into(),

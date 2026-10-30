@@ -8,6 +8,7 @@ pub mod floating_promises;
 pub mod ghost_dependencies;
 pub mod hallucinated_imports;
 pub mod mocks;
+pub mod path_traversal;
 pub mod phantom_routes;
 pub mod placeholders;
 pub mod prototype_pollution;
@@ -28,6 +29,7 @@ use crate::detectors::floating_promises::{detect_floating_promises_in_content, d
 use crate::detectors::ghost_dependencies::{detect_ghost_dependencies_in_content, detect_ghost_dependencies_in_diff};
 use crate::detectors::hallucinated_imports::{detect_hallucinated_imports_in_content, detect_hallucinated_imports_in_diff};
 use crate::detectors::mocks::{detect_mocks_in_content, detect_mocks_in_diff};
+use crate::detectors::path_traversal::{detect_path_traversal_in_content, detect_path_traversal_in_diff};
 use crate::detectors::phantom_routes::{detect_phantom_routes_in_content, detect_phantom_routes_in_diff};
 use crate::detectors::placeholders::{detect_placeholders_in_content, detect_placeholders_in_diff};
 use crate::detectors::prototype_pollution::{detect_prototype_pollution_in_content, detect_prototype_pollution_in_diff};
@@ -99,6 +101,9 @@ pub fn run_all_diff_detectors(diff_files: &[DiffFile], project_root: &Path, conf
     if config.rules.get("no-command-injection-risk").map(|s| s != "off").unwrap_or(true) {
         findings.extend(detect_command_injection_in_diff(diff_files));
     }
+    if config.rules.get("no-path-traversal-risk").map(|s| s != "off").unwrap_or(true) {
+        findings.extend(detect_path_traversal_in_diff(diff_files));
+    }
     findings.into_iter().filter(|f| config.rules.get(&f.rule_id).map(|s| s != "off").unwrap_or(true)).map(|mut f| {
         if let Some(rule_setting) = config.rules.get(&f.rule_id) {
             if rule_setting == "error" {
@@ -129,6 +134,7 @@ pub fn run_all_content_detectors(file_path: &str, content: &str, project_root: &
     findings.extend(detect_floating_promises_in_content(file_path, content));
     findings.extend(detect_prototype_pollution_in_content(file_path, content));
     findings.extend(detect_command_injection_in_content(file_path, content));
+    findings.extend(detect_path_traversal_in_content(file_path, content));
     findings.into_iter().filter(|f| config.rules.get(&f.rule_id).map(|s| s != "off").unwrap_or(true)).map(|mut f| {
         if let Some(rule_setting) = config.rules.get(&f.rule_id) {
             if rule_setting == "error" {
