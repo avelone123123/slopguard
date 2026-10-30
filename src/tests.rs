@@ -8,6 +8,7 @@ mod test_suite {
     use crate::detectors::ghost_dependencies::detect_ghost_dependencies_in_content;
     use crate::detectors::hallucinated_imports::detect_hallucinated_imports_in_content;
     use crate::detectors::mocks::detect_mocks_in_content;
+    use crate::detectors::phantom_routes::detect_phantom_routes_in_content;
     use crate::detectors::placeholders::detect_placeholders_in_content;
     use crate::detectors::type_degradation::detect_type_degradation_in_content;
     use crate::fixers::sanitize_code;
@@ -114,5 +115,17 @@ mod test_suite {
         let findings = detect_hallucinated_imports_in_content("App.tsx", &code);
         assert_eq!(findings.len(), 3);
         assert_eq!(findings[0].rule_id, "no-hallucinated-imports");
+    }
+    #[test]
+    fn test_detects_phantom_api_routes() {
+        let temp_dir = std::env::temp_dir().join(format!("slopguard_routes_test_{}", std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap().as_nanos()));
+        let api_dir = temp_dir.join("src").join("api");
+        let _ = std::fs::create_dir_all(&api_dir);
+        let _ = std::fs::write(api_dir.join("users.ts"), "export const getUsers = () => {};\n");
+        let code = "const res = await fetch('/api/nonexistent_phantom_endpoint');\n";
+        let findings = detect_phantom_routes_in_content("src/client.ts", code, &temp_dir);
+        let _ = std::fs::remove_dir_all(&temp_dir);
+        assert_eq!(findings.len(), 1);
+        assert_eq!(findings[0].rule_id, "no-phantom-api-routes");
     }
 }

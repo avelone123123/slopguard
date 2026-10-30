@@ -5,6 +5,7 @@ pub mod env_vars;
 pub mod ghost_dependencies;
 pub mod hallucinated_imports;
 pub mod mocks;
+pub mod phantom_routes;
 pub mod placeholders;
 pub mod scanner;
 pub mod scope_drift;
@@ -16,6 +17,7 @@ use crate::detectors::env_vars::{detect_ghost_env_vars_in_content, detect_ghost_
 use crate::detectors::ghost_dependencies::{detect_ghost_dependencies_in_content, detect_ghost_dependencies_in_diff};
 use crate::detectors::hallucinated_imports::{detect_hallucinated_imports_in_content, detect_hallucinated_imports_in_diff};
 use crate::detectors::mocks::{detect_mocks_in_content, detect_mocks_in_diff};
+use crate::detectors::phantom_routes::{detect_phantom_routes_in_content, detect_phantom_routes_in_diff};
 use crate::detectors::placeholders::{detect_placeholders_in_content, detect_placeholders_in_diff};
 use crate::detectors::scope_drift::detect_scope_drift;
 use crate::detectors::type_degradation::{detect_type_degradation_in_content, detect_type_degradation_in_diff};
@@ -31,6 +33,9 @@ pub fn run_all_diff_detectors(diff_files: &[DiffFile], project_root: &Path, conf
     }
     if config.rules.get("no-hallucinated-imports").map(|s| s != "off").unwrap_or(true) {
         findings.extend(detect_hallucinated_imports_in_diff(diff_files));
+    }
+    if config.rules.get("no-phantom-api-routes").map(|s| s != "off").unwrap_or(true) {
+        findings.extend(detect_phantom_routes_in_diff(diff_files, project_root));
     }
     if config.rules.get("no-ghost-env-vars").map(|s| s != "off").unwrap_or(true) {
         findings.extend(detect_ghost_env_vars_in_diff(diff_files, project_root));
@@ -70,6 +75,7 @@ pub fn run_all_content_detectors(file_path: &str, content: &str, project_root: &
     findings.extend(detect_placeholders_in_content(file_path, content));
     findings.extend(detect_mocks_in_content(file_path, content));
     findings.extend(detect_hallucinated_imports_in_content(file_path, content));
+    findings.extend(detect_phantom_routes_in_content(file_path, content, project_root));
     findings.extend(detect_ghost_env_vars_in_content(file_path, content, project_root));
     findings.extend(detect_nesting_sprawl_in_content(file_path, content, 7));
     findings.extend(detect_type_degradation_in_content(file_path, content));

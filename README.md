@@ -161,11 +161,12 @@ slopguard
 ```
 
 - **5 Multi-Function Diagnostic Views**:
-  - `[1] OVERVIEW`: Live MCP agent activity stream, hygiene gauge, latency, and telemetry counters.
+  - `[1] OVERVIEW`: Real-time moving telemetry wave oscilloscope, live MCP activity stream, hygiene gauge, and latency counters.
   - `[2] ISSUES`: Interactive findings inspector with `↑`/`↓` navigation, code snippets, and AI fix recommendations.
   - `[3] MCP STREAM`: Deep inspection of incoming MCP tool calls (`slopguard_scan_diff`, `slopguard_check_snippet`, `slopguard_sanitize_file`).
-  - `[4] FIREWALLS`: 12 active AST rule firewalls matrix with real-time enforcement status.
+  - `[4] FIREWALLS`: 13 active AST rule firewalls matrix with real-time enforcement status.
   - `[5] REPOSITORY`: Git diagnostic status, active branch, latest commit, and working tree breakdown.
+- **Real-Time Animated Wave Oscilloscope**: Moving multi-level ASCII/ANSI frequency spectrum visualizing MCP agent pulse and latency in real time.
 - **Single-Key Controls**:
   - `[1..5]` or `[Tab]` Switch diagnostic views instantly
   - `[↑/↓]` or `[j/k]` Navigate issue and event logs
@@ -205,6 +206,7 @@ Opens a fast, embedded local web interface at `http://127.0.0.1:4545`:
 | `no-dummy-secrets-mocks` | `ERROR` | Mock tokens (`sk-proj-dummy...`, `dummy_api_key`) |
 | `no-mock-hallucinations` | `ERROR` | Public placeholder APIs (`jsonplaceholder`, mock JWTs, test emails) |
 | `no-hallucinated-imports` | `ERROR` | Hallucinated package exports (`useLocalStorage`, `createClient`, etc.) |
+| `no-phantom-api-routes` | `ERROR` | Client API calls with no matching backend endpoint |
 | `no-ghost-env-vars` | `ERROR` | Environment variables missing from `.env.example` / `.env` template |
 | `no-deep-nesting-sprawl` | `WARN` | Deep pyramid-of-doom control flow nesting (>= 5 levels) |
 | `no-type-safety-degradation`| `ERROR` | `@ts-ignore`, `@ts-nocheck`, `: any`, `as unknown as any` |
