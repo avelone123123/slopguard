@@ -16,6 +16,7 @@ mod test_suite {
     use crate::detectors::placeholders::detect_placeholders_in_content;
     use crate::detectors::prototype_pollution::detect_prototype_pollution_in_content;
     use crate::detectors::secrets::detect_secrets_in_content;
+    use crate::detectors::silent_errors::detect_silent_errors_in_content;
     use crate::detectors::sql_injection::detect_sql_injection_in_content;
     use crate::detectors::type_degradation::detect_type_degradation_in_content;
     use crate::detectors::unsafe_eval::detect_unsafe_eval_in_content;
@@ -470,5 +471,26 @@ mod test_suite {
             "file_get_contents(\"template.html\");",
         ].join("\n");
         assert!(detect_path_traversal_in_content("safe.php", &safe_php).is_empty());
+    }
+    #[test]
+    fn test_detects_silent_error_swallowing() {
+        let js_code = ["fetchUserData().catch(() => {});", "fetchUserData().catch(err => {});", "fetchUserData().catch((e) => { console.log(e); });", "try { run(); } catch (e) { console.log(e); }", "const { data } = await supabase.from('users').select();"].join("\n");
+        let findings = detect_silent_errors_in_content("service.ts", &js_code);
+        assert!(findings.len() >= 5);
+    }
+    #[test]
+    fn test_silent_errors_legitimate_handlers_ignored() {
+        let safe_js = ["fetchUserData().catch((err) => { logger.error(err); throw err; });", "try { run(); } catch (e) { console.error(e); throw e; }", "try { run(); } catch (e) { return fallbackValue; }", "const { data, error } = await supabase.from('users').select();"].join("\n");
+        let findings = detect_silent_errors_in_content("safe.ts", &safe_js);
+        assert_eq!(findings.len(), 0);
+    }
+    #[test]
+    fn test_detects_python_and_go_error_swallowing() {
+        let py_code = "try:\n    do_job()\nexcept Exception as e:\n    print(e)\n";
+        let findings_py = detect_silent_errors_in_content("task.py", py_code);
+        assert_eq!(findings_py.len(), 1);
+        let go_code = "val, err := fetch()\n_ = err\n";
+        let findings_go = detect_silent_errors_in_content("worker.go", go_code);
+        assert_eq!(findings_go.len(), 1);
     }
 }
