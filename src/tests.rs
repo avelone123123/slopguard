@@ -12,6 +12,7 @@ mod test_suite {
     use crate::detectors::mocks::detect_mocks_in_content;
     use crate::detectors::phantom_routes::detect_phantom_routes_in_content;
     use crate::detectors::placeholders::detect_placeholders_in_content;
+    use crate::detectors::prototype_pollution::detect_prototype_pollution_in_content;
     use crate::detectors::secrets::detect_secrets_in_content;
     use crate::detectors::sql_injection::detect_sql_injection_in_content;
     use crate::detectors::type_degradation::detect_type_degradation_in_content;
@@ -240,6 +241,73 @@ mod test_suite {
             "void api.syncData().then(res => render(res));",
         ].join("\n");
         let safe_findings = detect_floating_promises_in_content("safe.ts", &safe_code);
+        assert!(safe_findings.is_empty());
+    }
+    #[test]
+    fn test_detects_prototype_pollution() {
+        let direct_proto = "target[\"__proto__\"] = evilPayload;\n";
+        let f1 = detect_prototype_pollution_in_content("merge.js", direct_proto);
+        assert_eq!(f1.len(), 1);
+        assert_eq!(f1[0].rule_id, "no-prototype-pollution");
+        let obj_proto = "Object.prototype.isAdmin = true;\n";
+        let f2 = detect_prototype_pollution_in_content("auth.ts", obj_proto);
+        assert_eq!(f2.len(), 1);
+        assert_eq!(f2[0].rule_id, "no-prototype-pollution");
+        let naive_merge = [
+            "function deepMerge(target, source) {",
+            "  for (const key of Object.keys(source)) {",
+            "    if (typeof source[key] === 'object' && source[key] !== null) {",
+            "      if (!target[key]) target[key] = {};",
+            "      deepMerge(target[key], source[key]);",
+            "    } else {",
+            "      target[key] = source[key];",
+            "    }",
+            "  }",
+            "  return target;",
+            "}",
+        ].join("\n");
+        let f3 = detect_prototype_pollution_in_content("merge.js", &naive_merge);
+        assert_eq!(f3.len(), 1);
+        assert_eq!(f3[0].rule_id, "no-prototype-pollution");
+        let path_setter = [
+            "function setByPath(obj, path, value) {",
+            "  const parts = path.split('.');",
+            "  let current = obj;",
+            "  for (let i = 0; i < parts.length - 1; i++) {",
+            "    const part = parts[i];",
+            "    if (!current[part]) current[part] = {};",
+            "    current = current[part];",
+            "  }",
+            "  current[parts[parts.length - 1]] = value;",
+            "}",
+        ].join("\n");
+        let f4 = detect_prototype_pollution_in_content("setter.ts", &path_setter);
+        assert_eq!(f4.len(), 1);
+        assert_eq!(f4[0].rule_id, "no-prototype-pollution");
+        let safe_code = [
+            "function safeMerge(target, source) {",
+            "  for (const key of Object.keys(source)) {",
+            "    if (key === '__proto__' || key === 'constructor' || key === 'prototype') continue;",
+            "    if (typeof source[key] === 'object' && source[key] !== null) {",
+            "      if (!target[key]) target[key] = {};",
+            "      safeMerge(target[key], source[key]);",
+            "    } else {",
+            "      target[key] = source[key];",
+            "    }",
+            "  }",
+            "  return target;",
+            "}",
+            "function safeSetPath(obj, path, value) {",
+            "  const parts = path.split('.');",
+            "  let current = obj;",
+            "  for (const part of parts) {",
+            "    if (part === '__proto__' || part === 'constructor' || part === 'prototype') return;",
+            "    if (!current[part]) current[part] = {};",
+            "    current = current[part];",
+            "  }",
+            "}",
+        ].join("\n");
+        let safe_findings = detect_prototype_pollution_in_content("safe.ts", &safe_code);
         assert!(safe_findings.is_empty());
     }
 }
