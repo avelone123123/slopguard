@@ -13,6 +13,7 @@ pub fn default_config() -> SlopConfig {
     rules.insert("no-duplicate-shadow-utilities".to_string(), "warning".to_string());
     rules.insert("no-ai-conversational-bloat".to_string(), "warning".to_string());
     rules.insert("no-excessive-scope-drift".to_string(), "warning".to_string());
+    rules.insert("no-sql-injection-risk".to_string(), "error".to_string());
     SlopConfig {
         ignore: vec![
             "target".into(),

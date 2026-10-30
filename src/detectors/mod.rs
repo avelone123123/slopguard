@@ -11,6 +11,7 @@ pub mod placeholders;
 pub mod scanner;
 pub mod scope_drift;
 pub mod secrets;
+pub mod sql_injection;
 pub mod type_degradation;
 pub mod unsafe_eval;
 pub mod watermarks;
@@ -26,6 +27,7 @@ use crate::detectors::phantom_routes::{detect_phantom_routes_in_content, detect_
 use crate::detectors::placeholders::{detect_placeholders_in_content, detect_placeholders_in_diff};
 use crate::detectors::scope_drift::detect_scope_drift;
 use crate::detectors::secrets::{detect_secrets_in_content, detect_secrets_in_diff};
+use crate::detectors::sql_injection::{detect_sql_injection_in_content, detect_sql_injection_in_diff};
 use crate::detectors::type_degradation::{detect_type_degradation_in_content, detect_type_degradation_in_diff};
 use crate::detectors::unsafe_eval::{detect_unsafe_eval_in_content, detect_unsafe_eval_in_diff};
 use crate::detectors::watermarks::{detect_watermarks_in_content, detect_watermarks_in_diff};
@@ -79,6 +81,9 @@ pub fn run_all_diff_detectors(diff_files: &[DiffFile], project_root: &Path, conf
     if config.rules.get("no-unsafe-dynamic-eval").map(|s| s != "off").unwrap_or(true) {
         findings.extend(detect_unsafe_eval_in_diff(diff_files));
     }
+    if config.rules.get("no-sql-injection-risk").map(|s| s != "off").unwrap_or(true) {
+        findings.extend(detect_sql_injection_in_diff(diff_files));
+    }
     findings.into_iter().filter(|f| config.rules.get(&f.rule_id).map(|s| s != "off").unwrap_or(true)).map(|mut f| {
         if let Some(rule_setting) = config.rules.get(&f.rule_id) {
             if rule_setting == "error" {
@@ -105,6 +110,7 @@ pub fn run_all_content_detectors(file_path: &str, content: &str, project_root: &
     findings.extend(detect_ai_comment_bloat_in_content(file_path, content));
     findings.extend(detect_secrets_in_content(file_path, content));
     findings.extend(detect_unsafe_eval_in_content(file_path, content));
+    findings.extend(detect_sql_injection_in_content(file_path, content));
     findings.into_iter().filter(|f| config.rules.get(&f.rule_id).map(|s| s != "off").unwrap_or(true)).map(|mut f| {
         if let Some(rule_setting) = config.rules.get(&f.rule_id) {
             if rule_setting == "error" {

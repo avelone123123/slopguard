@@ -144,6 +144,7 @@ pub fn run_interactive_monitor(target_root: &Path) {
         ("no-excessive-scope-drift", "WARN", "Agent touching excessive/unrelated files"),
         ("no-hardcoded-secrets", "ERROR", "Exposed AI tokens, private keys, AWS/Slack secrets"),
         ("no-unsafe-dynamic-eval", "ERROR", "Dangerous dynamic evaluation & unsafe deserialization"),
+        ("no-sql-injection-risk", "ERROR", "Raw SQL string concatenation & query interpolation"),
     ];
     loop {
         tick = tick.wrapping_add(1);

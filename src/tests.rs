@@ -12,6 +12,7 @@ mod test_suite {
     use crate::detectors::phantom_routes::detect_phantom_routes_in_content;
     use crate::detectors::placeholders::detect_placeholders_in_content;
     use crate::detectors::secrets::detect_secrets_in_content;
+    use crate::detectors::sql_injection::detect_sql_injection_in_content;
     use crate::detectors::type_degradation::detect_type_degradation_in_content;
     use crate::detectors::unsafe_eval::detect_unsafe_eval_in_content;
     use crate::detectors::watermarks::detect_watermarks_in_content;
@@ -169,5 +170,44 @@ mod test_suite {
         let findings = detect_unsafe_eval_in_content("calc.js", &code);
         assert_eq!(findings.len(), 1);
         assert_eq!(findings[0].rule_id, "no-unsafe-dynamic-eval");
+    }
+    #[test]
+    fn test_detects_sql_injection_hallucinations() {
+        let sel_js = ["SEL", "ECT * FROM users WHERE id = ${userId}"].concat();
+        let code_js = format!("const query = `{sel_js}`;");
+        let f_js = detect_sql_injection_in_content("query.ts", &code_js);
+        assert_eq!(f_js.len(), 1);
+        assert_eq!(f_js[0].rule_id, "no-sql-injection-risk");
+        let sel_cat = ["SEL", "ECT * FROM items WHERE name = '\" + name + \"'"].concat();
+        let code_cat = format!("const q = \"{sel_cat};");
+        let f_cat = detect_sql_injection_in_content("query.js", &code_cat);
+        assert_eq!(f_cat.len(), 1);
+        let sel_py = ["SEL", "ECT * FROM accounts WHERE email = '{email}'"].concat();
+        let code_py = format!("q = f\"{sel_py}\"");
+        let f_py = detect_sql_injection_in_content("db.py", &code_py);
+        assert_eq!(f_py.len(), 1);
+        let sel_pct = ["SEL", "ECT * FROM accounts WHERE email = %s\" % (email,)"].concat();
+        let code_pct = format!("q = \"{sel_pct}");
+        let f_pct = detect_sql_injection_in_content("db.py", &code_pct);
+        assert_eq!(f_pct.len(), 1);
+        let sel_rs = ["SEL", "ECT * FROM users WHERE id = '{}'\", uid)"].concat();
+        let code_rs = format!("let q = format!(\"{sel_rs};");
+        let f_rs = detect_sql_injection_in_content("repo.rs", &code_rs);
+        assert_eq!(f_rs.len(), 1);
+        let del_go = ["DEL", "ETE FROM sessions WHERE token = '%s'\", token)"].concat();
+        let code_go = format!("q := fmt.Sprintf(\"{del_go}");
+        let f_go = detect_sql_injection_in_content("auth.go", &code_go);
+        assert_eq!(f_go.len(), 1);
+        let sel_php = ["SEL", "ECT * FROM users WHERE username = '$username'\""].concat();
+        let code_php = format!("$q = \"{sel_php};");
+        let f_php = detect_sql_injection_in_content("login.php", &code_php);
+        assert_eq!(f_php.len(), 1);
+        let safe_pg = "const q = \"SELECT * FROM users WHERE id = $1 AND role = $2\";";
+        let safe_mysql = "const q = \"SELECT * FROM users WHERE id = ? AND status = ?\";";
+        let safe_py = "cursor.execute(\"SELECT * FROM accounts WHERE id = %s\", (uid,))";
+        let safe_php = "$stmt = $pdo->prepare(\"SELECT * FROM users WHERE id = :id\");";
+        let safe_code = format!("{safe_pg}\n{safe_mysql}\n{safe_py}\n{safe_php}\n");
+        let safe_findings = detect_sql_injection_in_content("safe.ts", &safe_code);
+        assert!(safe_findings.is_empty());
     }
 }
