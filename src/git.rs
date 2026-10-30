@@ -117,3 +117,25 @@ pub fn parse_unified_diff(diff_text: &str) -> Vec<DiffFile> {
     }
     files
 }
+pub fn get_current_branch(cwd: &Path) -> String {
+    if let Ok(output) = Command::new("git").args(["branch", "--show-current"]).current_dir(cwd).output() {
+        if output.status.success() {
+            let b = String::from_utf8_lossy(&output.stdout).trim().to_string();
+            if !b.is_empty() {
+                return b;
+            }
+        }
+    }
+    "main".to_string()
+}
+pub fn get_latest_commit(cwd: &Path) -> String {
+    if let Ok(output) = Command::new("git").args(["log", "-1", "--oneline"]).current_dir(cwd).output() {
+        if output.status.success() {
+            let c = String::from_utf8_lossy(&output.stdout).trim().to_string();
+            if !c.is_empty() {
+                return c;
+            }
+        }
+    }
+    "initial".to_string()
+}

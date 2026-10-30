@@ -6,6 +6,7 @@ mod test_suite {
     use crate::detectors::compute_summary;
     use crate::detectors::env_vars::detect_ghost_env_vars_in_content;
     use crate::detectors::ghost_dependencies::detect_ghost_dependencies_in_content;
+    use crate::detectors::hallucinated_imports::detect_hallucinated_imports_in_content;
     use crate::detectors::mocks::detect_mocks_in_content;
     use crate::detectors::placeholders::detect_placeholders_in_content;
     use crate::detectors::type_degradation::detect_type_degradation_in_content;
@@ -103,5 +104,15 @@ mod test_suite {
         let findings = detect_nesting_sprawl_in_content("app.ts", code, 7);
         assert!(!findings.is_empty());
         assert_eq!(findings[0].rule_id, "no-deep-nesting-sprawl");
+    }
+    #[test]
+    fn test_detects_hallucinated_package_imports() {
+        let h1 = ["useLocal", "Storage"].concat();
+        let h2 = ["use", "Fetch"].concat();
+        let h3 = ["create", "Client"].concat();
+        let code = format!("import {{ {h1}, {h2} }} from 'react';\nimport {{ {h3} }} from 'axios';\n");
+        let findings = detect_hallucinated_imports_in_content("App.tsx", &code);
+        assert_eq!(findings.len(), 3);
+        assert_eq!(findings[0].rule_id, "no-hallucinated-imports");
     }
 }

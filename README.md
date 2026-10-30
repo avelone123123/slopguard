@@ -160,11 +160,19 @@ slopguard monitor
 slopguard
 ```
 
-- **Live MCP Observer Feed**: Instantly shows incoming tool calls from Cursor, Claude Code, Windsurf, or Antigravity with millisecond response time.
-- **Real-Time Hygiene Gauge**: Live visual progress bar `[████████████████████] 100/100` and health rating.
-- **Interactive Single-Key Controls**:
+- **5 Multi-Function Diagnostic Views**:
+  - `[1] OVERVIEW`: Live MCP agent activity stream, hygiene gauge, latency, and telemetry counters.
+  - `[2] ISSUES`: Interactive findings inspector with `↑`/`↓` navigation, code snippets, and AI fix recommendations.
+  - `[3] MCP STREAM`: Deep inspection of incoming MCP tool calls (`slopguard_scan_diff`, `slopguard_check_snippet`, `slopguard_sanitize_file`).
+  - `[4] FIREWALLS`: 12 active AST rule firewalls matrix with real-time enforcement status.
+  - `[5] REPOSITORY`: Git diagnostic status, active branch, latest commit, and working tree breakdown.
+- **Single-Key Controls**:
+  - `[1..5]` or `[Tab]` Switch diagnostic views instantly
+  - `[↑/↓]` or `[j/k]` Navigate issue and event logs
   - `[S]` Instant full repository audit
   - `[F]` One-key conversational AI bloat sanitizer
+  - `[W]` Toggle live file change watcher
+  - `[E]` Export audit diagnostics report (`slopguard-audit-report.json`)
   - `[R]` Force refresh telemetry log
   - `[Q]` Clean exit
 
@@ -196,6 +204,7 @@ Opens a fast, embedded local web interface at `http://127.0.0.1:4545`:
 | `no-silent-catch-pass` | `ERROR` | Empty `catch(e) {}` blocks and Python `except: pass` |
 | `no-dummy-secrets-mocks` | `ERROR` | Mock tokens (`sk-proj-dummy...`, `dummy_api_key`) |
 | `no-mock-hallucinations` | `ERROR` | Public placeholder APIs (`jsonplaceholder`, mock JWTs, test emails) |
+| `no-hallucinated-imports` | `ERROR` | Hallucinated package exports (`useLocalStorage`, `createClient`, etc.) |
 | `no-ghost-env-vars` | `ERROR` | Environment variables missing from `.env.example` / `.env` template |
 | `no-deep-nesting-sprawl` | `WARN` | Deep pyramid-of-doom control flow nesting (>= 5 levels) |
 | `no-type-safety-degradation`| `ERROR` | `@ts-ignore`, `@ts-nocheck`, `: any`, `as unknown as any` |
