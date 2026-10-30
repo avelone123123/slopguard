@@ -79,6 +79,15 @@ slopguard check
 # Проверка только подготовленных файлов (для pre-commit)
 slopguard check --staged
 
+# Вывод в формате JSON для тулинга и скриптов
+slopguard check --json
+
+# Вывод в формате аннотаций GitHub Actions
+slopguard check --github
+
+# Генерация пайплайна GitHub Actions CI за 1 секунду
+slopguard ci
+
 # Полное сканирование всех файлов проекта
 slopguard all
 

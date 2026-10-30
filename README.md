@@ -79,6 +79,15 @@ slopguard check
 # Scan only staged git changes (ideal for git pre-commit hooks)
 slopguard check --staged
 
+# Output structured JSON for tooling / IDEs
+slopguard check --json
+
+# Emit GitHub Actions workflow annotations
+slopguard check --github
+
+# Generate GitHub Actions CI workflow in 1 second
+slopguard ci
+
 # Scan the entire codebase recursively
 slopguard all
 

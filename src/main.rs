@@ -12,7 +12,7 @@ use crate::detectors::{compute_summary, run_all_content_detectors, run_all_diff_
 use crate::fixers::sanitize_file;
 use crate::git::{get_diff_output, get_git_root, get_untracked_files, is_git_repo, parse_unified_diff};
 use crate::mcp::start_mcp_server;
-use crate::reporters::{format_terminal_report, generate_badge_svg};
+use crate::reporters::{format_github_actions_report, format_json_report, format_terminal_report, generate_badge_svg};
 use crate::types::{DiffChunk, DiffFile, DiffLine, DiffLineType, SlopFinding};
 use std::env;
 use std::fs;
@@ -43,7 +43,16 @@ fn scan_directory_recursively(dir: &Path, root_dir: &Path, ignore_patterns: &[St
     }
     files
 }
-fn run_check_command(target_dir: &Path, is_staged: bool) -> usize {
+fn print_summary_output(summary: &crate::types::SlopSummary, is_json: bool, is_github: bool) {
+    if is_json {
+        println!("{}", format_json_report(summary));
+    } else if is_github {
+        println!("{}", format_github_actions_report(summary));
+    } else {
+        println!("{}", format_terminal_report(summary));
+    }
+}
+fn run_check_command(target_dir: &Path, is_staged: bool, is_json: bool, is_github: bool) -> usize {
     let config = load_config(target_dir);
     let start = Instant::now();
     if is_git_repo(target_dir) {
@@ -72,7 +81,7 @@ fn run_check_command(target_dir: &Path, is_staged: bool) -> usize {
         if !diff_files.is_empty() {
             let findings = run_all_diff_detectors(&diff_files, target_dir, &config);
             let summary = compute_summary(findings, diff_files.len(), start.elapsed().as_millis());
-            println!("{}", format_terminal_report(&summary));
+            print_summary_output(&summary, is_json, is_github);
             return summary.errors;
         }
     }
@@ -86,17 +95,28 @@ fn run_check_command(target_dir: &Path, is_staged: bool) -> usize {
         }
     }
     let summary = compute_summary(all_findings, all_files.len(), start.elapsed().as_millis());
-    println!("{}", format_terminal_report(&summary));
+    print_summary_output(&summary, is_json, is_github);
     summary.errors
 }
 fn main() {
     let args: Vec<String> = env::args().collect();
     let is_interactive = args.len() <= 1;
     let command = args.get(1).map(|s| s.as_str()).unwrap_or("check");
+    let is_json = args.iter().any(|a| a == "--json");
+    let is_github = args.iter().any(|a| a == "--github");
     let cwd = env::current_dir().unwrap_or_else(|_| Path::new(".").to_path_buf());
     let target_root = if is_git_repo(&cwd) { get_git_root(&cwd) } else { cwd.clone() };
     if command == "mcp" {
         start_mcp_server();
+        return;
+    }
+    if command == "ci" {
+        let wf_dir = target_root.join(".github").join("workflows");
+        let _ = fs::create_dir_all(&wf_dir);
+        let wf_path = wf_dir.join("slopguard.yml");
+        let yml = "name: SlopGuard AI Hygiene\non: [push, pull_request]\njobs:\n  audit:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v4\n      - uses: dtolnay/rust-toolchain@stable\n      - run: cargo install --path .\n      - run: slopguard check --github\n";
+        let _ = fs::write(&wf_path, yml);
+        println!("[SlopGuard] GitHub Actions CI workflow created at: {}", wf_path.display());
         return;
     }
     if command == "hook" && args.get(2).map(|s| s.as_str()) == Some("install") {
@@ -160,7 +180,7 @@ fn main() {
             }
         }
         let summary = compute_summary(all_findings, all_files.len(), start.elapsed().as_millis());
-        println!("{}", format_terminal_report(&summary));
+        print_summary_output(&summary, is_json, is_github);
         if summary.errors > 0 {
             exit(1);
         }
@@ -168,14 +188,14 @@ fn main() {
     }
     if command == "check" || is_interactive {
         let is_staged = args.iter().any(|a| a == "--staged");
-        let errors = run_check_command(&target_root, is_staged);
+        let errors = run_check_command(&target_root, is_staged, is_json, is_github);
         if is_interactive {
-            println!("\nPress Enter to exit or type a command (all, fix, badge, hook):");
+            println!("\nPress Enter to exit or type a command (all, fix, badge, hook, ci):");
             let mut line = String::new();
             let _ = io::stdin().lock().read_line(&mut line);
             let trimmed = line.trim();
             if trimmed == "all" {
-                let _ = run_check_command(&target_root, false);
+                let _ = run_check_command(&target_root, false, false, false);
             } else if trimmed == "fix" {
                 let config = load_config(&target_root);
                 let all_files = scan_directory_recursively(&target_root, &target_root, &config.ignore);
@@ -192,5 +212,5 @@ fn main() {
         }
         return;
     }
-    println!("Usage: slopguard [check|all|fix|badge|hook install|mcp]");
+    println!("Usage: slopguard [check|all|fix|badge|ci|hook install|mcp] [--json] [--github]");
 }

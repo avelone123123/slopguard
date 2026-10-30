@@ -1,0 +1,10 @@
+name: SlopGuard AI Hygiene
+on: [push, pull_request]
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - run: cargo install --path .
+      - run: slopguard check --github

@@ -46,6 +46,21 @@ pub fn format_terminal_report(summary: &SlopSummary) -> String {
     out.push(format!("\x1b[2m{}\x1b[0m", border));
     out.join("\n")
 }
+pub fn format_json_report(summary: &SlopSummary) -> String {
+    serde_json::to_string_pretty(summary).unwrap_or_else(|_| "{}".to_string())
+}
+pub fn format_github_actions_report(summary: &SlopSummary) -> String {
+    let mut out = Vec::new();
+    for f in &summary.findings {
+        let level = match f.severity {
+            SlopSeverity::Error => "error",
+            SlopSeverity::Warning => "warning",
+            SlopSeverity::Info => "notice",
+        };
+        out.push(format!("::{level} file={},line={},col={}::[SlopGuard] {} ({})", f.file, f.line, f.column, f.message, f.rule_id));
+    }
+    out.join("\n")
+}
 pub fn generate_badge_svg(score: usize, errors: usize) -> String {
     let status_color = if errors > 0 { "#e5484d" } else if score >= 80 { "#30a46c" } else { "#f5a623" };
     let status_text = if errors > 0 { format!("{} slop errors", errors) } else { format!("{}% clean", score) };
