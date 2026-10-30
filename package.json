@@ -1,0 +1,37 @@
+{
+  "name": "slopguard",
+  "version": "1.0.0",
+  "description": "Zero-latency AI slop & hallucination firewall for Cursor, Claude Code, and vibe-coders",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "slopguard": "bin/slopguard.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "check": "node bin/slopguard.js check",
+    "mcp": "node bin/slopguard.js mcp",
+    "test": "node --test"
+  },
+  "keywords": [
+    "ai",
+    "vibe-coding",
+    "cursor",
+    "claude-code",
+    "linter",
+    "mcp",
+    "anti-slop",
+    "code-quality",
+    "agentic"
+  ],
+  "author": "avelo",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^22.13.0",
+    "typescript": "^5.7.3"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
