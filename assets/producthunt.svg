@@ -1,7 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="250" height="54" viewBox="0 0 250 54" fill="none">
-<rect width="250" height="54" rx="10" fill="#0E121B" stroke="#DA552F" stroke-width="1.5"/>
-<circle cx="28" cy="27" r="16" fill="#DA552F"/>
-<path d="M26 21H30C31.6569 21 33 22.3431 33 24C33 25.6569 31.6569 27 30 27H26V21ZM26 27V33H23V21H26Z" fill="#FFFFFF"/>
-<text x="54" y="22" fill="#DA552F" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif" font-size="10" font-weight="700" letter-spacing="1.2">FEATURED ON PRODUCT HUNT</text>
-<text x="54" y="38" fill="#FFFFFF" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif" font-size="14" font-weight="800">#1 Product of the Day</text>
-</svg>
