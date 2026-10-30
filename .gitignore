@@ -1,4 +1,3 @@
-node_modules
-dist
-*.log
+/target
 slopguard-badge.svg
+*.log

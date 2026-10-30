@@ -1,0 +1,86 @@
+pub mod ai_bloat;
+pub mod duplicates;
+pub mod ghost_dependencies;
+pub mod placeholders;
+pub mod scanner;
+pub mod scope_drift;
+pub mod type_degradation;
+use crate::detectors::ai_bloat::{detect_ai_comment_bloat_in_content, detect_ai_comment_bloat_in_diff};
+use crate::detectors::duplicates::{detect_duplicate_utilities, index_existing_functions};
+use crate::detectors::ghost_dependencies::{detect_ghost_dependencies_in_content, detect_ghost_dependencies_in_diff};
+use crate::detectors::placeholders::{detect_placeholders_in_content, detect_placeholders_in_diff};
+use crate::detectors::scope_drift::detect_scope_drift;
+use crate::detectors::type_degradation::{detect_type_degradation_in_content, detect_type_degradation_in_diff};
+use crate::types::{DiffFile, SlopConfig, SlopFinding, SlopSeverity, SlopSummary};
+use std::path::Path;
+pub fn run_all_diff_detectors(diff_files: &[DiffFile], project_root: &Path, config: &SlopConfig) -> Vec<SlopFinding> {
+    let mut findings = Vec::new();
+    if config.rules.get("no-ai-todo-placeholders").map(|s| s != "off").unwrap_or(true) || config.rules.get("no-silent-catch-pass").map(|s| s != "off").unwrap_or(true) || config.rules.get("no-dummy-secrets-mocks").map(|s| s != "off").unwrap_or(true) {
+        findings.extend(detect_placeholders_in_diff(diff_files));
+    }
+    if config.rules.get("no-type-safety-degradation").map(|s| s != "off").unwrap_or(true) {
+        findings.extend(detect_type_degradation_in_diff(diff_files));
+    }
+    if config.rules.get("no-ghost-dependencies").map(|s| s != "off").unwrap_or(true) {
+        findings.extend(detect_ghost_dependencies_in_diff(diff_files, project_root, &config.allowed_ghost_deps));
+    }
+    if config.rules.get("no-excessive-scope-drift").map(|s| s != "off").unwrap_or(true) {
+        findings.extend(detect_scope_drift(diff_files, config.max_drift_files));
+    }
+    if config.rules.get("no-ai-conversational-bloat").map(|s| s != "off").unwrap_or(true) {
+        findings.extend(detect_ai_comment_bloat_in_diff(diff_files));
+    }
+    if config.rules.get("no-duplicate-shadow-utilities").map(|s| s != "off").unwrap_or(true) {
+        let existing = index_existing_functions(project_root, &config.ignore);
+        findings.extend(detect_duplicate_utilities(diff_files, &existing));
+    }
+    findings.into_iter().filter(|f| config.rules.get(&f.rule_id).map(|s| s != "off").unwrap_or(true)).map(|mut f| {
+        if let Some(rule_setting) = config.rules.get(&f.rule_id) {
+            if rule_setting == "error" {
+                f.severity = SlopSeverity::Error;
+            } else if rule_setting == "warning" {
+                f.severity = SlopSeverity::Warning;
+            }
+        }
+        f
+    }).collect()
+}
+pub fn run_all_content_detectors(file_path: &str, content: &str, project_root: &Path, config: &SlopConfig) -> Vec<SlopFinding> {
+    let mut findings = Vec::new();
+    findings.extend(detect_placeholders_in_content(file_path, content));
+    findings.extend(detect_type_degradation_in_content(file_path, content));
+    findings.extend(detect_ghost_dependencies_in_content(file_path, content, project_root, &config.allowed_ghost_deps));
+    findings.extend(detect_ai_comment_bloat_in_content(file_path, content));
+    findings.into_iter().filter(|f| config.rules.get(&f.rule_id).map(|s| s != "off").unwrap_or(true)).map(|mut f| {
+        if let Some(rule_setting) = config.rules.get(&f.rule_id) {
+            if rule_setting == "error" {
+                f.severity = SlopSeverity::Error;
+            } else if rule_setting == "warning" {
+                f.severity = SlopSeverity::Warning;
+            }
+        }
+        f
+    }).collect()
+}
+pub fn compute_summary(findings: Vec<SlopFinding>, scanned_files: usize, duration_ms: u128) -> SlopSummary {
+    let mut errors = 0;
+    let mut warnings = 0;
+    for f in &findings {
+        match f.severity {
+            SlopSeverity::Error => errors += 1,
+            SlopSeverity::Warning => warnings += 1,
+            SlopSeverity::Info => {}
+        }
+    }
+    let penalty = (errors * 15) + (warnings * 5);
+    let score = 100usize.saturating_sub(penalty);
+    SlopSummary {
+        total_issues: findings.len(),
+        errors,
+        warnings,
+        score,
+        findings,
+        scanned_files,
+        duration_ms,
+    }
+}
