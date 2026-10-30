@@ -11,7 +11,9 @@ mod test_suite {
     use crate::detectors::mocks::detect_mocks_in_content;
     use crate::detectors::phantom_routes::detect_phantom_routes_in_content;
     use crate::detectors::placeholders::detect_placeholders_in_content;
+    use crate::detectors::secrets::detect_secrets_in_content;
     use crate::detectors::type_degradation::detect_type_degradation_in_content;
+    use crate::detectors::unsafe_eval::detect_unsafe_eval_in_content;
     use crate::detectors::watermarks::detect_watermarks_in_content;
     use crate::fixers::sanitize_code;
     use crate::reporters::generate_badge_svg;
@@ -151,5 +153,21 @@ mod test_suite {
         let findings = detect_watermarks_in_content("auth.ts", &code);
         assert_eq!(findings.len(), 2);
         assert_eq!(findings[0].rule_id, "no-ai-sycophancy-watermarks");
+    }
+    #[test]
+    fn test_detects_hardcoded_secrets() {
+        let sec = ["sk-proj-", "abcdef1234567890abcdef1234567890"].concat();
+        let code = format!("const OPENAI_KEY = \"{sec}\";\n");
+        let findings = detect_secrets_in_content("config.ts", &code);
+        assert_eq!(findings.len(), 1);
+        assert_eq!(findings[0].rule_id, "no-hardcoded-secrets");
+    }
+    #[test]
+    fn test_detects_unsafe_eval() {
+        let ev = ["ev", "al"].concat();
+        let code = format!("const result = {ev}(\"2 + 2\");\n");
+        let findings = detect_unsafe_eval_in_content("calc.js", &code);
+        assert_eq!(findings.len(), 1);
+        assert_eq!(findings[0].rule_id, "no-unsafe-dynamic-eval");
     }
 }

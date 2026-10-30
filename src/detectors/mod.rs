@@ -10,7 +10,9 @@ pub mod phantom_routes;
 pub mod placeholders;
 pub mod scanner;
 pub mod scope_drift;
+pub mod secrets;
 pub mod type_degradation;
+pub mod unsafe_eval;
 pub mod watermarks;
 use crate::detectors::ai_bloat::{detect_ai_comment_bloat_in_content, detect_ai_comment_bloat_in_diff};
 use crate::detectors::circular_deps::{detect_circular_dependencies_in_content, detect_circular_dependencies_in_diff};
@@ -23,7 +25,9 @@ use crate::detectors::mocks::{detect_mocks_in_content, detect_mocks_in_diff};
 use crate::detectors::phantom_routes::{detect_phantom_routes_in_content, detect_phantom_routes_in_diff};
 use crate::detectors::placeholders::{detect_placeholders_in_content, detect_placeholders_in_diff};
 use crate::detectors::scope_drift::detect_scope_drift;
+use crate::detectors::secrets::{detect_secrets_in_content, detect_secrets_in_diff};
 use crate::detectors::type_degradation::{detect_type_degradation_in_content, detect_type_degradation_in_diff};
+use crate::detectors::unsafe_eval::{detect_unsafe_eval_in_content, detect_unsafe_eval_in_diff};
 use crate::detectors::watermarks::{detect_watermarks_in_content, detect_watermarks_in_diff};
 use crate::types::{DiffFile, SlopConfig, SlopFinding, SlopSeverity, SlopSummary};
 use std::path::Path;
@@ -69,6 +73,12 @@ pub fn run_all_diff_detectors(diff_files: &[DiffFile], project_root: &Path, conf
         let existing = index_existing_functions(project_root, &config.ignore);
         findings.extend(detect_duplicate_utilities(diff_files, &existing));
     }
+    if config.rules.get("no-hardcoded-secrets").map(|s| s != "off").unwrap_or(true) {
+        findings.extend(detect_secrets_in_diff(diff_files));
+    }
+    if config.rules.get("no-unsafe-dynamic-eval").map(|s| s != "off").unwrap_or(true) {
+        findings.extend(detect_unsafe_eval_in_diff(diff_files));
+    }
     findings.into_iter().filter(|f| config.rules.get(&f.rule_id).map(|s| s != "off").unwrap_or(true)).map(|mut f| {
         if let Some(rule_setting) = config.rules.get(&f.rule_id) {
             if rule_setting == "error" {
@@ -93,6 +103,8 @@ pub fn run_all_content_detectors(file_path: &str, content: &str, project_root: &
     findings.extend(detect_circular_dependencies_in_content(file_path, content, project_root));
     findings.extend(detect_watermarks_in_content(file_path, content));
     findings.extend(detect_ai_comment_bloat_in_content(file_path, content));
+    findings.extend(detect_secrets_in_content(file_path, content));
+    findings.extend(detect_unsafe_eval_in_content(file_path, content));
     findings.into_iter().filter(|f| config.rules.get(&f.rule_id).map(|s| s != "off").unwrap_or(true)).map(|mut f| {
         if let Some(rule_setting) = config.rules.get(&f.rule_id) {
             if rule_setting == "error" {

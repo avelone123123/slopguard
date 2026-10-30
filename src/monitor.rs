@@ -142,6 +142,8 @@ pub fn run_interactive_monitor(target_root: &Path) {
         ("no-duplicate-shadow-utilities", "WARN", "Shadow utility re-implementation"),
         ("no-ai-conversational-bloat", "WARN", "AI conversational comments & filler"),
         ("no-excessive-scope-drift", "WARN", "Agent touching excessive/unrelated files"),
+        ("no-hardcoded-secrets", "ERROR", "Exposed AI tokens, private keys, AWS/Slack secrets"),
+        ("no-unsafe-dynamic-eval", "ERROR", "Dangerous dynamic evaluation & unsafe deserialization"),
     ];
     loop {
         tick = tick.wrapping_add(1);
@@ -181,7 +183,7 @@ pub fn run_interactive_monitor(target_root: &Path) {
                 screen.push_str("\x1b[36m┌─ AI HYGIENE HEALTH & TELEMETRY ────────────────────────┬─ ENGINE STATS ──────────────┐\x1b[0m\r\n");
                 screen.push_str(&format!("\x1b[36m│\x1b[0m Score:   {:20} \x1b[32m\x1b[1m{:3}/100\x1b[0m \x1b[36m│\x1b[0m Audits:    \x1b[1m{:6}\x1b[0m            \x1b[36m│\x1b[0m\r\n", bar, state.current_hygiene_score, state.total_scans));
                 screen.push_str(&format!("\x1b[36m│\x1b[0m Rating:  \x1b[1m{:26}\x1b[0m                \x1b[36m│\x1b[0m Intercept: \x1b[31m\x1b[1m{:6}\x1b[0m            \x1b[36m│\x1b[0m\r\n", grade, state.total_slop_blocked));
-                screen.push_str(&format!("\x1b[36m│\x1b[0m Defense: \x1b[36m15 Active AST Firewalls\x1b[0m                       \x1b[36m│\x1b[0m Latency:   \x1b[32m\x1b[1m{:4.1} ms\x1b[0m (Rust)     \x1b[36m│\x1b[0m\r\n", state.avg_latency_ms));
+                screen.push_str(&format!("\x1b[36m│\x1b[0m Defense: \x1b[36m17 Active AST Firewalls\x1b[0m                       \x1b[36m│\x1b[0m Latency:   \x1b[32m\x1b[1m{:4.1} ms\x1b[0m (Rust)     \x1b[36m│\x1b[0m\r\n", state.avg_latency_ms));
                 screen.push_str("\x1b[36m└────────────────────────────────────────────────────────┴─────────────────────────────┘\x1b[0m\r\n");
                 screen.push_str("\x1b[36m┌─ REAL-TIME AGENTIC TELEMETRY WAVEFORM (Oscilloscope) ────────────────────────────────┐\x1b[0m\r\n");
                 screen.push_str(&format!("│ \x1b[90m8ms\x1b[0m ┤{} │\r\n", render_wave_row(6.0, &wave_history, "\x1b[38;5;198m")));
