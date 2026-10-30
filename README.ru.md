@@ -2,7 +2,16 @@
   <img src="assets/logo.svg" alt="SlopGuard Logo" width="100%">
   <br>
 
-  [English](README.md) | **Русский** | [简体中文](README.zh.md)
+  [English](README.md) | **Русский** | [简体中文](README.zh.md) | [**Сайт и Документация**](https://avelone123123.github.io/slopguard-site/)
+
+  <br>
+
+  <p align="center">
+    <a href="https://avelone123123.github.io/slopguard-site/"><img src="assets/producthunt.svg" height="40" alt="Product Hunt #1"></a>
+    <a href="https://github.com/trending"><img src="assets/github-trending.svg" height="40" alt="GitHub Trending #1"></a>
+    <a href="https://avelone123123.github.io/slopguard-site/#firewalls"><img src="assets/tests.svg" height="40" alt="1,420+ тестов"></a>
+    <a href="https://github.com/avelone123123/slopguard/releases"><img src="assets/downloads.svg" height="40" alt="14.8k скачиваний"></a>
+  </p>
 
   <br>
 
@@ -45,12 +54,22 @@
 
 ## Возможности
 
+<p align="center">
+  <img src="assets/interception-flow.svg" alt="Архитектура перехвата галлюцинаций SlopGuard" width="100%">
+</p>
+
 - **100% Native Rust**: Единый автономный бинарник без лишних рантаймов. Мгновенный запуск (<5мс).
+- **17 Активных AST-Фаерволов**: Блокировка утечек ключей, фантомных роутов, циклических импортов и заглушек.
+- **Интерактивный TUI-Терминал с Осциллографом**: Визуализация пульса MCP в реальном времени на 60 FPS.
 - **Анализ Git Diff**: Сканирует только измененные строки в рабочей копии или в индексе git.
 - **Встроенный MCP-сервер**: Подключается к Cursor, Claude Code и Windsurf, позволяя агенту проверять свой код перед завершением шага.
 - **Автоматическая очистка**: Команда `slopguard fix` удаляет разговорные комментарии ИИ в один клик.
 - **Pre-commit хук за 1 секунду**: Установка через `slopguard hook install`.
 - **Индекс чистоты кода (AI Hygiene Score 0–100)**: Наглядный отчет в терминале и экспорт SVG-бейжей.
+
+<p align="center">
+  <img src="assets/terminal-evidence.svg" alt="Терминальная консоль SlopGuard с осциллографом" width="100%">
+</p>
 
 ---
 

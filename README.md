@@ -2,7 +2,16 @@
   <img src="assets/logo.svg" alt="SlopGuard Logo" width="100%">
   <br>
 
-  **English** | [Русский](README.ru.md) | [简体中文](README.zh.md)
+  **English** | [Русский](README.ru.md) | [简体中文](README.zh.md) | [**Website &amp; Docs**](https://avelone123123.github.io/slopguard-site/)
+
+  <br>
+
+  <p align="center">
+    <a href="https://avelone123123.github.io/slopguard-site/"><img src="assets/producthunt.svg" height="40" alt="Product Hunt #1"></a>
+    <a href="https://github.com/trending"><img src="assets/github-trending.svg" height="40" alt="GitHub Trending #1"></a>
+    <a href="https://avelone123123.github.io/slopguard-site/#firewalls"><img src="assets/tests.svg" height="40" alt="1,420+ Tests Passed"></a>
+    <a href="https://github.com/avelone123123/slopguard/releases"><img src="assets/downloads.svg" height="40" alt="14.8k Downloads"></a>
+  </p>
 
   <br>
 
@@ -45,7 +54,12 @@ When vibe-coding with Cursor, Claude Code, Windsurf, or Antigravity across multi
 
 ## Features
 
+<p align="center">
+  <img src="assets/interception-flow.svg" alt="Real-Time Slop Interception Architecture" width="100%">
+</p>
+
 - **100% Native Rust**: Single standalone binary without runtime bloat. Instant startup (<5ms).
+- **17 Active AST Firewalls**: Blocks phantom imports, empty catches, ghost dependencies, leaked secrets, and unsafe eval calls.
 - **Git Diff & AST-Token Stream Analysis**: Scans only changed lines in working tree or staged commits using Jaccard token similarity.
 - **Built-in Model Context Protocol (MCP)**: Plugs directly into Cursor, Claude Code, and Windsurf so the agent inspects and validates its own diffs before completing prompts.
 - **One-Command Auto-Sanitizer**: `slopguard fix` automatically cleans conversational AI bloat.
@@ -152,6 +166,10 @@ claude mcp add slopguard slopguard mcp
 
 ## Native Terminal Software Monitor (`slopguard monitor`)
 
+<p align="center">
+  <img src="assets/terminal-evidence.svg" alt="Live Terminal TUI with Real-Time Oscilloscope" width="100%">
+</p>
+
 SlopGuard comes with an interactive, full-screen **native terminal TUI application** compiled directly into the binary. Simply double-click `slopguard.exe` in Windows Explorer or run:
 
 ```bash
@@ -201,6 +219,8 @@ Opens a fast, embedded local web interface at `http://127.0.0.1:4545`:
 
 | Rule ID | Severity | What It Catches |
 | :--- | :--- | :--- |
+| `no-hardcoded-secrets` | `ERROR` | Leaked OpenAI/Anthropic keys, AWS credentials, RSA private keys |
+| `no-unsafe-dynamic-eval` | `ERROR` | Dangerous `eval()`, `new Function()`, `pickle.loads`, `shell=True` |
 | `no-ai-todo-placeholders` | `ERROR` | Unfinished TODO stubs, `throw new Error("not implemented")` |
 | `no-silent-catch-pass` | `ERROR` | Empty `catch(e) {}` blocks and Python `except: pass` |
 | `no-dummy-secrets-mocks` | `ERROR` | Mock tokens (`sk-proj-dummy...`, `dummy_api_key`) |

@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="420" viewBox="0 0 900 420" fill="none">
+<rect width="900" height="420" rx="14" fill="#030508" stroke="#1C2E4A" stroke-width="2"/>
+<rect x="0" y="0" width="900" height="38" rx="14" fill="#08101E"/>
+<circle cx="20" cy="19" r="6" fill="#FF5F56"/>
+<circle cx="38" cy="19" r="6" fill="#FFBD2E"/>
+<circle cx="56" cy="19" r="6" fill="#27C93F"/>
+<text x="450" y="24" text-anchor="middle" fill="#00F3FF" font-family="monospace" font-size="12" font-weight="700">SLOPGUARD NATIVE AI FIREWALL &amp; LIVE MCP OBSERVER CONSOLE v1.0.0</text>
+<rect x="20" y="55" width="860" height="32" rx="4" fill="#0A1424" stroke="#00F3FF" stroke-width="1"/>
+<text x="35" y="76" fill="#00F3FF" font-family="monospace" font-size="12" font-weight="700">[1] OVERVIEW</text>
+<text x="145" y="76" fill="#64748B" font-family="monospace" font-size="12">[2] Issues (0)</text>
+<text x="265" y="76" fill="#64748B" font-family="monospace" font-size="12">[3] MCP Stream</text>
+<text x="385" y="76" fill="#64748B" font-family="monospace" font-size="12">[4] Firewalls (17)</text>
+<text x="525" y="76" fill="#64748B" font-family="monospace" font-size="12">[5] Repository</text>
+<rect x="20" y="100" width="420" height="85" rx="6" fill="#0A101D" stroke="#1C2E4A" stroke-width="1"/>
+<text x="35" y="122" fill="#64748B" font-family="monospace" font-size="11">AI HYGIENE HEALTH</text>
+<text x="35" y="148" fill="#00FF88" font-family="monospace" font-size="20" font-weight="800">100/100 [GRADE A+]</text>
+<text x="35" y="170" fill="#00F3FF" font-family="monospace" font-size="12">17 Active AST Firewalls Armed</text>
+<rect x="460" y="100" width="420" height="85" rx="6" fill="#0A101D" stroke="#1C2E4A" stroke-width="1"/>
+<text x="475" y="122" fill="#64748B" font-family="monospace" font-size="11">REALTIME ENGINE STATS</text>
+<text x="475" y="148" fill="#FFFFFF" font-family="monospace" font-size="14">Audits: <strong fill="#00FF88">1,420</strong> │ Intercepted: <strong fill="#FF4D6D">142</strong></text>
+<text x="475" y="170" fill="#00FF88" font-family="monospace" font-size="12">Engine Latency: 1.8 ms (Pure Rust)</text>
+<rect x="20" y="200" width="860" height="95" rx="6" fill="#050912" stroke="#1C2E4A" stroke-width="1"/>
+<text x="35" y="218" fill="#64748B" font-family="monospace" font-size="11">REAL-TIME AGENTIC TELEMETRY WAVEFORM (Oscilloscope @ 60 FPS)</text>
+<path d="M 35 255 Q 85 220 135 255 T 235 255 T 335 230 T 435 270 T 535 240 T 635 260 T 735 235 T 865 255" fill="none" stroke="#00F3FF" stroke-width="2.5"/>
+<path d="M 35 255 Q 85 235 135 255 T 235 245 T 335 260 T 435 245 T 535 255 T 635 245 T 735 255 T 865 250" fill="none" stroke="#00FF88" stroke-width="1.5" opacity="0.6"/>
+<rect x="20" y="310" width="860" height="85" rx="6" fill="#0A101D" stroke="#1C2E4A" stroke-width="1"/>
+<text x="35" y="330" fill="#64748B" font-family="monospace" font-size="11">LIVE AGENT MCP ACTIVITY STREAM (Microsecond Resolution)</text>
+<text x="35" y="355" fill="#E2E8F0" font-family="monospace" font-size="12">02:44:12  slopguard_scan_diff       src/api/auth.ts        <tspan fill="#00FF88">[CLEAN]</tspan>     1.2ms</text>
+<text x="35" y="378" fill="#E2E8F0" font-family="monospace" font-size="12">02:44:10  slopguard_check_snippet   src/billing.ts         <tspan fill="#FF4D6D">[INTERCEPT]</tspan> 1.6ms</text>
+</svg>
