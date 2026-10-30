@@ -1,5 +1,5 @@
 use crate::types::{DiffChunk, DiffFile, DiffLine, DiffLineType};
-use std::path::Path;
+use std::path::{Path, PathBuf};
 use std::process::Command;
 pub fn is_git_repo(cwd: &Path) -> bool {
     Command::new("git")
@@ -17,14 +17,16 @@ pub fn has_commits(cwd: &Path) -> bool {
         .map(|o| o.status.success())
         .unwrap_or(false)
 }
-#[allow(dead_code)]
-pub fn get_git_root(cwd: &Path) -> String {
+pub fn get_git_root(cwd: &Path) -> PathBuf {
     if let Ok(output) = Command::new("git").args(["rev-parse", "--show-toplevel"]).current_dir(cwd).output() {
         if output.status.success() {
-            return String::from_utf8_lossy(&output.stdout).trim().to_string();
+            let path_str = String::from_utf8_lossy(&output.stdout).trim().to_string();
+            if !path_str.is_empty() {
+                return PathBuf::from(path_str);
+            }
         }
     }
-    cwd.to_string_lossy().to_string()
+    cwd.to_path_buf()
 }
 pub fn get_diff_output(cwd: &Path, staged_only: bool) -> String {
     let mut cmd = Command::new("git");

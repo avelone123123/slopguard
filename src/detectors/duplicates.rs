@@ -46,13 +46,19 @@ pub fn extract_functions_from_file(file_path: &str, content: &str) -> Vec<Functi
 }
 pub fn index_existing_functions(project_root: &Path, ignore_patterns: &[String]) -> Vec<FunctionSignature> {
     let mut signatures = Vec::new();
-    for entry in WalkDir::new(project_root).into_iter().filter_map(|e| e.ok()) {
+    let walker = WalkDir::new(project_root).into_iter().filter_entry(|e| {
+        let name = e.file_name().to_string_lossy();
+        if e.file_type().is_dir() && (name == "target" || name == ".git" || name == "node_modules" || name == "dist" || name == "build") {
+            return false;
+        }
+        let rel = e.path().strip_prefix(project_root).unwrap_or(e.path());
+        let rel_str = rel.to_string_lossy().replace('\\', "/");
+        !should_ignore_path(&rel_str, ignore_patterns)
+    });
+    for entry in walker.filter_map(|e| e.ok()) {
         if entry.file_type().is_file() {
             let rel = entry.path().strip_prefix(project_root).unwrap_or(entry.path());
             let rel_str = rel.to_string_lossy().replace('\\', "/");
-            if should_ignore_path(&rel_str, ignore_patterns) {
-                continue;
-            }
             let is_code = rel_str.ends_with(".ts") || rel_str.ends_with(".js") || rel_str.ends_with(".rs") || rel_str.ends_with(".py");
             if is_code {
                 if let Ok(content) = fs::read_to_string(entry.path()) {
