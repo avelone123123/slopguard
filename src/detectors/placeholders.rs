@@ -18,13 +18,22 @@ fn get_placeholder_rules() -> Vec<PatternRule> {
             suggestion: "Implement the required business logic or throw a domain-specific handled error",
         },
         PatternRule {
-            regex: Regex::new(r#"(?i)throw\s+new\s+(?:Error|NotImplementedError|Exception)\s*\(\s*["'`].*?(?:not implemented|placeholder|stub).*?["'`]\s*\)"#).unwrap(),
+            regex: Regex::new(r#"(?i)(?:throw\s+new\s+(?:Error|NotImplementedError|Exception)|panic!|panic)\s*\(\s*["'`].*?(?:not implemented|placeholder|stub).*?["'`]\s*\)"#).unwrap(),
             rule_id: "no-ai-todo-placeholders",
             category: SlopCategory::Placeholder,
             severity: SlopSeverity::Error,
             message: "Explicit unimplemented error placeholder thrown by AI",
             fixable: false,
             suggestion: "Provide concrete implementation instead of throwing placeholder error",
+        },
+        PatternRule {
+            regex: Regex::new(r"\b(?:todo!|unimplemented!)\s*\(\s*\)").unwrap(),
+            rule_id: "no-ai-todo-placeholders",
+            category: SlopCategory::Placeholder,
+            severity: SlopSeverity::Error,
+            message: "Rust todo!() or unimplemented!() macro left unfinished in production code",
+            fixable: false,
+            suggestion: "Provide concrete implementation rather than leaving macro placeholder",
         },
         PatternRule {
             regex: Regex::new(r"catch\s*\([^)]*\)\s*\{\s*(?://[^\n]*|/\*[\s\S]*?\*/)?\s*\}").unwrap(),
@@ -45,7 +54,7 @@ fn get_placeholder_rules() -> Vec<PatternRule> {
             suggestion: "Handle or log the caught exception",
         },
         PatternRule {
-            regex: Regex::new(r#"(?i)["'`](?:sk-[a-zA-Z0-9]{20,}|dummy[-_]?(?:token|secret|key|api)|fake[-_]?(?:token|secret|key)|test[-_]api[-_]key)["'`]"#).unwrap(),
+            regex: Regex::new(r#"(?i)["'`](?:sk-[a-zA-Z0-9]{20,}|ghp_[a-zA-Z0-9]{20,}|xoxb-[a-zA-Z0-9]{20,}|dummy[-_]?(?:token|secret|key|api)|fake[-_]?(?:token|secret|key)|test[-_]api[-_]key)["'`]"#).unwrap(),
             rule_id: "no-dummy-secrets-mocks",
             category: SlopCategory::Placeholder,
             severity: SlopSeverity::Error,

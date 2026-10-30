@@ -15,6 +15,12 @@ mod test_suite {
         assert!(!findings.is_empty());
     }
     #[test]
+    fn test_detects_rust_and_go_stubs() {
+        let rust_code = "fn compute() {\n    todo!();\n}\nfn backup() {\n    unimplemented!();\n}";
+        let findings = detect_placeholders_in_content("test.rs", rust_code);
+        assert_eq!(findings.len(), 2);
+    }
+    #[test]
     fn test_detects_type_degradations() {
         let k_ts = ["@", "ts-", "ignore"].concat();
         let k_any = ["a", "n", "y"].concat();
