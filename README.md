@@ -207,6 +207,8 @@ Opens a fast, embedded local web interface at `http://127.0.0.1:4545`:
 | `no-mock-hallucinations` | `ERROR` | Public placeholder APIs (`jsonplaceholder`, mock JWTs, test emails) |
 | `no-hallucinated-imports` | `ERROR` | Hallucinated package exports (`useLocalStorage`, `createClient`, etc.) |
 | `no-phantom-api-routes` | `ERROR` | Client API calls with no matching backend endpoint |
+| `no-circular-dependencies` | `ERROR` | Circular module import cycles (`A -> B -> A`) causing TDZ crashes |
+| `no-ai-sycophancy-watermarks` | `WARN` | AI sycophancy or chat watermarks (`// As an AI...`, `// Hope this helps`) |
 | `no-ghost-env-vars` | `ERROR` | Environment variables missing from `.env.example` / `.env` template |
 | `no-deep-nesting-sprawl` | `WARN` | Deep pyramid-of-doom control flow nesting (>= 5 levels) |
 | `no-type-safety-degradation`| `ERROR` | `@ts-ignore`, `@ts-nocheck`, `: any`, `as unknown as any` |

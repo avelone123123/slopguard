@@ -85,6 +85,16 @@ fn export_report(target_root: &Path, summary: &SlopSummary) -> String {
         "Export failed".to_string()
     }
 }
+fn try_fix_selected_issue(target_root: &Path, summary: &Option<SlopSummary>, index: usize) -> Option<String> {
+    let s = summary.as_ref()?;
+    let sel = s.findings.get(index)?;
+    let target_file = target_root.join(&sel.file);
+    if target_file.is_file() && sanitize_file(&target_file) {
+        Some(format!("Cleaned AI comments in {}! Re-auditing...", sel.file))
+    } else {
+        Some(format!("Cannot auto-fix rule '{}'. Check suggested fix.", sel.rule_id))
+    }
+}
 fn render_wave_row(threshold: f64, history: &[f64], color_code: &str) -> String {
     let mut row = String::new();
     for &val in history {
@@ -108,8 +118,9 @@ pub fn run_interactive_monitor(target_root: &Path) {
     let root_str = target_root.display().to_string();
     let mut current_tab = ActiveTab::Overview;
     let mut selected_index: usize = 0;
+    let mut issue_filter: usize = 0;
     let mut last_summary: Option<SlopSummary> = Some(perform_scan_action(target_root));
-    let mut status_msg = "Ready. Press [S] to audit, [F] to sanitize bloat, [1-5] to switch views.".to_string();
+    let mut status_msg = "Ready. Press [S] to audit, [F] to sanitize, [Enter] to fix issue.".to_string();
     let mut watch_mode = false;
     let mut last_diff = String::new();
     let mut tick: usize = 0;
@@ -122,6 +133,8 @@ pub fn run_interactive_monitor(target_root: &Path) {
         ("no-mock-hallucinations", "ERROR", "Public placeholder mock APIs & fake emails"),
         ("no-hallucinated-imports", "ERROR", "Hallucinated package exports (React, Axios, Lodash)"),
         ("no-phantom-api-routes", "ERROR", "Phantom client API endpoints with no backend route"),
+        ("no-circular-dependencies", "ERROR", "Circular module import cycles between files"),
+        ("no-ai-sycophancy-watermarks", "WARN", "Conversational AI sycophancy or chat watermarks"),
         ("no-ghost-env-vars", "ERROR", "Referenced env variables missing from .env.example"),
         ("no-deep-nesting-sprawl", "WARN", "Deep pyramid-of-doom spaghetti control flow"),
         ("no-type-safety-degradation", "ERROR", "Type bypasses and compiler suppression flags"),
@@ -168,7 +181,7 @@ pub fn run_interactive_monitor(target_root: &Path) {
                 screen.push_str("\x1b[36m┌─ AI HYGIENE HEALTH & TELEMETRY ────────────────────────┬─ ENGINE STATS ──────────────┐\x1b[0m\r\n");
                 screen.push_str(&format!("\x1b[36m│\x1b[0m Score:   {:20} \x1b[32m\x1b[1m{:3}/100\x1b[0m \x1b[36m│\x1b[0m Audits:    \x1b[1m{:6}\x1b[0m            \x1b[36m│\x1b[0m\r\n", bar, state.current_hygiene_score, state.total_scans));
                 screen.push_str(&format!("\x1b[36m│\x1b[0m Rating:  \x1b[1m{:26}\x1b[0m                \x1b[36m│\x1b[0m Intercept: \x1b[31m\x1b[1m{:6}\x1b[0m            \x1b[36m│\x1b[0m\r\n", grade, state.total_slop_blocked));
-                screen.push_str(&format!("\x1b[36m│\x1b[0m Defense: \x1b[36m13 Active AST Firewalls\x1b[0m                       \x1b[36m│\x1b[0m Latency:   \x1b[32m\x1b[1m{:4.1} ms\x1b[0m (Rust)     \x1b[36m│\x1b[0m\r\n", state.avg_latency_ms));
+                screen.push_str(&format!("\x1b[36m│\x1b[0m Defense: \x1b[36m15 Active AST Firewalls\x1b[0m                       \x1b[36m│\x1b[0m Latency:   \x1b[32m\x1b[1m{:4.1} ms\x1b[0m (Rust)     \x1b[36m│\x1b[0m\r\n", state.avg_latency_ms));
                 screen.push_str("\x1b[36m└────────────────────────────────────────────────────────┴─────────────────────────────┘\x1b[0m\r\n");
                 screen.push_str("\x1b[36m┌─ REAL-TIME AGENTIC TELEMETRY WAVEFORM (Oscilloscope) ────────────────────────────────┐\x1b[0m\r\n");
                 screen.push_str(&format!("│ \x1b[90m8ms\x1b[0m ┤{} │\r\n", render_wave_row(6.0, &wave_history, "\x1b[38;5;198m")));
@@ -190,15 +203,21 @@ pub fn run_interactive_monitor(target_root: &Path) {
                 screen.push_str("\x1b[36m└──────────────────────────────────────────────────────────────────────────────────────┘\x1b[0m\r\n");
             }
             ActiveTab::Issues => {
-                let findings: Vec<&SlopFinding> = last_summary.as_ref().map(|s| s.findings.iter().collect()).unwrap_or_default();
-                screen.push_str(&format!("\x1b[36m┌─ ACTIVE CODEBASE ISSUES ({} found in latest audit) ────────────────────────────────┐\x1b[0m\r\n", findings.len()));
-                if findings.is_empty() {
+                let all_findings: Vec<&SlopFinding> = last_summary.as_ref().map(|s| s.findings.iter().collect()).unwrap_or_default();
+                let filtered: Vec<&SlopFinding> = all_findings.into_iter().filter(|f| match issue_filter {
+                    1 => f.severity == SlopSeverity::Error,
+                    2 => f.severity == SlopSeverity::Warning,
+                    _ => true,
+                }).collect();
+                let filter_str = match issue_filter { 1 => "ERRORS ONLY", 2 => "WARNINGS ONLY", _ => "ALL" };
+                screen.push_str(&format!("\x1b[36m┌─ CODEBASE ISSUES ({} shown | Filter: \x1b[1m{}\x1b[0m \x1b[36m[A]) ────────────────────────────────────────┐\x1b[0m\r\n", filtered.len(), filter_str));
+                if filtered.is_empty() {
                     screen.push_str("│  \x1b[32m\x1b[1m[PASS] Zero AI slop detected! Repository is immaculate and deterministic.\x1b[0m          │\r\n");
                     screen.push_str("│  \x1b[2mPress [S] to re-run full AST audit on workspace.\x1b[0m                                    │\r\n");
                 } else {
-                    let total = findings.len();
+                    let total = filtered.len();
                     if selected_index >= total { selected_index = total.saturating_sub(1); }
-                    for (idx, f) in findings.iter().enumerate().take(8) {
+                    for (idx, f) in filtered.iter().enumerate().take(8) {
                         let is_sel = idx == selected_index;
                         let prefix = if is_sel { "\x1b[36m\x1b[1m▶\x1b[0m " } else { "  " };
                         let badge = match f.severity {
@@ -211,7 +230,7 @@ pub fn run_interactive_monitor(target_root: &Path) {
                         let msg_str = if f.message.len() > 38 { &f.message[..38] } else { &f.message };
                         screen.push_str(&format!("│ {}{} {:<28} {:<38} │\r\n", prefix, badge, line_str, msg_str));
                     }
-                    if let Some(sel) = findings.get(selected_index) {
+                    if let Some(sel) = filtered.get(selected_index) {
                         screen.push_str("├──────────────────────────────────────────────────────────────────────────────────────┤\r\n");
                         screen.push_str(&format!("│ \x1b[1mTarget:\x1b[0m {}:{} \x1b[2m({})\x1b[0m\r\n", sel.file, sel.line, sel.rule_id));
                         if !sel.snippet.is_empty() {
@@ -248,7 +267,7 @@ pub fn run_interactive_monitor(target_root: &Path) {
                 screen.push_str("\x1b[36m└──────────────────────────────────────────────────────────────────────────────────────┘\x1b[0m\r\n");
             }
             ActiveTab::Firewalls => {
-                screen.push_str("\x1b[36m┌─ ACTIVE AST FIREWALL ENGINES & GUARDRAILS (13 ACTIVE) ───────────────────────────────┐\x1b[0m\r\n");
+                screen.push_str("\x1b[36m┌─ ACTIVE AST FIREWALL ENGINES & GUARDRAILS (15 ACTIVE) ───────────────────────────────┐\x1b[0m\r\n");
                 for (id, sev, desc) in &firewalls {
                     let badge = if *sev == "ERROR" { "\x1b[31m[ERROR]\x1b[0m" } else { "\x1b[33m[WARN ]\x1b[0m" };
                     screen.push_str(&format!("│  \x1b[32m●\x1b[0m {} {:<30} \x1b[2m{:<42}\x1b[0m │\r\n", badge, id, desc));
@@ -276,7 +295,7 @@ pub fn run_interactive_monitor(target_root: &Path) {
             }
         }
         screen.push_str(&format!("\r\n  \x1b[90mStatus:\x1b[0m \x1b[37m{}\x1b[0m\r\n", status_msg));
-        screen.push_str("  \x1b[1mKEYS:\x1b[0m \x1b[36m[1..5]\x1b[0m Tabs \x1b[36m[↑/↓]\x1b[0m Select \x1b[36m[S]\x1b[0m Audit \x1b[36m[F]\x1b[0m Sanitize \x1b[36m[W]\x1b[0m Watch \x1b[36m[E]\x1b[0m Export \x1b[36m[Q]\x1b[0m Quit\r\n");
+        screen.push_str("  \x1b[1mKEYS:\x1b[0m \x1b[36m[1..5]\x1b[0m Tabs \x1b[36m[↑/↓]\x1b[0m Select \x1b[36m[Enter]\x1b[0m Auto-Fix \x1b[36m[A]\x1b[0m Filter \x1b[36m[S]\x1b[0m Audit \x1b[36m[F]\x1b[0m Sanitize \x1b[36m[W]\x1b[0m Watch \x1b[36m[E]\x1b[0m Export \x1b[36m[Q]\x1b[0m Quit\r\n");
         let _ = write!(out, "{}", screen);
         let _ = out.flush();
         if event::poll(Duration::from_millis(110)).unwrap_or(false) {
@@ -298,6 +317,15 @@ pub fn run_interactive_monitor(target_root: &Path) {
                                 ActiveTab::Repository => ActiveTab::Overview,
                             };
                             selected_index = 0;
+                        },
+                        KeyCode::Char('a') | KeyCode::Char('A') => {
+                            issue_filter = (issue_filter + 1) % 3;
+                            selected_index = 0;
+                        },
+                        KeyCode::Enter if current_tab == ActiveTab::Issues => {
+                            let fix_res = try_fix_selected_issue(target_root, &last_summary, selected_index);
+                            last_summary = fix_res.as_ref().map(|_| perform_scan_action(target_root)).or(last_summary);
+                            status_msg = fix_res.unwrap_or(status_msg);
                         },
                         KeyCode::Up | KeyCode::Char('k') => {
                             selected_index = selected_index.saturating_sub(1);

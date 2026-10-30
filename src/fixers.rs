@@ -7,6 +7,7 @@ pub fn sanitize_code(code: &str) -> (String, bool) {
         Regex::new(r"(?i)^\s*(?://|#)\s*(?:Here(?:'s| is) (?:the|our|an?)|Let(?:'s| us) (?:add|implement|create|fix|update)|In order to|Note that|This will allow us|We need to)\b").unwrap(),
         Regex::new(&format!(r"(?i)^\s*(?://|#)\s*(?:Step \d+:|{k_todo}:?\s*(?:implement|add)\s*(?:logic|later|code))\b")).unwrap(),
         Regex::new(r"(?i)^\s*(?://|#)\s*(?:Function|Method|Class) to\b").unwrap(),
+        Regex::new(r"(?i)^\s*(?://|#)\s*(?:As an AI|Hope this helps|Feel free to|In a (?:real|production) (?:world|environment|app)|Let me know if you|Ensure you have|Make sure to run|Happy coding|Best regards)\b").unwrap(),
     ];
     let mut modified = false;
     let mut out_lines = Vec::new();

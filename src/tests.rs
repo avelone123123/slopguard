@@ -2,6 +2,7 @@
 mod test_suite {
     use crate::dashboard::get_dashboard_html;
     use crate::detectors::ai_bloat::detect_ai_comment_bloat_in_content;
+    use crate::detectors::circular_deps::detect_circular_dependencies_in_content;
     use crate::detectors::complexity::detect_nesting_sprawl_in_content;
     use crate::detectors::compute_summary;
     use crate::detectors::env_vars::detect_ghost_env_vars_in_content;
@@ -11,6 +12,7 @@ mod test_suite {
     use crate::detectors::phantom_routes::detect_phantom_routes_in_content;
     use crate::detectors::placeholders::detect_placeholders_in_content;
     use crate::detectors::type_degradation::detect_type_degradation_in_content;
+    use crate::detectors::watermarks::detect_watermarks_in_content;
     use crate::fixers::sanitize_code;
     use crate::reporters::generate_badge_svg;
     use crate::telemetry::{create_shared_telemetry, record_event};
@@ -127,5 +129,27 @@ mod test_suite {
         let _ = std::fs::remove_dir_all(&temp_dir);
         assert_eq!(findings.len(), 1);
         assert_eq!(findings[0].rule_id, "no-phantom-api-routes");
+    }
+    #[test]
+    fn test_detects_circular_dependencies() {
+        let temp_dir = std::env::temp_dir().join(format!("slopguard_circ_test_{}", std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap().as_nanos()));
+        let src_dir = temp_dir.join("src");
+        let _ = std::fs::create_dir_all(&src_dir);
+        let _ = std::fs::write(src_dir.join("b.ts"), "import { a } from './a';\nexport const b = 1;\n");
+        let a_code = "import { b } from './b';\nexport const a = 2;\n";
+        let _ = std::fs::write(src_dir.join("a.ts"), a_code);
+        let findings = detect_circular_dependencies_in_content("src/a.ts", a_code, &temp_dir);
+        let _ = std::fs::remove_dir_all(&temp_dir);
+        assert_eq!(findings.len(), 1);
+        assert_eq!(findings[0].rule_id, "no-circular-dependencies");
+    }
+    #[test]
+    fn test_detects_ai_sycophancy_watermarks() {
+        let p1 = ["As an ", "AI"].concat();
+        let p2 = ["Hope this ", "helps"].concat();
+        let code = format!("// {p1} coding assistant, I have implemented your request:\nconst x = 42;\n// {p2}! Let me know if you need anything else.\n");
+        let findings = detect_watermarks_in_content("auth.ts", &code);
+        assert_eq!(findings.len(), 2);
+        assert_eq!(findings[0].rule_id, "no-ai-sycophancy-watermarks");
     }
 }

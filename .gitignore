@@ -3,3 +3,4 @@ slopguard-badge.svg
 *.log
 slopguard.exe
 .slopguard
+slopguard-audit-report.json

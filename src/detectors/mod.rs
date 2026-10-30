@@ -1,4 +1,5 @@
 pub mod ai_bloat;
+pub mod circular_deps;
 pub mod complexity;
 pub mod duplicates;
 pub mod env_vars;
@@ -10,7 +11,9 @@ pub mod placeholders;
 pub mod scanner;
 pub mod scope_drift;
 pub mod type_degradation;
+pub mod watermarks;
 use crate::detectors::ai_bloat::{detect_ai_comment_bloat_in_content, detect_ai_comment_bloat_in_diff};
+use crate::detectors::circular_deps::{detect_circular_dependencies_in_content, detect_circular_dependencies_in_diff};
 use crate::detectors::complexity::{detect_nesting_sprawl_in_content, detect_nesting_sprawl_in_diff};
 use crate::detectors::duplicates::{detect_duplicate_utilities, index_existing_functions};
 use crate::detectors::env_vars::{detect_ghost_env_vars_in_content, detect_ghost_env_vars_in_diff};
@@ -21,6 +24,7 @@ use crate::detectors::phantom_routes::{detect_phantom_routes_in_content, detect_
 use crate::detectors::placeholders::{detect_placeholders_in_content, detect_placeholders_in_diff};
 use crate::detectors::scope_drift::detect_scope_drift;
 use crate::detectors::type_degradation::{detect_type_degradation_in_content, detect_type_degradation_in_diff};
+use crate::detectors::watermarks::{detect_watermarks_in_content, detect_watermarks_in_diff};
 use crate::types::{DiffFile, SlopConfig, SlopFinding, SlopSeverity, SlopSummary};
 use std::path::Path;
 pub fn run_all_diff_detectors(diff_files: &[DiffFile], project_root: &Path, config: &SlopConfig) -> Vec<SlopFinding> {
@@ -48,6 +52,12 @@ pub fn run_all_diff_detectors(diff_files: &[DiffFile], project_root: &Path, conf
     }
     if config.rules.get("no-ghost-dependencies").map(|s| s != "off").unwrap_or(true) {
         findings.extend(detect_ghost_dependencies_in_diff(diff_files, project_root, &config.allowed_ghost_deps));
+    }
+    if config.rules.get("no-circular-dependencies").map(|s| s != "off").unwrap_or(true) {
+        findings.extend(detect_circular_dependencies_in_diff(diff_files, project_root));
+    }
+    if config.rules.get("no-ai-sycophancy-watermarks").map(|s| s != "off").unwrap_or(true) {
+        findings.extend(detect_watermarks_in_diff(diff_files));
     }
     if config.rules.get("no-excessive-scope-drift").map(|s| s != "off").unwrap_or(true) {
         findings.extend(detect_scope_drift(diff_files, config.max_drift_files));
@@ -80,6 +90,8 @@ pub fn run_all_content_detectors(file_path: &str, content: &str, project_root: &
     findings.extend(detect_nesting_sprawl_in_content(file_path, content, 7));
     findings.extend(detect_type_degradation_in_content(file_path, content));
     findings.extend(detect_ghost_dependencies_in_content(file_path, content, project_root, &config.allowed_ghost_deps));
+    findings.extend(detect_circular_dependencies_in_content(file_path, content, project_root));
+    findings.extend(detect_watermarks_in_content(file_path, content));
     findings.extend(detect_ai_comment_bloat_in_content(file_path, content));
     findings.into_iter().filter(|f| config.rules.get(&f.rule_id).map(|s| s != "off").unwrap_or(true)).map(|mut f| {
         if let Some(rule_setting) = config.rules.get(&f.rule_id) {
