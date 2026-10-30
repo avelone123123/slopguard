@@ -6,6 +6,7 @@ mod test_suite {
     use crate::detectors::complexity::detect_nesting_sprawl_in_content;
     use crate::detectors::compute_summary;
     use crate::detectors::env_vars::detect_ghost_env_vars_in_content;
+    use crate::detectors::floating_promises::detect_floating_promises_in_content;
     use crate::detectors::ghost_dependencies::detect_ghost_dependencies_in_content;
     use crate::detectors::hallucinated_imports::detect_hallucinated_imports_in_content;
     use crate::detectors::mocks::detect_mocks_in_content;
@@ -208,6 +209,37 @@ mod test_suite {
         let safe_php = "$stmt = $pdo->prepare(\"SELECT * FROM users WHERE id = :id\");";
         let safe_code = format!("{safe_pg}\n{safe_mysql}\n{safe_py}\n{safe_php}\n");
         let safe_findings = detect_sql_injection_in_content("safe.ts", &safe_code);
+        assert!(safe_findings.is_empty());
+    }
+    #[test]
+    fn test_detects_floating_promises_and_async_antipatterns() {
+        let code_for_each = "items.forEach(async (item) => { await processItem(item); });\n";
+        let f1 = detect_floating_promises_in_content("handler.ts", code_for_each);
+        assert_eq!(f1.len(), 1);
+        assert_eq!(f1[0].rule_id, "no-floating-promises");
+        let code_executor = "const task = new Promise(async (resolve, reject) => { resolve(await compute()); });\n";
+        let f2 = detect_floating_promises_in_content("task.ts", code_executor);
+        assert_eq!(f2.len(), 1);
+        assert_eq!(f2[0].rule_id, "no-floating-promises");
+        let code_try = "async function run() {\n    try {\n        return fetchResults();\n    } catch (e) {\n        console.error(e);\n    }\n}\n";
+        let f3 = detect_floating_promises_in_content("run.ts", code_try);
+        assert_eq!(f3.len(), 1);
+        assert_eq!(f3[0].rule_id, "no-floating-promises");
+        let code_then = "api.syncData().then(res => render(res));\n";
+        let f4 = detect_floating_promises_in_content("sync.ts", code_then);
+        assert_eq!(f4.len(), 1);
+        assert_eq!(f4[0].rule_id, "no-floating-promises");
+        let safe_code = [
+            "for (const item of items) { await processItem(item); }",
+            "await Promise.all(items.map(async (i) => await processItem(i)));",
+            "const p = new Promise((resolve, reject) => { resolve(42); });",
+            "async function safeRun() { try { return await fetchResults(); } catch (e) { log(e); } }",
+            "api.syncData().then(res => render(res)).catch(err => log(err));",
+            "const assigned = api.syncData().then(res => render(res));",
+            "return api.syncData().then(res => render(res));",
+            "void api.syncData().then(res => render(res));",
+        ].join("\n");
+        let safe_findings = detect_floating_promises_in_content("safe.ts", &safe_code);
         assert!(safe_findings.is_empty());
     }
 }

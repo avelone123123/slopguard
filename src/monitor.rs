@@ -145,6 +145,7 @@ pub fn run_interactive_monitor(target_root: &Path) {
         ("no-hardcoded-secrets", "ERROR", "Exposed AI tokens, private keys, AWS/Slack secrets"),
         ("no-unsafe-dynamic-eval", "ERROR", "Dangerous dynamic evaluation & unsafe deserialization"),
         ("no-sql-injection-risk", "ERROR", "Raw SQL string concatenation & query interpolation"),
+        ("no-floating-promises", "ERROR", "Floating unhandled promises & async anti-patterns"),
     ];
     loop {
         tick = tick.wrapping_add(1);
@@ -270,7 +271,7 @@ pub fn run_interactive_monitor(target_root: &Path) {
                 screen.push_str("\x1b[36m└──────────────────────────────────────────────────────────────────────────────────────┘\x1b[0m\r\n");
             }
             ActiveTab::Firewalls => {
-                screen.push_str("\x1b[36m┌─ ACTIVE AST FIREWALL ENGINES & GUARDRAILS (15 ACTIVE) ───────────────────────────────┐\x1b[0m\r\n");
+                screen.push_str("\x1b[36m┌─ ACTIVE AST FIREWALL ENGINES & GUARDRAILS (19 ACTIVE) ───────────────────────────────┐\x1b[0m\r\n");
                 for (id, sev, desc) in &firewalls {
                     let badge = if *sev == "ERROR" { "\x1b[31m[ERROR]\x1b[0m" } else { "\x1b[33m[WARN ]\x1b[0m" };
                     screen.push_str(&format!("│  \x1b[32m●\x1b[0m {} {:<30} \x1b[2m{:<42}\x1b[0m │\r\n", badge, id, desc));
