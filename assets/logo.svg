@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 240" width="100%" height="100%" fill="none">
+  <defs>
+    <linearGradient id="shieldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00f2fe"/>
+      <stop offset="100%" stop-color="#4facfe"/>
+    </linearGradient>
+    <linearGradient id="textGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#e0e7ff"/>
+    </linearGradient>
+    <linearGradient id="glowGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00f2fe" stop-opacity="0.3"/>
+      <stop offset="100%" stop-color="#4facfe" stop-opacity="0"/>
+    </linearGradient>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="8" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+  </defs>
+  <rect width="800" height="240" rx="16" fill="#090d16"/>
+  <rect x="1" y="1" width="798" height="238" rx="15" stroke="#1e293b" stroke-width="2"/>
+  <circle cx="120" cy="120" r="70" fill="url(#glowGrad)" filter="url(#glow)"/>
+  <g transform="translate(60, 48)">
+    <path d="M 60 10 L 105 32 C 105 85 60 125 60 125 C 60 125 15 85 15 32 Z" fill="#0f172a" stroke="url(#shieldGrad)" stroke-width="4" stroke-linejoin="round"/>
+    <path d="M 60 25 L 92 42 C 92 80 60 110 60 110 C 60 110 28 80 28 42 Z" fill="#1e293b" fill-opacity="0.5"/>
+    <path d="M 45 68 L 56 79 L 78 52" stroke="#00f2fe" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+    <line x1="25" y1="68" x2="95" y2="68" stroke="#38bdf8" stroke-width="1.5" stroke-dasharray="3 3" opacity="0.6"/>
+    <circle cx="60" cy="70" r="3" fill="#ffffff"/>
+  </g>
+  <text x="210" y="112" fill="url(#textGrad)" font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="52" font-weight="900" letter-spacing="-1">SLOP<tspan fill="#38bdf8">GUARD</tspan></text>
+  <text x="212" y="146" fill="#94a3b8" font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="16" font-weight="500" letter-spacing="0.5">Zero-Latency AI Slop &amp; Hallucination Firewall for Vibe-Coders</text>
+  <g transform="translate(212, 168)">
+    <rect width="78" height="24" rx="4" fill="#1e293b"/>
+    <text x="39" y="16" fill="#38bdf8" font-family="monospace" font-size="11" font-weight="700" text-anchor="middle">ZERO-DEP</text>
+    <rect x="88" width="58" height="24" rx="4" fill="#1e293b"/>
+    <text x="117" y="16" fill="#a78bfa" font-family="monospace" font-size="11" font-weight="700" text-anchor="middle">MCP 1.0</text>
+    <rect x="156" width="68" height="24" rx="4" fill="#1e293b"/>
+    <text x="190" y="16" fill="#34d399" font-family="monospace" font-size="11" font-weight="700" text-anchor="middle">&lt; 30MS</text>
+    <rect x="234" width="76" height="24" rx="4" fill="#1e293b"/>
+    <text x="272" y="16" fill="#f59e0b" font-family="monospace" font-size="11" font-weight="700" text-anchor="middle">GIT-HOOK</text>
+  </g>
+</svg>

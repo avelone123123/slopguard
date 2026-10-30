@@ -8,6 +8,9 @@ import { generateBadgeSvg, generateAuditCardSvg } from "./reporters/svg.js";
 import { sanitizeFile } from "./fixers/sanitizer.js";
 import { startMcpServer } from "./mcp.js";
 import { SlopFinding } from "./types.js";
+function isSupportedCodeFile(filePath: string): boolean {
+  return /\.(ts|tsx|js|jsx|mjs|cjs|py|go|rs|php)$/.test(filePath);
+}
 function scanDirectoryRecursively(dir: string, rootDir: string, ignorePatterns: string[]): string[] {
   const filePaths: string[] = [];
   const entries = fs.readdirSync(dir, { withFileTypes: true });
@@ -17,7 +20,7 @@ function scanDirectoryRecursively(dir: string, rootDir: string, ignorePatterns: 
     if (shouldIgnorePath(relPath, ignorePatterns)) continue;
     if (entry.isDirectory()) {
       filePaths.push(...scanDirectoryRecursively(fullPath, rootDir, ignorePatterns));
-    } else if (/\.(ts|tsx|js|jsx|mjs|cjs|py|go|rs|php)$/.test(entry.name)) {
+    } else if (isSupportedCodeFile(entry.name)) {
       filePaths.push(fullPath);
     }
   }
@@ -49,7 +52,7 @@ export async function runCli(): Promise<void> {
     const config = loadConfig(cwd);
     const startTime = Date.now();
     const diffText = getDiffOutput(cwd, false);
-    const diffFiles = parseUnifiedDiff(diffText);
+    const diffFiles = parseUnifiedDiff(diffText).filter(f => !shouldIgnorePath(f.newPath || f.oldPath, config.ignore) && isSupportedCodeFile(f.newPath || f.oldPath));
     const findings = runAllDiffDetectors(diffFiles, cwd, config);
     const summary = computeSummary(findings, diffFiles.length, Date.now() - startTime);
     const badgeSvg = generateBadgeSvg(summary.score, summary.errors);
@@ -97,12 +100,13 @@ export async function runCli(): Promise<void> {
     const startTime = Date.now();
     if (isGitRepo(cwd)) {
       const diffText = getDiffOutput(cwd, isStaged);
-      const diffFiles = parseUnifiedDiff(diffText);
+      const rawDiffFiles = parseUnifiedDiff(diffText);
+      const diffFiles = rawDiffFiles.filter(f => !shouldIgnorePath(f.newPath || f.oldPath, config.ignore) && isSupportedCodeFile(f.newPath || f.oldPath));
       if (!isStaged) {
         const untracked = getUntrackedFiles(cwd);
         for (const u of untracked) {
           const relPath = u.replace(/\\/g, "/");
-          if (shouldIgnorePath(relPath, config.ignore)) continue;
+          if (shouldIgnorePath(relPath, config.ignore) || !isSupportedCodeFile(relPath)) continue;
           const fullPath = path.join(cwd, u);
           if (fs.existsSync(fullPath) && fs.statSync(fullPath).isFile()) {
             try {

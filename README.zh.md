@@ -1,0 +1,113 @@
+<div align="center">
+  <img src="assets/logo.svg" alt="SlopGuard Logo" width="100%">
+  <br>
+
+  [English](README.md) | [Русский](README.ru.md) | **简体中文**
+
+  <br>
+
+  <img alt="零依赖" src="https://img.shields.io/badge/dependencies-zero-4b6fff?style=flat-square">
+  <img alt="开源许可证: MIT" src="https://img.shields.io/badge/license-MIT-263146?style=flat-square">
+  <img alt="极低延迟: <30ms" src="https://img.shields.io/badge/latency-%3C30ms-2f6f4f?style=flat-square">
+  <img alt="MCP 协议: 1.0" src="https://img.shields.io/badge/MCP-JSON--RPC%202.0-7c3aed?style=flat-square">
+  <img alt="Node: >=18" src="https://img.shields.io/badge/node-%3E%3D18.0.0-339933?style=flat-square">
+
+  <br>
+
+  <h3>防止 AI 编程智能体用未经检验的代码垃圾腐蚀您的项目。</h3>
+
+  <p>
+    <b>SlopGuard</b> 是一款零延迟、零依赖的 Git 预提交防火墙和 <b>Model Context Protocol (MCP)</b> 引擎，<br>
+    在 AI 幻觉、未完成占位符、影子工具函数和类型退化进入 Git 历史<b>之前</b>将其拦截。
+  </p>
+
+  <code>npx slopguard</code>
+
+</div>
+
+---
+
+## 核心痛点：AI 代码垃圾堆积效应 (Code Slop)
+
+在使用 Cursor、Claude Code、Windsurf 或 Antigravity 进行连续多轮编程时，AI 往往会带来以下隐蔽问题：
+
+1. **未完成占位符**：`// TODO: implement later`、`throw new Error("not implemented")` 或静默吞没异常的空 `catch (e) {}` 块。
+2. **重复影子工具函数**：AI 遗忘项目中已有 `formatDate()`，并在其它文件中偷偷新建重复函数。
+3. **类型安全退化**：为了通过编译器检查，AI 将领域类型粗暴替换为 `any`、`Record<string, any>`、`@ts-ignore` 或 `as unknown as any`。
+4. **幽灵依赖 (Ghost Dependencies)**：AI 引入了 `package.json` 中根本未声明的第三方包。
+5. **范围失控 (Scope Drift)**：修改一个按钮样式，AI 却无意识篡改了 `.env` 与关键配置文件。
+6. **对话式注释污染**：代码中充斥着 `// Here is the updated code:` 等 AI 废话注释。
+
+> **传统 Linter (ESLint、Ruff、Biome) 无法拦截此类问题**。它们仅做语法与格式检查，不理解 AI 智能体的行为退化。
+
+---
+
+## 核心特性
+
+- **零依赖**：基于 Node.js 原生标准库，`npx slopguard` 启动时间低于 30ms。
+- **Git Diff 极速扫描**：仅针对暂存区或工作区变动行进行 AST Token 流比对。
+- **内置 MCP 协议服务**：直接集成至 Cursor 与 Claude Code，在智能体生成完代码后即刻自检。
+- **一键清理**：`slopguard fix` 自动剥离 AI 冗余对话注释。
+- **一秒安装 Git Hook**：`slopguard hook install` 自动配置预提交守卫。
+- **代码卫生评分 (0-100)**：直观终端报告与 SVG 徽章导出。
+
+---
+
+## 快速开始
+
+无需全局安装即可立即运行：
+
+```bash
+npx slopguard
+```
+
+或全局安装：
+
+```bash
+npm install -g slopguard
+```
+
+### 常用命令
+
+```bash
+# 扫描未提交变动
+slopguard check
+
+# 仅扫描 Git 暂存区 (适合 pre-commit)
+slopguard check --staged
+
+# 递归扫描全仓库
+slopguard all
+
+# 自动清理 AI 注释垃圾
+slopguard fix
+
+# 安装 Git 预提交钩子
+slopguard hook install
+
+# 导出 SVG 评分徽章
+slopguard badge ./slopguard-badge.svg
+```
+
+---
+
+## MCP 配置 (Cursor, Claude Code, Windsurf)
+
+在项目的 `.cursor/mcp.json` 中加入：
+
+```json
+{
+  "mcpServers": {
+    "slopguard": {
+      "command": "npx",
+      "args": ["slopguard", "mcp"]
+    }
+  }
+}
+```
+
+---
+
+## 开源许可
+
+MIT © [avelo](https://github.com/avelo)

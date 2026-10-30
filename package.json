@@ -12,7 +12,7 @@
     "build": "tsc",
     "check": "node bin/slopguard.js check",
     "mcp": "node bin/slopguard.js mcp",
-    "test": "node --test"
+    "test": "node --experimental-strip-types --test test/slopguard.test.ts"
   },
   "keywords": [
     "ai",

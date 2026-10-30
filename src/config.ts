@@ -2,7 +2,7 @@ import * as fs from "node:fs";
 import * as path from "node:path";
 import { SlopConfig } from "./types.js";
 export const DEFAULT_CONFIG: SlopConfig = {
-  ignore: ["node_modules", ".git", "dist", "build", "coverage", ".next", ".turbo", "vendor", "*.min.js", "*.lock", "package-lock.json"],
+  ignore: ["node_modules", ".git", "dist", "build", "coverage", ".next", ".turbo", "vendor", "*.min.js", "*.lock", "package-lock.json", "*.md", "*.svg", "test/**", "tests/**", "*.test.*", "*.spec.*"],
   rules: {
     "no-ai-todo-placeholders": "error",
     "no-silent-catch-pass": "error",
@@ -40,8 +40,13 @@ export function shouldIgnorePath(filePath: string, ignorePatterns: string[]): bo
   const normalized = filePath.replace(/\\/g, "/");
   return ignorePatterns.some(pattern => {
     const cleanPattern = pattern.replace(/^\.\//, "").replace(/\\/g, "/");
+    if (cleanPattern.endsWith("/**")) {
+      const baseDir = cleanPattern.slice(0, -3);
+      return normalized === baseDir || normalized.startsWith(`${baseDir}/`) || normalized.includes(`/${baseDir}/`);
+    }
     if (cleanPattern.startsWith("*.")) {
-      return normalized.endsWith(cleanPattern.slice(1));
+      const ext = cleanPattern.slice(1);
+      return normalized.endsWith(ext) || normalized.includes(ext);
     }
     return normalized.includes(`/${cleanPattern}/`) || normalized.startsWith(`${cleanPattern}/`) || normalized === cleanPattern;
   });
