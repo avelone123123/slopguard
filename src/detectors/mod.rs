@@ -1,5 +1,7 @@
 pub mod ai_bloat;
+pub mod complexity;
 pub mod duplicates;
+pub mod env_vars;
 pub mod ghost_dependencies;
 pub mod mocks;
 pub mod placeholders;
@@ -7,7 +9,9 @@ pub mod scanner;
 pub mod scope_drift;
 pub mod type_degradation;
 use crate::detectors::ai_bloat::{detect_ai_comment_bloat_in_content, detect_ai_comment_bloat_in_diff};
+use crate::detectors::complexity::{detect_nesting_sprawl_in_content, detect_nesting_sprawl_in_diff};
 use crate::detectors::duplicates::{detect_duplicate_utilities, index_existing_functions};
+use crate::detectors::env_vars::{detect_ghost_env_vars_in_content, detect_ghost_env_vars_in_diff};
 use crate::detectors::ghost_dependencies::{detect_ghost_dependencies_in_content, detect_ghost_dependencies_in_diff};
 use crate::detectors::mocks::{detect_mocks_in_content, detect_mocks_in_diff};
 use crate::detectors::placeholders::{detect_placeholders_in_content, detect_placeholders_in_diff};
@@ -22,6 +26,12 @@ pub fn run_all_diff_detectors(diff_files: &[DiffFile], project_root: &Path, conf
     }
     if config.rules.get("no-mock-hallucinations").map(|s| s != "off").unwrap_or(true) {
         findings.extend(detect_mocks_in_diff(diff_files));
+    }
+    if config.rules.get("no-ghost-env-vars").map(|s| s != "off").unwrap_or(true) {
+        findings.extend(detect_ghost_env_vars_in_diff(diff_files, project_root));
+    }
+    if config.rules.get("no-deep-nesting-sprawl").map(|s| s != "off").unwrap_or(true) {
+        findings.extend(detect_nesting_sprawl_in_diff(diff_files, 5));
     }
     if config.rules.get("no-type-safety-degradation").map(|s| s != "off").unwrap_or(true) {
         findings.extend(detect_type_degradation_in_diff(diff_files));
@@ -54,6 +64,8 @@ pub fn run_all_content_detectors(file_path: &str, content: &str, project_root: &
     let mut findings = Vec::new();
     findings.extend(detect_placeholders_in_content(file_path, content));
     findings.extend(detect_mocks_in_content(file_path, content));
+    findings.extend(detect_ghost_env_vars_in_content(file_path, content, project_root));
+    findings.extend(detect_nesting_sprawl_in_content(file_path, content, 5));
     findings.extend(detect_type_degradation_in_content(file_path, content));
     findings.extend(detect_ghost_dependencies_in_content(file_path, content, project_root, &config.allowed_ghost_deps));
     findings.extend(detect_ai_comment_bloat_in_content(file_path, content));

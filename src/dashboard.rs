@@ -1,9 +1,15 @@
-use crate::telemetry::{SharedTelemetry, load_persisted_telemetry};
+use crate::config::{is_supported_code_file, load_config, should_ignore_path};
+use crate::detectors::{compute_summary, run_all_diff_detectors};
+use crate::fixers::sanitize_file;
+use crate::git::{get_diff_output, is_git_repo, parse_unified_diff};
+use crate::telemetry::{load_persisted_telemetry, record_event, SharedTelemetry};
 use std::io::{Read, Write};
 use std::net::TcpListener;
 use std::path::PathBuf;
 use std::process::Command;
 use std::thread;
+use std::time::Instant;
+use walkdir::WalkDir;
 pub fn get_dashboard_html() -> &'static str {
     r##"<!DOCTYPE html>
 <html lang="en">
@@ -18,6 +24,11 @@ body{background:#090d16;color:#f0f6fc;padding:24px;min-height:100vh}
 .brand{display:flex;align-items:center;gap:12px}
 .title{font-size:24px;font-weight:900;letter-spacing:-0.5px}
 .title span{color:#00f2fe}
+.actions{display:flex;gap:10px;align-items:center}
+.btn{background:#00f2fe;color:#090d16;font-weight:800;border:none;padding:8px 16px;border-radius:6px;cursor:pointer;font-size:12px;transition:0.2s}
+.btn:hover{opacity:0.85}
+.btn-sec{background:#1e293b;color:#f0f6fc;font-weight:700;border:1px solid #334155}
+.btn-sec:hover{border-color:#00f2fe}
 .status-pill{display:flex;align-items:center;gap:8px;background:#0d1d2e;border:1px solid #00f2fe44;padding:6px 14px;border-radius:20px;font-size:12px;font-weight:700;color:#00f2fe}
 .pulse{width:8px;height:8px;background:#00f2fe;border-radius:50%;box-shadow:0 0 10px #00f2fe;animation:blink 1.5s infinite}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:0.3}}
@@ -47,11 +58,15 @@ body{background:#090d16;color:#f0f6fc;padding:24px;min-height:100vh}
 <svg width="32" height="32" viewBox="0 0 120 120" fill="none"><path d="M60 10 L105 32 C105 85 60 125 60 125 C60 125 15 85 15 32 Z" fill="#0f172a" stroke="#00f2fe" stroke-width="6"/><path d="M45 68 L56 79 L78 52" stroke="#00f2fe" stroke-width="8" stroke-linecap="round"/></svg>
 <div class="title">SLOP<span>GUARD</span> <small style="font-size:12px;color:#64748b;font-weight:400">TELEMETRY v1.0</small></div>
 </div>
+<div class="actions">
+<button onclick="triggerScan(this)" class="btn">AUDIT WORKSPACE</button>
+<button onclick="triggerSanitize(this)" class="btn btn-sec">SANITIZE BLOAT</button>
 <div class="status-pill"><div class="pulse"></div> MCP PROTOCOL ACTIVE</div>
+</div>
 </div>
 <div class="grid">
 <div class="card"><div class="card-label">AI Hygiene Score</div><div class="card-value" id="val-score">100<small style="font-size:18px;color:#64748b">/100</small></div><div class="card-sub" id="val-grade">Grade: A+ (Immaculate)</div></div>
-<div class="card"><div class="card-label">Slop Neutralized</div><div class="card-value" id="val-blocked" style="color:#e5484d">0</div><div class="card-sub">Stubs & escapes blocked</div></div>
+<div class="card"><div class="card-label">Slop Neutralized</div><div class="card-value" id="val-blocked" style="color:#e5484d">0</div><div class="card-sub">Stubs, ghosts & bypasses</div></div>
 <div class="card"><div class="card-label">MCP Tool Latency</div><div class="card-value" id="val-latency" style="color:#00f2fe">1.8<small style="font-size:18px">ms</small></div><div class="card-sub">Sub-millisecond Rust speed</div></div>
 <div class="card"><div class="card-label">Total Code Audits</div><div class="card-value" id="val-scans">0</div><div class="card-sub">Diff & snippet inspections</div></div>
 </div>
@@ -64,14 +79,14 @@ body{background:#090d16;color:#f0f6fc;padding:24px;min-height:100vh}
 <div class="panel-title"><span>Agent Telemetry Sparkline</span></div>
 <div class="chart-box">
 <svg width="100%" height="100%" viewBox="0 0 300 140" fill="none" id="spark-svg">
-<path d="M0 120 L50 110 L100 115 L150 70 L200 95 L250 40 L300 60" stroke="#00f2fe" stroke-width="3" fill="none"/>
-<path d="M0 120 L50 110 L100 115 L150 70 L200 95 L250 40 L300 60 L300 140 L0 140 Z" fill="#00f2fe" fill-opacity="0.1"/>
+<path d="M0 120 L50 110 L100 115 L150 70 L200 95 L250 40 L300 60" stroke="#00f2fe" stroke-width="3" fill="none" id="spark-line"/>
+<path d="M0 120 L50 110 L100 115 L150 70 L200 95 L250 40 L300 60 L300 140 L0 140 Z" fill="#00f2fe" fill-opacity="0.1" id="spark-area"/>
 <text x="10" y="25" fill="#64748b" font-size="11">REALTIME LATENCY (MS)</text>
 </svg>
 </div>
 <div style="margin-top:20px;border-top:1px solid #1e293b;padding-top:16px;font-size:12px;color:#94a3b8">
 <div><strong>Target:</strong> <span id="val-target">Auto-connected Repository</span></div>
-<div style="margin-top:4px"><strong>Guardrails:</strong> 9 active AST firewalls</div>
+<div style="margin-top:4px"><strong>Guardrails:</strong> 11 active AST firewalls</div>
 </div>
 </div>
 </div>
@@ -98,14 +113,81 @@ feed.innerHTML=data.events.map(e=>`
 <div class="feed-badge ${e.slop_found>0?'intercept':'pass'}">${e.slop_found>0?'BLOCKED '+e.slop_found+' SLOP':'CLEAN'}</div>
 </div>
 `).join('');
+const latencies=data.events.slice(0,8).map(e=>e.latency_ms||1).reverse();
+if(latencies.length>1){
+const maxLat=Math.max(...latencies,4);
+const pts=latencies.map((l,idx)=>{
+const x=idx*(300/(latencies.length-1));
+const y=Math.round(130-(l/maxLat*95));
+return `${x} ${y}`;
+});
+const lineD=`M${pts.join(' L')}`;
+const areaD=`M0 140 L${pts.join(' L')} L300 140 Z`;
+document.getElementById("spark-line").setAttribute("d",lineD);
+document.getElementById("spark-area").setAttribute("d",areaD);
+}
 }
 }catch(err){}
+}
+async function triggerScan(btn){
+const orig=btn.textContent;btn.textContent="SCANNING...";
+try{await fetch("/api/scan",{method:"POST"});await pollTelemetry();}catch(e){}
+btn.textContent=orig;
+}
+async function triggerSanitize(btn){
+const orig=btn.textContent;btn.textContent="SANITIZING...";
+try{const res=await fetch("/api/fix",{method:"POST"});const d=await res.json();alert("Sanitized "+(d.fixed||0)+" file(s)");await pollTelemetry();}catch(e){}
+btn.textContent=orig;
 }
 setInterval(pollTelemetry,800);
 pollTelemetry();
 </script>
 </body>
 </html>"##
+}
+fn audit_workspace(target_root: &PathBuf, shared: &SharedTelemetry) -> String {
+    let start = Instant::now();
+    let config = load_config(target_root);
+    let mut files_count = 1;
+    let findings = if is_git_repo(target_root) {
+        let diff_text = get_diff_output(target_root, false);
+        let diff_files = parse_unified_diff(&diff_text);
+        files_count = diff_files.len().max(1);
+        run_all_diff_detectors(&diff_files, target_root, &config)
+    } else {
+        Vec::new()
+    };
+    let elapsed = start.elapsed().as_millis();
+    let summary = compute_summary(findings, files_count, elapsed);
+    let msg = if summary.errors > 0 { format!("Found {} critical slop issues", summary.errors) } else { "Clean working tree".to_string() };
+    record_event(shared, target_root, "dashboard_scan", "repository", summary.errors, summary.score, elapsed, &msg);
+    serde_json::to_string(&summary).unwrap_or_else(|_| "{}".to_string())
+}
+fn sanitize_workspace(target_root: &PathBuf, shared: &SharedTelemetry) -> usize {
+    let start = Instant::now();
+    let config = load_config(target_root);
+    let mut fixed = 0;
+    let walker = WalkDir::new(target_root).into_iter().filter_entry(|e| {
+        let name = e.file_name().to_string_lossy();
+        if e.file_type().is_dir() && (name == "target" || name == ".git" || name == "node_modules" || name == "dist" || name == "build") {
+            return false;
+        }
+        let rel = e.path().strip_prefix(target_root).unwrap_or(e.path());
+        let rel_str = rel.to_string_lossy().replace('\\', "/");
+        !should_ignore_path(&rel_str, &config.ignore)
+    });
+    for entry in walker.filter_map(|e| e.ok()) {
+        if entry.file_type().is_file() {
+            let rel = entry.path().strip_prefix(target_root).unwrap_or(entry.path());
+            let rel_str = rel.to_string_lossy().replace('\\', "/");
+            if is_supported_code_file(&rel_str) && sanitize_file(entry.path()) {
+                fixed += 1;
+            }
+        }
+    }
+    let elapsed = start.elapsed().as_millis();
+    record_event(shared, target_root, "dashboard_sanitize", "all files", 0, 100, elapsed, &format!("Sanitized {fixed} file(s)"));
+    fixed
 }
 pub fn start_dashboard_server(port: u16, target_root: PathBuf, shared: SharedTelemetry) {
     let addr = format!("127.0.0.1:{port}");
@@ -125,6 +207,15 @@ pub fn start_dashboard_server(port: u16, target_root: PathBuf, shared: SharedTel
                     load_persisted_telemetry(&target_root)
                 };
                 let body = serde_json::to_string(&state).unwrap_or_else(|_| "{}".to_string());
+                let resp = format!("HTTP/1.1 200 OK\r\nContent-Type: application/json\r\nAccess-Control-Allow-Origin: *\r\nContent-Length: {}\r\n\r\n{}", body.len(), body);
+                let _ = stream.write_all(resp.as_bytes());
+            } else if req.starts_with("POST /api/scan") || req.starts_with("GET /api/scan") {
+                let body = audit_workspace(&target_root, &shared);
+                let resp = format!("HTTP/1.1 200 OK\r\nContent-Type: application/json\r\nAccess-Control-Allow-Origin: *\r\nContent-Length: {}\r\n\r\n{}", body.len(), body);
+                let _ = stream.write_all(resp.as_bytes());
+            } else if req.starts_with("POST /api/fix") || req.starts_with("GET /api/fix") {
+                let count = sanitize_workspace(&target_root, &shared);
+                let body = format!("{{\"success\":true,\"fixed\":{count}}}");
                 let resp = format!("HTTP/1.1 200 OK\r\nContent-Type: application/json\r\nAccess-Control-Allow-Origin: *\r\nContent-Length: {}\r\n\r\n{}", body.len(), body);
                 let _ = stream.write_all(resp.as_bytes());
             } else {

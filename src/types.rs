@@ -9,6 +9,8 @@ pub enum SlopCategory {
     ScopeDrift,
     AiBloat,
     SilentCatch,
+    GhostEnv,
+    Complexity,
 }
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub enum SlopSeverity {

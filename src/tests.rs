@@ -2,7 +2,9 @@
 mod test_suite {
     use crate::dashboard::get_dashboard_html;
     use crate::detectors::ai_bloat::detect_ai_comment_bloat_in_content;
+    use crate::detectors::complexity::detect_nesting_sprawl_in_content;
     use crate::detectors::compute_summary;
+    use crate::detectors::env_vars::detect_ghost_env_vars_in_content;
     use crate::detectors::ghost_dependencies::detect_ghost_dependencies_in_content;
     use crate::detectors::mocks::detect_mocks_in_content;
     use crate::detectors::placeholders::detect_placeholders_in_content;
@@ -80,5 +82,24 @@ mod test_suite {
         let badge = generate_badge_svg(summary.score, summary.errors);
         assert!(badge.contains("100% clean"));
         assert!(badge.contains("<svg"));
+    }
+    #[test]
+    fn test_detects_ghost_environment_variables() {
+        let temp_dir = std::env::temp_dir().join(format!("slopguard_env_test_{}", std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap().as_nanos()));
+        let _ = std::fs::create_dir_all(&temp_dir);
+        let env_file = temp_dir.join(".env.example");
+        let _ = std::fs::write(&env_file, "DATABASE_URL=postgres://localhost\nPORT=3000\n");
+        let code = "const key = process.env.MY_UNKNOWN_LLM_KEY;\nconst port = process.env.PORT;\n";
+        let findings = detect_ghost_env_vars_in_content("config.ts", code, &temp_dir);
+        let _ = std::fs::remove_dir_all(&temp_dir);
+        assert_eq!(findings.len(), 1);
+        assert_eq!(findings[0].rule_id, "no-ghost-env-vars");
+    }
+    #[test]
+    fn test_detects_deep_nesting_sprawl() {
+        let code = "function handle() {\n    if (a) {\n        if (b) {\n            if (c) {\n                if (d) {\n                    if (e) {\n                        return true;\n                    }\n                }\n            }\n        }\n    }\n}\n";
+        let findings = detect_nesting_sprawl_in_content("app.ts", code, 5);
+        assert!(!findings.is_empty());
+        assert_eq!(findings[0].rule_id, "no-deep-nesting-sprawl");
     }
 }

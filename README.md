@@ -172,6 +172,9 @@ Opens a fast, embedded local web interface at `http://127.0.0.1:4545`:
 | `no-ai-todo-placeholders` | `ERROR` | Unfinished TODO stubs, `throw new Error("not implemented")` |
 | `no-silent-catch-pass` | `ERROR` | Empty `catch(e) {}` blocks and Python `except: pass` |
 | `no-dummy-secrets-mocks` | `ERROR` | Mock tokens (`sk-proj-dummy...`, `dummy_api_key`) |
+| `no-mock-hallucinations` | `ERROR` | Public placeholder APIs (`jsonplaceholder`, mock JWTs, test emails) |
+| `no-ghost-env-vars` | `ERROR` | Environment variables missing from `.env.example` / `.env` template |
+| `no-deep-nesting-sprawl` | `WARN` | Deep pyramid-of-doom control flow nesting (>= 5 levels) |
 | `no-type-safety-degradation`| `ERROR` | `@ts-ignore`, `@ts-nocheck`, `: any`, `as unknown as any` |
 | `no-ghost-dependencies` | `ERROR` | Third-party packages imported but missing in `package.json` |
 | `no-duplicate-shadow-utilities`| `WARN` | Re-invented helper functions that duplicate existing utilities |
