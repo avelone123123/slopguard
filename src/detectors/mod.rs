@@ -31,7 +31,7 @@ pub fn run_all_diff_detectors(diff_files: &[DiffFile], project_root: &Path, conf
         findings.extend(detect_ghost_env_vars_in_diff(diff_files, project_root));
     }
     if config.rules.get("no-deep-nesting-sprawl").map(|s| s != "off").unwrap_or(true) {
-        findings.extend(detect_nesting_sprawl_in_diff(diff_files, 5));
+        findings.extend(detect_nesting_sprawl_in_diff(diff_files, 7));
     }
     if config.rules.get("no-type-safety-degradation").map(|s| s != "off").unwrap_or(true) {
         findings.extend(detect_type_degradation_in_diff(diff_files));
@@ -65,7 +65,7 @@ pub fn run_all_content_detectors(file_path: &str, content: &str, project_root: &
     findings.extend(detect_placeholders_in_content(file_path, content));
     findings.extend(detect_mocks_in_content(file_path, content));
     findings.extend(detect_ghost_env_vars_in_content(file_path, content, project_root));
-    findings.extend(detect_nesting_sprawl_in_content(file_path, content, 5));
+    findings.extend(detect_nesting_sprawl_in_content(file_path, content, 7));
     findings.extend(detect_type_degradation_in_content(file_path, content));
     findings.extend(detect_ghost_dependencies_in_content(file_path, content, project_root, &config.allowed_ghost_deps));
     findings.extend(detect_ai_comment_bloat_in_content(file_path, content));

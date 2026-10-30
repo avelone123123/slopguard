@@ -73,6 +73,9 @@ cargo build --release
 ### Common Commands
 
 ```bash
+# Launch interactive native terminal software monitor (or double-click slopguard.exe)
+slopguard monitor
+
 # Scan current uncommitted changes or working tree
 slopguard check
 
@@ -144,6 +147,26 @@ claude mcp add slopguard slopguard mcp
 - `slopguard_scan_diff`: Allows the agent to inspect the current git diff for unfinished stubs and type degradations.
 - `slopguard_check_snippet`: Validates an in-memory code block before writing it to a file.
 - `slopguard_sanitize_file`: Automatically cleans AI comment artifacts from a target file.
+
+---
+
+## Native Terminal Software Monitor (`slopguard monitor`)
+
+SlopGuard comes with an interactive, full-screen **native terminal TUI application** compiled directly into the binary. Simply double-click `slopguard.exe` in Windows Explorer or run:
+
+```bash
+slopguard monitor
+# or run without arguments:
+slopguard
+```
+
+- **Live MCP Observer Feed**: Instantly shows incoming tool calls from Cursor, Claude Code, Windsurf, or Antigravity with millisecond response time.
+- **Real-Time Hygiene Gauge**: Live visual progress bar `[████████████████████] 100/100` and health rating.
+- **Interactive Single-Key Controls**:
+  - `[S]` Instant full repository audit
+  - `[F]` One-key conversational AI bloat sanitizer
+  - `[R]` Force refresh telemetry log
+  - `[Q]` Clean exit
 
 ---
 

@@ -72,6 +72,9 @@ cargo build --release
 ### 常用命令
 
 ```bash
+# 启动交互式终端软件监控程序 (或双击 slopguard.exe)
+slopguard monitor
+
 # 扫描未提交变动
 slopguard check
 
@@ -110,6 +113,26 @@ slopguard badge ./slopguard-badge.svg
   }
 }
 ```
+
+---
+
+## 原生终端软件监控程序 (`slopguard monitor`)
+
+SlopGuard 内置全屏**原生交互式终端 TUI 程序**，直接在控制台中运行，无需任何浏览器：
+
+```bash
+slopguard monitor
+# 或无需参数直接运行:
+slopguard
+```
+
+- **MCP 实时活动流**：微秒级精度直观记录 Cursor、Claude Code、Windsurf 或 Antigravity 的每一次工具调用。
+- **实时洁净度进度条**：显示 `[████████████████████] 100/100` 与健康等级。
+- **控制台单键交互**：
+  - `[S]` 立即执行全工作区代码审计
+  - `[F]` 一键自动清洗 AI 冗余注释与垃圾
+  - `[R]` 强制刷新遥测记录
+  - `[Q]` 退出程序
 
 ---
 

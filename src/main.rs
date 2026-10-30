@@ -4,6 +4,7 @@ mod detectors;
 mod fixers;
 mod git;
 mod mcp;
+mod monitor;
 mod reporters;
 mod telemetry;
 #[cfg(test)]
@@ -20,7 +21,6 @@ use crate::telemetry::create_shared_telemetry;
 use crate::types::{DiffChunk, DiffFile, DiffLine, DiffLineType, SlopFinding};
 use std::env;
 use std::fs;
-use std::io::{self, BufRead};
 use std::path::Path;
 use std::process::exit;
 use std::thread::sleep;
@@ -128,6 +128,10 @@ fn main() {
         start_mcp_server();
         return;
     }
+    if command == "monitor" || command == "tui" || is_interactive {
+        crate::monitor::run_interactive_monitor(&target_root);
+        return;
+    }
     if command == "dashboard" || command == "ui" {
         let shared = create_shared_telemetry();
         let port = 4545;
@@ -229,39 +233,13 @@ fn main() {
         }
         return;
     }
-    if command == "check" || is_interactive {
+    if command == "check" {
         let is_staged = args.iter().any(|a| a == "--staged");
         let errors = run_check_command(&target_root, is_staged, is_json, is_github);
-        if is_interactive {
-            println!("\nPress Enter to exit or enter command (ui, all, fix, badge, hook, ci, init, watch):");
-            let mut line = String::new();
-            let _ = io::stdin().lock().read_line(&mut line);
-            let trimmed = line.trim();
-            if trimmed == "ui" || trimmed == "dashboard" {
-                let shared = create_shared_telemetry();
-                let port = 4545;
-                let url = format!("http://127.0.0.1:{port}");
-                open_browser(&url);
-                start_dashboard_server(port, target_root, shared);
-            } else if trimmed == "all" {
-                let _ = run_check_command(&target_root, false, false, false);
-            } else if trimmed == "fix" {
-                let config = load_config(&target_root);
-                let all_files = scan_directory_recursively(&target_root, &target_root, &config.ignore);
-                let mut count = 0;
-                for f in all_files {
-                    if sanitize_file(&f) { count += 1; }
-                }
-                println!("[SlopGuard] Sanitized {count} file(s)");
-            } else if trimmed == "watch" {
-                run_watch_loop(&target_root);
-            }
-            return;
-        }
         if errors > 0 {
             exit(1);
         }
         return;
     }
-    println!("Usage: slopguard [check|dashboard|watch|all|fix|init|badge|ci|hook install|mcp] [--json] [--github]");
+    println!("Usage: slopguard [monitor|check|dashboard|watch|all|fix|init|badge|ci|hook install|mcp] [--json] [--github]");
 }

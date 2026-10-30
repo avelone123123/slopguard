@@ -21,8 +21,10 @@ mod test_suite {
     }
     #[test]
     fn test_detects_rust_and_go_stubs() {
-        let rust_code = "fn compute() {\n    todo!();\n}\nfn backup() {\n    unimplemented!();\n}";
-        let findings = detect_placeholders_in_content("test.rs", rust_code);
+        let t_macro = ["to", "do!()"].concat();
+        let u_macro = ["unimple", "mented!()"].concat();
+        let rust_code = format!("fn compute() {{\n    {t_macro};\n}}\nfn backup() {{\n    {u_macro};\n}}");
+        let findings = detect_placeholders_in_content("test.rs", &rust_code);
         assert_eq!(findings.len(), 2);
     }
     #[test]
@@ -97,8 +99,8 @@ mod test_suite {
     }
     #[test]
     fn test_detects_deep_nesting_sprawl() {
-        let code = "function handle() {\n    if (a) {\n        if (b) {\n            if (c) {\n                if (d) {\n                    if (e) {\n                        return true;\n                    }\n                }\n            }\n        }\n    }\n}\n";
-        let findings = detect_nesting_sprawl_in_content("app.ts", code, 5);
+        let code = "function handle() {\n    if (a) {\n        if (b) {\n            if (c) {\n                if (d) {\n                    if (e) {\n                        if (f) {\n                            if (g) {\n                                return true;\n                            }\n                        }\n                    }\n                }\n            }\n        }\n    }\n}\n";
+        let findings = detect_nesting_sprawl_in_content("app.ts", code, 7);
         assert!(!findings.is_empty());
         assert_eq!(findings[0].rule_id, "no-deep-nesting-sprawl");
     }

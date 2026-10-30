@@ -127,16 +127,16 @@ document.getElementById("spark-line").setAttribute("d",lineD);
 document.getElementById("spark-area").setAttribute("d",areaD);
 }
 }
-}catch(err){}
+}catch(err){console.warn(err);}
 }
 async function triggerScan(btn){
 const orig=btn.textContent;btn.textContent="SCANNING...";
-try{await fetch("/api/scan",{method:"POST"});await pollTelemetry();}catch(e){}
+try{await fetch("/api/scan",{method:"POST"});await pollTelemetry();}catch(e){console.warn(e);}
 btn.textContent=orig;
 }
 async function triggerSanitize(btn){
 const orig=btn.textContent;btn.textContent="SANITIZING...";
-try{const res=await fetch("/api/fix",{method:"POST"});const d=await res.json();alert("Sanitized "+(d.fixed||0)+" file(s)");await pollTelemetry();}catch(e){}
+try{const res=await fetch("/api/fix",{method:"POST"});const d=await res.json();alert("Sanitized "+(d.fixed||0)+" file(s)");await pollTelemetry();}catch(e){console.warn(e);}
 btn.textContent=orig;
 }
 setInterval(pollTelemetry,800);

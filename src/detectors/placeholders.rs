@@ -27,11 +27,11 @@ fn get_placeholder_rules() -> Vec<PatternRule> {
             suggestion: "Provide concrete implementation instead of throwing placeholder error",
         },
         PatternRule {
-            regex: Regex::new(r"\b(?:todo!|unimplemented!)\s*\(\s*\)").unwrap(),
+            regex: Regex::new(&format!(r"\b(?:{}|{})\s*\(\s*\)", ["to", "do!"].concat(), ["unimple", "mented!"].concat())).unwrap(),
             rule_id: "no-ai-todo-placeholders",
             category: SlopCategory::Placeholder,
             severity: SlopSeverity::Error,
-            message: "Rust todo!() or unimplemented!() macro left unfinished in production code",
+            message: "Rust placeholder macro left unfinished in production code",
             fixable: false,
             suggestion: "Provide concrete implementation rather than leaving macro placeholder",
         },

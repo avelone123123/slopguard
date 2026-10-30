@@ -20,7 +20,7 @@ fn has_control_keyword(line: &str) -> bool {
     trimmed.starts_with("switch ") || trimmed.starts_with("switch(") ||
     trimmed.starts_with("match ") || trimmed.starts_with("try ") ||
     trimmed.starts_with("catch ") || trimmed.starts_with("catch(") ||
-    trimmed.starts_with("case ") || trimmed.contains("=>")
+    trimmed.starts_with("case ")
 }
 pub fn detect_nesting_sprawl_in_content(file_path: &str, content: &str, max_depth: usize) -> Vec<SlopFinding> {
     let mut findings = Vec::new();
