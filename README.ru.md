@@ -79,6 +79,12 @@ slopguard check
 # Проверка только подготовленных файлов (для pre-commit)
 slopguard check --staged
 
+# Режим наблюдения в реальном времени при вайбкодинге
+slopguard watch
+
+# Создание файла конфигурации .slopguardrc.json
+slopguard init
+
 # Вывод в формате JSON для тулинга и скриптов
 slopguard check --json
 

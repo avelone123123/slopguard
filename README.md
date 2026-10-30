@@ -79,6 +79,12 @@ slopguard check
 # Scan only staged git changes (ideal for git pre-commit hooks)
 slopguard check --staged
 
+# Live watch mode while vibe-coding (re-scans on every save)
+slopguard watch
+
+# Generate a recommended .slopguardrc.json config
+slopguard init
+
 # Output structured JSON for tooling / IDEs
 slopguard check --json
 

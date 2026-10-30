@@ -7,7 +7,7 @@ mod reporters;
 #[cfg(test)]
 mod tests;
 mod types;
-use crate::config::{is_supported_code_file, load_config, should_ignore_path};
+use crate::config::{default_config, is_supported_code_file, load_config, should_ignore_path};
 use crate::detectors::{compute_summary, run_all_content_detectors, run_all_diff_detectors};
 use crate::fixers::sanitize_file;
 use crate::git::{get_diff_output, get_git_root, get_untracked_files, is_git_repo, parse_unified_diff};
@@ -19,7 +19,8 @@ use std::fs;
 use std::io::{self, BufRead};
 use std::path::Path;
 use std::process::exit;
-use std::time::Instant;
+use std::thread::sleep;
+use std::time::{Duration, Instant};
 use walkdir::WalkDir;
 fn scan_directory_recursively(dir: &Path, root_dir: &Path, ignore_patterns: &[String]) -> Vec<std::path::PathBuf> {
     let mut files = Vec::new();
@@ -98,6 +99,19 @@ fn run_check_command(target_dir: &Path, is_staged: bool, is_json: bool, is_githu
     print_summary_output(&summary, is_json, is_github);
     summary.errors
 }
+fn run_watch_loop(target_root: &Path) {
+    println!("\x1b[36m[SlopGuard Watcher]\x1b[0m Watching for live code changes... (Press Ctrl+C to stop)");
+    let mut last_diff = String::new();
+    loop {
+        let current_diff = get_diff_output(target_root, false);
+        if current_diff != last_diff {
+            last_diff = current_diff;
+            print!("\x1b[2J\x1b[1;1H");
+            let _ = run_check_command(target_root, false, false, false);
+        }
+        sleep(Duration::from_millis(800));
+    }
+}
 fn main() {
     let args: Vec<String> = env::args().collect();
     let is_interactive = args.len() <= 1;
@@ -108,6 +122,18 @@ fn main() {
     let target_root = if is_git_repo(&cwd) { get_git_root(&cwd) } else { cwd.clone() };
     if command == "mcp" {
         start_mcp_server();
+        return;
+    }
+    if command == "watch" {
+        run_watch_loop(&target_root);
+        return;
+    }
+    if command == "init" {
+        let cfg_path = target_root.join(".slopguardrc.json");
+        let def = default_config();
+        let json_str = serde_json::to_string_pretty(&def).unwrap_or_default();
+        let _ = fs::write(&cfg_path, json_str);
+        println!("[SlopGuard] Configuration file created at: {}", cfg_path.display());
         return;
     }
     if command == "ci" {
@@ -190,7 +216,7 @@ fn main() {
         let is_staged = args.iter().any(|a| a == "--staged");
         let errors = run_check_command(&target_root, is_staged, is_json, is_github);
         if is_interactive {
-            println!("\nPress Enter to exit or type a command (all, fix, badge, hook, ci):");
+            println!("\nPress Enter to exit or type a command (all, fix, badge, hook, ci, init, watch):");
             let mut line = String::new();
             let _ = io::stdin().lock().read_line(&mut line);
             let trimmed = line.trim();
@@ -204,6 +230,8 @@ fn main() {
                     if sanitize_file(&f) { count += 1; }
                 }
                 println!("[SlopGuard] Sanitized {count} file(s)");
+            } else if trimmed == "watch" {
+                run_watch_loop(&target_root);
             }
             return;
         }
@@ -212,5 +240,5 @@ fn main() {
         }
         return;
     }
-    println!("Usage: slopguard [check|all|fix|badge|ci|hook install|mcp] [--json] [--github]");
+    println!("Usage: slopguard [check|all|fix|watch|init|badge|ci|hook install|mcp] [--json] [--github]");
 }

@@ -3,6 +3,7 @@ mod test_suite {
     use crate::detectors::ai_bloat::detect_ai_comment_bloat_in_content;
     use crate::detectors::compute_summary;
     use crate::detectors::ghost_dependencies::detect_ghost_dependencies_in_content;
+    use crate::detectors::mocks::detect_mocks_in_content;
     use crate::detectors::placeholders::detect_placeholders_in_content;
     use crate::detectors::type_degradation::detect_type_degradation_in_content;
     use crate::fixers::sanitize_code;
@@ -18,6 +19,14 @@ mod test_suite {
     fn test_detects_rust_and_go_stubs() {
         let rust_code = "fn compute() {\n    todo!();\n}\nfn backup() {\n    unimplemented!();\n}";
         let findings = detect_placeholders_in_content("test.rs", rust_code);
+        assert_eq!(findings.len(), 2);
+    }
+    #[test]
+    fn test_detects_mock_hallucinations() {
+        let host = ["json", "placeholder.typicode.com"].concat();
+        let email = ["john", "@", "example.com"].concat();
+        let code = format!("const API = \"https://{host}/posts\";\nconst user = \"{email}\";\n");
+        let findings = detect_mocks_in_content("api.ts", &code);
         assert_eq!(findings.len(), 2);
     }
     #[test]

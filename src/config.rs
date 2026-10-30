@@ -7,6 +7,7 @@ pub fn default_config() -> SlopConfig {
     rules.insert("no-ai-todo-placeholders".to_string(), "error".to_string());
     rules.insert("no-silent-catch-pass".to_string(), "error".to_string());
     rules.insert("no-dummy-secrets-mocks".to_string(), "error".to_string());
+    rules.insert("no-mock-hallucinations".to_string(), "error".to_string());
     rules.insert("no-type-safety-degradation".to_string(), "error".to_string());
     rules.insert("no-ghost-dependencies".to_string(), "error".to_string());
     rules.insert("no-duplicate-shadow-utilities".to_string(), "warning".to_string());
