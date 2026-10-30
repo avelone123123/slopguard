@@ -75,6 +75,9 @@ cargo build --release
 # 扫描未提交变动
 slopguard check
 
+# 启动实时 Web 可视化遥测面板
+slopguard dashboard
+
 # 仅扫描 Git 暂存区 (适合 pre-commit)
 slopguard check --staged
 
@@ -107,6 +110,24 @@ slopguard badge ./slopguard-badge.svg
   }
 }
 ```
+
+---
+
+## 实时可视化监控面板 (`slopguard ui`)
+
+实时观察 AI 编程助手（Cursor、Claude Code、Windsurf、Antigravity）对项目代码的操作：
+
+```bash
+slopguard dashboard
+# 或
+slopguard ui
+```
+
+在 `http://127.0.0.1:4545` 开启纯本地超轻量监控页面：
+- **MCP 实时活动流**：微秒级精度记录 AI 工具调用与审计结果。
+- **AI 洁净度评分计**：随着代码生成动态评估代码健康度与评级。
+- **拦截垃圾计数器**：实时显示已拦截的未完成占位符、假数据与类型降级。
+- **毫秒级延迟图表**：验证 Rust 极致响应速度（<2ms），零开发卡顿。
 
 ---
 

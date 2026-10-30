@@ -1,18 +1,22 @@
 mod config;
+mod dashboard;
 mod detectors;
 mod fixers;
 mod git;
 mod mcp;
 mod reporters;
+mod telemetry;
 #[cfg(test)]
 mod tests;
 mod types;
 use crate::config::{default_config, is_supported_code_file, load_config, should_ignore_path};
+use crate::dashboard::{open_browser, start_dashboard_server};
 use crate::detectors::{compute_summary, run_all_content_detectors, run_all_diff_detectors};
 use crate::fixers::sanitize_file;
 use crate::git::{get_diff_output, get_git_root, get_untracked_files, is_git_repo, parse_unified_diff};
 use crate::mcp::start_mcp_server;
 use crate::reporters::{format_github_actions_report, format_json_report, format_terminal_report, generate_badge_svg};
+use crate::telemetry::create_shared_telemetry;
 use crate::types::{DiffChunk, DiffFile, DiffLine, DiffLineType, SlopFinding};
 use std::env;
 use std::fs;
@@ -124,6 +128,19 @@ fn main() {
         start_mcp_server();
         return;
     }
+    if command == "dashboard" || command == "ui" {
+        let shared = create_shared_telemetry();
+        let port = 4545;
+        let url = format!("http://127.0.0.1:{port}");
+        println!("\x1b[36m┌──────────────────────────────────────────────────────────────────────────────┐\x1b[0m");
+        println!("\x1b[36m│\x1b[0m  \x1b[1mSLOPGUARD LIVE MCP TELEMETRY DASHBOARD\x1b[0m                                      \x1b[36m│\x1b[0m");
+        println!("\x1b[36m└──────────────────────────────────────────────────────────────────────────────┘\x1b[0m");
+        println!("Web UI running at: \x1b[32m\x1b[1m{url}\x1b[0m");
+        println!("Opening live dashboard in default browser...");
+        open_browser(&url);
+        start_dashboard_server(port, target_root, shared);
+        return;
+    }
     if command == "watch" {
         run_watch_loop(&target_root);
         return;
@@ -216,11 +233,17 @@ fn main() {
         let is_staged = args.iter().any(|a| a == "--staged");
         let errors = run_check_command(&target_root, is_staged, is_json, is_github);
         if is_interactive {
-            println!("\nPress Enter to exit or type a command (all, fix, badge, hook, ci, init, watch):");
+            println!("\nPress Enter to exit or enter command (ui, all, fix, badge, hook, ci, init, watch):");
             let mut line = String::new();
             let _ = io::stdin().lock().read_line(&mut line);
             let trimmed = line.trim();
-            if trimmed == "all" {
+            if trimmed == "ui" || trimmed == "dashboard" {
+                let shared = create_shared_telemetry();
+                let port = 4545;
+                let url = format!("http://127.0.0.1:{port}");
+                open_browser(&url);
+                start_dashboard_server(port, target_root, shared);
+            } else if trimmed == "all" {
                 let _ = run_check_command(&target_root, false, false, false);
             } else if trimmed == "fix" {
                 let config = load_config(&target_root);
@@ -240,5 +263,5 @@ fn main() {
         }
         return;
     }
-    println!("Usage: slopguard [check|all|fix|watch|init|badge|ci|hook install|mcp] [--json] [--github]");
+    println!("Usage: slopguard [check|dashboard|watch|all|fix|init|badge|ci|hook install|mcp] [--json] [--github]");
 }

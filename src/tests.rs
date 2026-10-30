@@ -1,5 +1,6 @@
 #[cfg(test)]
 mod test_suite {
+    use crate::dashboard::get_dashboard_html;
     use crate::detectors::ai_bloat::detect_ai_comment_bloat_in_content;
     use crate::detectors::compute_summary;
     use crate::detectors::ghost_dependencies::detect_ghost_dependencies_in_content;
@@ -8,6 +9,7 @@ mod test_suite {
     use crate::detectors::type_degradation::detect_type_degradation_in_content;
     use crate::fixers::sanitize_code;
     use crate::reporters::generate_badge_svg;
+    use crate::telemetry::{create_shared_telemetry, record_event};
     use std::path::Path;
     #[test]
     fn test_detects_placeholders_and_dummy_tokens() {
@@ -52,6 +54,23 @@ mod test_suite {
         assert!(modified);
         assert!(!cleaned.contains("Here is the updated code"));
         assert!(cleaned.contains("fn sum"));
+    }
+    #[test]
+    fn test_dashboard_ui_html() {
+        let html = get_dashboard_html();
+        assert!(html.contains("SLOP"));
+        assert!(html.contains("GUARD"));
+        assert!(html.contains("/api/telemetry"));
+    }
+    #[test]
+    fn test_telemetry_event_recording() {
+        let shared = create_shared_telemetry();
+        record_event(&shared, Path::new("."), "test_tool", "src/auth.rs", 2, 85, 3, "Blocked 2 items");
+        let state = shared.lock().unwrap();
+        assert_eq!(state.total_scans, 1);
+        assert_eq!(state.total_slop_blocked, 2);
+        assert_eq!(state.current_hygiene_score, 85);
+        assert_eq!(state.events.len(), 1);
     }
     #[test]
     fn test_computes_score_and_badge() {

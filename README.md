@@ -76,6 +76,9 @@ cargo build --release
 # Scan current uncommitted changes or working tree
 slopguard check
 
+# Launch live real-time web telemetry dashboard
+slopguard dashboard
+
 # Scan only staged git changes (ideal for git pre-commit hooks)
 slopguard check --staged
 
@@ -141,6 +144,24 @@ claude mcp add slopguard slopguard mcp
 - `slopguard_scan_diff`: Allows the agent to inspect the current git diff for unfinished stubs and type degradations.
 - `slopguard_check_snippet`: Validates an in-memory code block before writing it to a file.
 - `slopguard_sanitize_file`: Automatically cleans AI comment artifacts from a target file.
+
+---
+
+## Live Visual Observer Dashboard (`slopguard ui`)
+
+Observe what your AI agent (Cursor, Claude Code, Windsurf, Antigravity) is doing in real time.
+
+```bash
+slopguard dashboard
+# or
+slopguard ui
+```
+
+Opens a fast, embedded local web interface at `http://127.0.0.1:4545`:
+- **Live Activity Feed**: Tracks all incoming MCP inspections with microsecond resolution.
+- **AI Hygiene Meter**: Dynamic score and grade updated as code is generated.
+- **Blocked Slop Counter**: Real-time counter of intercepted placeholders, dummy tokens, and type degradation.
+- **Sub-millisecond Latency**: Telemetry sparklines verifying zero impact on developer flow.
 
 ---
 
