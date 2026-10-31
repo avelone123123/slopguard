@@ -1,6 +1,6 @@
 [package]
 name = "slopguard"
-version = "1.8.0"
+version = "1.9.0"
 edition = "2021"
 authors = ["avelone123123"]
 description = "Zero-latency native Rust AI slop and hallucination firewall for Cursor, Claude Code, and vibe-coders"
@@ -11,3 +11,9 @@ serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 regex = "1.11"
 walkdir = "2.5"
+[profile.release]
+opt-level = 3
+lto = true
+codegen-units = 1
+panic = "abort"
+strip = true

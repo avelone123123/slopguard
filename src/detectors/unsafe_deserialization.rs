@@ -19,6 +19,15 @@ fn is_java(p: &str) -> bool {
 fn is_unsafe_match(line: &str, re: &Regex, safe_opt: Option<&'static str>) -> bool {
     re.is_match(line) && !safe_opt.map_or(false, |s| line.contains(s))
 }
+#[allow(dead_code)]
+pub const CONTRACT: crate::types::AstDetectorContract = crate::types::AstDetectorContract {
+rule_id: "no-unsafe-deserialization",
+severity: SlopSeverity::Error,
+category: SlopCategory::Security,
+target_languages: &["py", "js", "ts", "rb"],
+analyze_diff: detect_unsafe_deserialization_in_diff,
+analyze_content: detect_unsafe_deserialization_in_content,
+};
 fn get_deserialization_patterns(file_path: &str) -> Vec<(Regex, Option<&'static str>, &'static str, &'static str)> {
     let mut patterns = Vec::new();
     let specific = is_py(file_path) || is_js_ts(file_path) || is_php(file_path) || is_rb(file_path) || is_java(file_path);

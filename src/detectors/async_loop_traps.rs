@@ -36,7 +36,7 @@ pub const CONTRACT: crate::types::AstDetectorContract = crate::types::AstDetecto
 rule_id: "no-unawaited-async-in-loops",
 severity: SlopSeverity::Error,
 category: SlopCategory::AsyncIterationHazard,
-target_languages: &[".js", ".ts", ".jsx", ".tsx", ".py", ".rs"],
+target_languages: &["js", "ts", "jsx", "tsx", "py"],
 analyze_diff: detect_async_loop_traps_in_diff,
 analyze_content: detect_async_loop_traps_in_content,
 };

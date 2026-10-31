@@ -1,5 +1,15 @@
 use serde::{Deserialize, Serialize};
 use std::collections::{HashMap, HashSet};
+#[allow(dead_code)]
+pub const RULE_NO_HALLUCINATED_PACKAGE_MANIFEST: &str = "no-hallucinated-package-manifest";
+#[allow(dead_code)]
+pub const RULE_NO_UNAWAITED_ASYNC_IN_LOOPS: &str = "no-unawaited-async-in-loops";
+#[allow(dead_code)]
+pub const RULE_NO_INSECURE_PRNG_TOKENS: &str = "no-insecure-prng-tokens";
+#[allow(dead_code)]
+pub const RULE_NO_DEEP_PATH_TRAVERSAL: &str = "no-deep-path-traversal";
+#[allow(dead_code)]
+pub const RULE_NO_UNSAFE_DESERIALIZATION: &str = "no-unsafe-deserialization";
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
 pub enum SlopCategory {
     Placeholder,

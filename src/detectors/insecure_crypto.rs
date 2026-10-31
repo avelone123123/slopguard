@@ -10,6 +10,9 @@ fn is_py(path: &str) -> bool {
 fn is_rs(path: &str) -> bool {
     path.to_lowercase().ends_with(".rs")
 }
+fn is_go(path: &str) -> bool {
+    path.to_lowercase().ends_with(".go")
+}
 fn get_sensitive_identifier_regex() -> Regex {
     Regex::new(r#"(?i)\b[a-zA-Z0-9_$]*(?:token|secret|api_?key|nonce|password|passwd|auth|session|salt|reset|otp|pin|csrf)[a-zA-Z0-9_$]*\b"#).unwrap()
 }
@@ -21,6 +24,9 @@ fn get_py_weak_prng_regex() -> Regex {
 }
 fn get_rs_weak_prng_regex() -> Regex {
     Regex::new(r#"\b(?:rand::thread_rng|rand::random)\s*\("#).unwrap()
+}
+fn get_go_weak_prng_regex() -> Regex {
+    Regex::new(r#"\brand\.(?:Intn|Float64|Int|Int31|Int63|Uint32|Uint64)\s*\("#).unwrap()
 }
 fn get_weak_hash_patterns() -> Vec<(Regex, &'static str)> {
     vec![
@@ -36,7 +42,7 @@ pub const CONTRACT: crate::types::AstDetectorContract = crate::types::AstDetecto
     rule_id: "no-insecure-prng-tokens",
     severity: SlopSeverity::Error,
     category: SlopCategory::CryptoFlaw,
-    target_languages: &[".js", ".ts", ".py", ".rs"],
+    target_languages: &["js", "ts", "py", "rs", "go"],
     analyze_diff: detect_insecure_crypto_in_diff,
     analyze_content: detect_insecure_crypto_in_content,
 };
@@ -46,14 +52,16 @@ pub fn detect_insecure_crypto_in_content(file_path: &str, content: &str) -> Vec<
     let js_prng_re = get_js_weak_prng_regex();
     let py_prng_re = get_py_weak_prng_regex();
     let rs_prng_re = get_rs_weak_prng_regex();
+    let go_prng_re = get_go_weak_prng_regex();
     let hash_patterns = get_weak_hash_patterns();
     let is_js = is_js_ts(file_path);
     let is_python = is_py(file_path);
     let is_rust = is_rs(file_path);
+    let is_golang = is_go(file_path);
     for (idx, line) in content.lines().enumerate() {
         let line_num = idx + 1;
         let trimmed = line.trim();
-        if (is_js || (!is_python && !is_rust && !trimmed.contains("def "))) && js_prng_re.is_match(trimmed) && sensitive_re.is_match(trimmed) {
+        if (is_js || (!is_python && !is_rust && !is_golang && !trimmed.contains("def ") && !trimmed.contains("func "))) && js_prng_re.is_match(trimmed) && sensitive_re.is_match(trimmed) {
             findings.push(SlopFinding {
                 file: file_path.to_string(),
                 line: line_num,
@@ -68,7 +76,7 @@ pub fn detect_insecure_crypto_in_content(file_path: &str, content: &str) -> Vec<
             });
             continue;
         }
-        if (is_python || (!is_js && !is_rust && trimmed.contains("def "))) && py_prng_re.is_match(trimmed) && sensitive_re.is_match(trimmed) {
+        if (is_python || (!is_js && !is_rust && !is_golang && trimmed.contains("def "))) && py_prng_re.is_match(trimmed) && sensitive_re.is_match(trimmed) {
             findings.push(SlopFinding {
                 file: file_path.to_string(),
                 line: line_num,
@@ -83,7 +91,7 @@ pub fn detect_insecure_crypto_in_content(file_path: &str, content: &str) -> Vec<
             });
             continue;
         }
-        if (is_rust || (!is_js && !is_python && trimmed.contains("fn "))) && rs_prng_re.is_match(trimmed) && sensitive_re.is_match(trimmed) {
+        if (is_rust || (!is_js && !is_python && !is_golang && trimmed.contains("fn "))) && rs_prng_re.is_match(trimmed) && sensitive_re.is_match(trimmed) {
             findings.push(SlopFinding {
                 file: file_path.to_string(),
                 line: line_num,
@@ -95,6 +103,21 @@ pub fn detect_insecure_crypto_in_content(file_path: &str, content: &str) -> Vec<
                 snippet: trimmed.to_string(),
                 fixable: true,
                 suggestion: Some("Use rand::rngs::OsRng or ring::rand::SystemRandom for cryptographic secrets".to_string()),
+            });
+            continue;
+        }
+        if (is_golang || (!is_js && !is_python && !is_rust && trimmed.contains("func "))) && go_prng_re.is_match(trimmed) && sensitive_re.is_match(trimmed) {
+            findings.push(SlopFinding {
+                file: file_path.to_string(),
+                line: line_num,
+                column: 1,
+                rule_id: "no-insecure-prng-tokens".to_string(),
+                category: SlopCategory::CryptoFlaw,
+                severity: SlopSeverity::Error,
+                message: "Insecure PRNG (math/rand) used for security token/credential without CSPRNG guarantees (CWE-330)".to_string(),
+                snippet: trimmed.to_string(),
+                fixable: true,
+                suggestion: Some("Use crypto/rand (crypto/rand.Read) for cryptographically secure values".to_string()),
             });
             continue;
         }
@@ -124,6 +147,7 @@ pub fn detect_insecure_crypto_in_diff(diff_files: &[DiffFile]) -> Vec<SlopFindin
     let js_prng_re = get_js_weak_prng_regex();
     let py_prng_re = get_py_weak_prng_regex();
     let rs_prng_re = get_rs_weak_prng_regex();
+    let go_prng_re = get_go_weak_prng_regex();
     let hash_patterns = get_weak_hash_patterns();
     for file in diff_files {
         if file.is_deleted {
@@ -133,6 +157,7 @@ pub fn detect_insecure_crypto_in_diff(diff_files: &[DiffFile]) -> Vec<SlopFindin
         let is_js = is_js_ts(target_path);
         let is_python = is_py(target_path);
         let is_rust = is_rs(target_path);
+        let is_golang = is_go(target_path);
         for chunk in &file.chunks {
             for line in &chunk.lines {
                 if line.line_type != DiffLineType::Add {
@@ -140,7 +165,7 @@ pub fn detect_insecure_crypto_in_diff(diff_files: &[DiffFile]) -> Vec<SlopFindin
                 }
                 let trimmed = line.content.trim();
                 let line_num = line.new_line_number.unwrap_or(1);
-                if (is_js || (!is_python && !is_rust && !trimmed.contains("def "))) && js_prng_re.is_match(trimmed) && sensitive_re.is_match(trimmed) {
+                if (is_js || (!is_python && !is_rust && !is_golang && !trimmed.contains("def ") && !trimmed.contains("func "))) && js_prng_re.is_match(trimmed) && sensitive_re.is_match(trimmed) {
                     findings.push(SlopFinding {
                         file: target_path.to_string(),
                         line: line_num,
@@ -155,7 +180,7 @@ pub fn detect_insecure_crypto_in_diff(diff_files: &[DiffFile]) -> Vec<SlopFindin
                     });
                     continue;
                 }
-                if (is_python || (!is_js && !is_rust && trimmed.contains("def "))) && py_prng_re.is_match(trimmed) && sensitive_re.is_match(trimmed) {
+                if (is_python || (!is_js && !is_rust && !is_golang && trimmed.contains("def "))) && py_prng_re.is_match(trimmed) && sensitive_re.is_match(trimmed) {
                     findings.push(SlopFinding {
                         file: target_path.to_string(),
                         line: line_num,
@@ -170,7 +195,7 @@ pub fn detect_insecure_crypto_in_diff(diff_files: &[DiffFile]) -> Vec<SlopFindin
                     });
                     continue;
                 }
-                if (is_rust || (!is_js && !is_python && trimmed.contains("fn "))) && rs_prng_re.is_match(trimmed) && sensitive_re.is_match(trimmed) {
+                if (is_rust || (!is_js && !is_python && !is_golang && trimmed.contains("fn "))) && rs_prng_re.is_match(trimmed) && sensitive_re.is_match(trimmed) {
                     findings.push(SlopFinding {
                         file: target_path.to_string(),
                         line: line_num,
@@ -182,6 +207,21 @@ pub fn detect_insecure_crypto_in_diff(diff_files: &[DiffFile]) -> Vec<SlopFindin
                         snippet: trimmed.to_string(),
                         fixable: true,
                         suggestion: Some("Use rand::rngs::OsRng or ring::rand::SystemRandom for cryptographic secrets".to_string()),
+                    });
+                    continue;
+                }
+                if (is_golang || (!is_js && !is_python && !is_rust && trimmed.contains("func "))) && go_prng_re.is_match(trimmed) && sensitive_re.is_match(trimmed) {
+                    findings.push(SlopFinding {
+                        file: target_path.to_string(),
+                        line: line_num,
+                        column: 1,
+                        rule_id: "no-insecure-prng-tokens".to_string(),
+                        category: SlopCategory::CryptoFlaw,
+                        severity: SlopSeverity::Error,
+                        message: "Insecure PRNG (math/rand) used for security token/credential without CSPRNG guarantees (CWE-330)".to_string(),
+                        snippet: trimmed.to_string(),
+                        fixable: true,
+                        suggestion: Some("Use crypto/rand (crypto/rand.Read) for cryptographically secure values".to_string()),
                     });
                     continue;
                 }

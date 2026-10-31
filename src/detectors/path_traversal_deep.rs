@@ -23,7 +23,7 @@ pub const CONTRACT: crate::types::AstDetectorContract = crate::types::AstDetecto
     rule_id: "no-deep-path-traversal",
     severity: SlopSeverity::Error,
     category: SlopCategory::PathTraversalSecurity,
-    target_languages: &[".js", ".ts", ".jsx", ".tsx", ".mjs", ".cjs", ".py", ".rs", ".go"],
+    target_languages: &["js", "ts", "py", "rs", "go"],
     analyze_diff: detect_deep_path_traversal_in_diff,
     analyze_content: detect_deep_path_traversal_in_content,
 };

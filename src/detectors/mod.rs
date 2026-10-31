@@ -88,10 +88,10 @@ use std::path::Path;
 #[allow(dead_code)]
 pub static ACTIVE_CONTRACTS: &[crate::types::AstDetectorContract] = &[
     package_hallucinations::CONTRACT,
-    path_traversal_deep::CONTRACT,
     async_loop_traps::CONTRACT,
-    async_callback_traps::CONTRACT,
     insecure_crypto::CONTRACT,
+    path_traversal_deep::CONTRACT,
+    unsafe_deserialization::CONTRACT,
 ];
 pub fn run_all_diff_detectors(diff_files: &[DiffFile], project_root: &Path, config: &SlopConfig) -> Vec<SlopFinding> {
     let mut findings = Vec::new();
