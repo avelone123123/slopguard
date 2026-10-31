@@ -9,6 +9,10 @@ pub struct PatternRule {
     pub fixable: bool,
     pub suggestion: &'static str,
 }
+#[allow(dead_code)]
+pub fn scan_diff(diff_files: &[crate::types::DiffFile], config: &crate::types::SlopConfig) -> Vec<SlopFinding> {
+    crate::detectors::run_all_diff_detectors(diff_files, std::path::Path::new("."), config)
+}
 pub fn scan_diff_with_rules(diff_files: &[DiffFile], rules: &[PatternRule], file_filter: Option<fn(&str) -> bool>) -> Vec<SlopFinding> {
     let mut findings = Vec::new();
     for file in diff_files {

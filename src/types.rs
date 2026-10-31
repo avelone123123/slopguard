@@ -12,6 +12,8 @@ pub const RULE_NO_DEEP_PATH_TRAVERSAL: &str = "no-deep-path-traversal";
 pub const RULE_NO_UNSAFE_DESERIALIZATION: &str = "no-unsafe-deserialization";
 #[allow(dead_code)]
 pub const RULE_NO_IDE_PROTOCOL_HALLUCINATIONS: &str = "no-ide-protocol-hallucinations";
+#[allow(dead_code)]
+pub const RULE_NO_SPECULATIVE_FFI_WASM: &str = "no-speculative-ffi-wasm";
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
 pub enum SlopCategory {
     Placeholder,
@@ -40,6 +42,7 @@ pub enum SlopCategory {
     PolymorphicUnsafeDeserialization,
     UnawaitedAsyncLoopTrap,
     InsecureCryptographicEntropy,
+    SpeculativeNativeFfi,
 }
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
 pub enum SlopSeverity {

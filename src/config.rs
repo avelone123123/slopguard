@@ -1,4 +1,4 @@
-use crate::types::SlopConfig;
+pub use crate::types::SlopConfig;
 use std::collections::HashMap;
 use std::fs;
 use std::path::Path;
@@ -43,6 +43,7 @@ pub fn default_config() -> SlopConfig {
     rules.insert("no-async-pipeline-races".to_string(), "warning".to_string());
     rules.insert("no-phantom-cloud-sdks".to_string(), "error".to_string());
     rules.insert("no-ide-protocol-hallucinations".to_string(), "error".to_string());
+    rules.insert("no-speculative-ffi-wasm".to_string(), "error".to_string());
     SlopConfig {
         ignore: vec![
             "target".into(),
@@ -62,6 +63,11 @@ pub fn default_config() -> SlopConfig {
         rules,
         max_drift_files: 12,
         allowed_ghost_deps: Vec::new(),
+    }
+}
+impl Default for SlopConfig {
+    fn default() -> Self {
+        default_config()
     }
 }
 pub fn load_config(project_root: &Path) -> SlopConfig {
@@ -101,6 +107,7 @@ pub fn is_supported_code_file(path_str: &str) -> bool {
         || lower.ends_with(".java")
         || lower.ends_with(".cpp")
         || lower.ends_with(".c")
+        || lower.ends_with(".wat")
         || lower.ends_with(".cs")
         || lower.ends_with(".rb")
         || lower.ends_with(".env")

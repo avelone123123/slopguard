@@ -36,7 +36,7 @@ pub const CONTRACT: crate::types::AstDetectorContract = crate::types::AstDetecto
 rule_id: "no-unawaited-async-in-loops",
 severity: SlopSeverity::Error,
 category: SlopCategory::AsyncIterationHazard,
-target_languages: &["js", "ts", "jsx", "tsx", "py"],
+target_languages: &["js", "ts", "jsx", "tsx", "py", "rs"],
 analyze_diff: detect_async_loop_traps_in_diff,
 analyze_content: detect_async_loop_traps_in_content,
 };
@@ -211,7 +211,23 @@ break;
 }
 }
 }
-if rs && rs_loop_re.is_match(trimmed) {
+if rs {
+if (trimmed.contains("for ") || trimmed.contains("while ") || trimmed.contains("loop ")) && trimmed.contains("tokio::spawn") && !has_rust_sync_guard(trimmed) {
+findings.push(SlopFinding {
+file: file_path.to_string(),
+line: line_num,
+column: 1,
+rule_id: "no-unawaited-async-in-loops".to_string(),
+category: SlopCategory::AsyncIterationHazard,
+severity: SlopSeverity::Error,
+message: "Unawaited tokio::spawn in loop without JoinSet".to_string(),
+snippet: trimmed.to_string(),
+fixable: false,
+suggestion: Some("Collect JoinHandle instances into JoinSet and await them".to_string()),
+});
+continue;
+}
+if rs_loop_re.is_match(trimmed) {
 for offset in 1..=12 {
 if let Some(body_line) = lines.get(idx + offset) {
 let body_trimmed = body_line.trim();
@@ -235,6 +251,7 @@ break;
 }
 if body_trimmed == "}" || body_trimmed.starts_with("};") {
 break;
+}
 }
 }
 }

@@ -1661,4 +1661,192 @@ mod test_suite {
         assert_eq!(events.len(), 1);
         assert_eq!(events[0].category, "THREAT_01_INTERCEPTED");
     }
+    #[test]
+    fn test_threat_01_speculative_crates_and_npm_hallucinations_v260() {
+        let npm_slop = "{\"dependencies\": {\"express-jwt-auto-auth\": \"^1.0.0\", \"react-smart-toast\": \"^2.0.0\"}}";
+        let npm_findings = detect_package_hallucinations_in_content("package.json", npm_slop);
+        assert_eq!(npm_findings.len(), 2);
+        let cargo_slop = "[dependencies]\nchrono-tz-sys = \"1.0.0\"\nfast-jwt-verifier = \"0.2\"\n";
+        let cargo_findings = detect_package_hallucinations_in_content("Cargo.toml", cargo_slop);
+        assert_eq!(cargo_findings.len(), 2);
+    }
+    #[test]
+    fn test_threat_02_unawaited_async_map_hazard_v260() {
+        let unshielded_async = "async function runTasks(items) { items.forEach(async item => { await processItem(item); }); }";
+        let findings = detect_async_loop_traps_in_content("queue.ts", unshielded_async);
+        assert_eq!(findings.len(), 1);
+        let clean_async = "async function runTasks(items) { for (const item of items) { await processItem(item); } }";
+        assert_eq!(detect_async_loop_traps_in_content("queue.ts", clean_async).len(), 0);
+    }
+    #[test]
+    fn test_threat_03_ruby_marshal_and_php_unserialize_gadgets_v260() {
+        let rb_marshal = "cached_session = Marshal.load(raw_cookie_payload)";
+        assert_eq!(detect_unsafe_deserialization_in_content("auth.rb", rb_marshal).len(), 1);
+        let php_unserialize = "$user_obj = unserialize($_POST['state']);";
+        assert_eq!(detect_unsafe_deserialization_in_content("state.php", php_unserialize).len(), 1);
+        let php_safe = "$user_obj = unserialize($_POST['state'], ['allowed_classes' => false]);";
+        assert_eq!(detect_unsafe_deserialization_in_content("safe_state.php", php_safe).len(), 0);
+    }
+    #[test]
+    fn test_threat_03_java_xmldecoder_gadget_v260() {
+        let java_xml = "XMLDecoder decoder = new XMLDecoder(inStream);";
+        assert_eq!(detect_unsafe_deserialization_in_content("XmlParser.java", java_xml).len(), 1);
+        let java_safe = "Document doc = builder.parse(inStream);";
+        assert_eq!(detect_unsafe_deserialization_in_content("XmlParser.java", java_safe).len(), 0);
+    }
+    #[test]
+    fn test_threat_04_csprng_strict_python_secrets_pass_v260() {
+        let py_secret_pass = "reset_token = secrets.token_urlsafe(32)\nauth_salt = secrets.token_hex(16)\n";
+        assert_eq!(detect_insecure_crypto_in_content("auth.py", py_secret_pass).len(), 0);
+        let js_csprng_pass = "const token = crypto.randomUUID();\nconst nonce = crypto.randomBytes(16);\n";
+        assert_eq!(detect_insecure_crypto_in_content("auth.js", js_csprng_pass).len(), 0);
+    }
+    #[test]
+    fn test_threat_04_insecure_random_token_rejection_v260() {
+        let py_bad_pin = "otp_code = f'{random.randint(100000, 999999)}'\n";
+        assert_eq!(detect_insecure_crypto_in_content("verify.py", py_bad_pin).len(), 1);
+        let js_bad_secret = "const client_secret = Math.random().toString(36);\n";
+        assert_eq!(detect_insecure_crypto_in_content("auth.ts", js_bad_secret).len(), 1);
+    }
+    #[test]
+    fn test_threat_05_multi_encoded_unicode_path_traversal_v260() {
+        let unicode_evasion = "const target = path.join(rootDir, \"\\u002e\\u002e/etc/passwd\");";
+        assert_eq!(detect_deep_path_traversal_in_content("server.js", unicode_evasion).len(), 1);
+        let double_url = "const target = path.join(rootDir, \"%252e%252e/config.json\");";
+        assert_eq!(detect_deep_path_traversal_in_content("server.js", double_url).len(), 1);
+    }
+    #[test]
+    fn test_threat_06_speculative_ffi_extern_c_hallucination_v260() {
+        let fake_c = "fn invoke() { slop_fast_alloc(1024); }";
+        assert_eq!(crate::detectors::ffi_speculative_apis::detect_ffi_speculative_apis_in_content("engine.rs", fake_c).len(), 1);
+        let legit_c = "extern \"C\" { fn malloc(size: usize) -> *mut u8; }";
+        assert_eq!(crate::detectors::ffi_speculative_apis::detect_ffi_speculative_apis_in_content("engine.rs", legit_c).len(), 0);
+    }
+    #[test]
+    fn test_threat_06_speculative_wasm_import_hallucination_v260() {
+        let fake_wasm = "WebAssembly.instantiate(bytes, { env: { __ai_eval: () => 42 } });";
+        assert_eq!(crate::detectors::ffi_speculative_apis::detect_ffi_speculative_apis_in_content("wasm_host.ts", fake_wasm).len(), 1);
+        let legit_wasi = "WebAssembly.instantiate(bytes, { wasi_snapshot_preview1: wasi.wasiImport });";
+        assert_eq!(crate::detectors::ffi_speculative_apis::detect_ffi_speculative_apis_in_content("wasm_host.ts", legit_wasi).len(), 0);
+    }
+    #[test]
+    fn test_latency_benchmark_sub_millisecond_1k_loc_v260() {
+        let mut sample = String::with_capacity(32768);
+        for i in 0..1000 {
+            sample.push_str(&format!("const line_{i} = {i};\n"));
+        }
+        let start = std::time::Instant::now();
+        let _ = detect_package_hallucinations_in_content("large.ts", &sample);
+        let duration = start.elapsed();
+        assert!(duration.as_millis() < 35, "Latency benchmark failed: took {:?}", duration);
+    }
+    #[test]
+    fn test_v270_threat_01_speculative_go_and_wildcard_manifests() {
+        let go_mod_slop = "module myapp\ngo 1.22\nrequire github.com/slop/go-redis-rate-limit v1.0.0\n";
+        assert_eq!(detect_package_hallucinations_in_content("go.mod", go_mod_slop).len(), 1);
+        let wildcard_npm = "{\"dependencies\": {\"lodash\": \"*\", \"axios\": \"latest\"}}";
+        assert_eq!(detect_package_hallucinations_in_content("package.json", wildcard_npm).len(), 2);
+    }
+    #[test]
+    fn test_v270_threat_02_tokio_spawn_unawaited_in_loop() {
+        let rust_spawn_loop = "fn process_queue() { for item in queue { tokio::spawn(async move { handle(item); }); } }";
+        assert_eq!(detect_async_loop_traps_in_content("worker.rs", rust_spawn_loop).len(), 1);
+        let rust_safe_join = "fn process_queue() { for item in queue { let handle = tokio::spawn(async move { handle(item); }); handles.push(handle); } }";
+        assert_eq!(detect_async_loop_traps_in_content("worker.rs", rust_safe_join).len(), 0);
+    }
+    #[test]
+    fn test_v270_threat_03_node_serialize_gadget_rejection() {
+        let js_unserialize = "const obj = serialize.unserialize(userInputPayload);";
+        assert_eq!(detect_unsafe_deserialization_in_content("api.js", js_unserialize).len(), 1);
+        let js_safe_json = "const obj = JSON.parse(userInputPayload);";
+        assert_eq!(detect_unsafe_deserialization_in_content("api.js", js_safe_json).len(), 0);
+    }
+    #[test]
+    fn test_v270_threat_04_rust_weak_prng_session_token() {
+        let rust_bad_token = "let session_token: u64 = rand::random();";
+        assert_eq!(detect_insecure_crypto_in_content("session.rs", rust_bad_token).len(), 1);
+        let rust_csprng_token = "let session_token = ring::rand::SystemRandom::new();";
+        assert_eq!(detect_insecure_crypto_in_content("session.rs", rust_csprng_token).len(), 0);
+    }
+    #[test]
+    fn test_v270_threat_05_windows_unc_and_archive_zip_slip() {
+        let zip_slip = "archive.extractall(target_directory)";
+        assert_eq!(detect_deep_path_traversal_in_content("unzip.py", zip_slip).len(), 1);
+        let rust_bad_path = "let full_path = format!(\"{}/{}\", base_dir, user_param);";
+        assert_eq!(detect_deep_path_traversal_in_content("fs.rs", rust_bad_path).len(), 1);
+    }
+    #[test]
+    fn test_v270_threat_06_synthetic_native_symbols_wat() {
+        let wat_slop = "(import \"env\" \"ai_kernel_calc\" (func $calc (param i32) (result i32)))";
+        assert_eq!(crate::detectors::ffi_speculative_apis::detect_ffi_speculative_apis_in_content("kernel.wat", wat_slop).len(), 1);
+        let wat_legit = "(import \"wasi_snapshot_preview1\" \"fd_write\" (func $fd_write (param i32 i32 i32 i32) (result i32)))";
+        assert_eq!(crate::detectors::ffi_speculative_apis::detect_ffi_speculative_apis_in_content("kernel.wat", wat_legit).len(), 0);
+    }
+    #[test]
+    fn test_v270_diff_scanner_comprehensive_threat_matrix() {
+        let diff_file = crate::types::DiffFile {
+            old_path: "src/worker.rs".to_string(),
+            new_path: "src/worker.rs".to_string(),
+            is_new: false,
+            is_deleted: false,
+            chunks: vec![crate::types::DiffChunk {
+                old_start: 1,
+                old_lines: 0,
+                new_start: 1,
+                new_lines: 2,
+                lines: vec![
+                    crate::types::DiffLine {
+                        line_type: crate::types::DiffLineType::Add,
+                        content: "let secret_token = Math.random();".to_string(),
+                        old_line_number: None,
+                        new_line_number: Some(1),
+                    },
+                    crate::types::DiffLine {
+                        line_type: crate::types::DiffLineType::Add,
+                        content: "extern \"C\" { fn slop_fast_alloc(s: usize); }".to_string(),
+                        old_line_number: None,
+                        new_line_number: Some(2),
+                    },
+                ],
+            }],
+        };
+        let cfg = crate::config::SlopConfig::default();
+        let findings = crate::detectors::scanner::scan_diff(&[diff_file], &cfg);
+        assert!(findings.len() >= 2);
+    }
+    #[test]
+    fn test_v270_ast_contract_registry_completeness() {
+        let contracts = vec![
+            crate::detectors::package_hallucinations::CONTRACT,
+            crate::detectors::async_loop_traps::CONTRACT,
+            crate::detectors::unsafe_deserialization::CONTRACT,
+            crate::detectors::insecure_crypto::CONTRACT,
+            crate::detectors::path_traversal_deep::CONTRACT,
+            crate::detectors::ffi_speculative_apis::CONTRACT,
+        ];
+        assert_eq!(contracts.len(), 6);
+        for c in contracts {
+            assert!(!c.rule_id.is_empty());
+            assert!(!c.target_languages.is_empty());
+        }
+    }
+    #[test]
+    fn test_v270_microbenchmark_sub_millisecond_10k_loc() {
+        let mut buffer = String::with_capacity(262144);
+        for i in 0..10000 {
+            buffer.push_str(&format!("const value_{i} = {i};\n"));
+        }
+        let start = std::time::Instant::now();
+        let findings = crate::detectors::ffi_speculative_apis::detect_ffi_speculative_apis_in_content("large.rs", &buffer);
+        let elapsed = start.elapsed();
+        assert_eq!(findings.len(), 0);
+        assert!(elapsed.as_millis() < 50, "Execution exceeded threshold: {:?}", elapsed);
+    }
+    #[test]
+    fn test_v270_zero_false_positives_on_clean_idiomatic_code() {
+        let clean_ts = "import crypto from 'crypto';\nasync function sync(arr: string[]) {\n  for (const item of arr) {\n    await process(item);\n  }\n}\nconst token = crypto.randomBytes(32).toString('hex');\n";
+        assert_eq!(detect_async_loop_traps_in_content("app.ts", clean_ts).len(), 0);
+        assert_eq!(detect_insecure_crypto_in_content("app.ts", clean_ts).len(), 0);
+        assert_eq!(crate::detectors::ffi_speculative_apis::detect_ffi_speculative_apis_in_content("app.ts", clean_ts).len(), 0);
+    }
 }

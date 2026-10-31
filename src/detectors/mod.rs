@@ -42,6 +42,7 @@ pub mod path_traversal_deep;
 pub mod async_race_traps;
 pub mod phantom_cloud_sdks;
 pub mod ide_protocol;
+pub mod ffi_speculative_apis;
 use crate::detectors::ai_bloat::{detect_ai_comment_bloat_in_content, detect_ai_comment_bloat_in_diff};
 use crate::detectors::circular_deps::{detect_circular_dependencies_in_content, detect_circular_dependencies_in_diff};
 use crate::detectors::command_injection::{detect_command_injection_in_content, detect_command_injection_in_diff};
@@ -85,6 +86,7 @@ use crate::detectors::path_traversal_deep::{detect_deep_path_traversal_in_conten
 use crate::detectors::async_race_traps::{detect_async_race_traps_in_content, detect_async_race_traps_in_diff};
 use crate::detectors::phantom_cloud_sdks::{detect_phantom_cloud_sdks_in_content, detect_phantom_cloud_sdks_in_diff};
 use crate::detectors::ide_protocol::{detect_ide_protocol_hallucinations_in_content, detect_ide_protocol_hallucinations_in_diff};
+use crate::detectors::ffi_speculative_apis::{detect_ffi_speculative_apis_in_content, detect_ffi_speculative_apis_in_diff};
 use crate::types::{DiffFile, SlopConfig, SlopFinding, SlopSeverity, SlopSummary};
 use std::path::Path;
 #[allow(dead_code)]
@@ -95,6 +97,7 @@ pub static ACTIVE_CONTRACTS: &[crate::types::AstDetectorContract] = &[
     path_traversal_deep::CONTRACT,
     unsafe_deserialization::CONTRACT,
     ide_protocol::CONTRACT,
+    ffi_speculative_apis::CONTRACT,
 ];
 pub fn run_all_diff_detectors(diff_files: &[DiffFile], project_root: &Path, config: &SlopConfig) -> Vec<SlopFinding> {
     let mut findings = Vec::new();
@@ -228,6 +231,9 @@ pub fn run_all_diff_detectors(diff_files: &[DiffFile], project_root: &Path, conf
     if config.rules.get("no-ide-protocol-hallucinations").map(|s| s != "off").unwrap_or(true) {
         findings.extend(detect_ide_protocol_hallucinations_in_diff(diff_files));
     }
+    if config.rules.get("no-speculative-ffi-wasm").map(|s| s != "off").unwrap_or(true) {
+        findings.extend(detect_ffi_speculative_apis_in_diff(diff_files));
+    }
     findings.into_iter().filter(|f| config.rules.get(&f.rule_id).map(|s| s != "off").unwrap_or(true)).map(|mut f| {
         if let Some(rule_setting) = config.rules.get(&f.rule_id) {
             if rule_setting == "error" {
@@ -282,6 +288,7 @@ pub fn run_all_content_detectors(file_path: &str, content: &str, project_root: &
     findings.extend(detect_async_race_traps_in_content(file_path, content));
     findings.extend(detect_phantom_cloud_sdks_in_content(file_path, content));
     findings.extend(detect_ide_protocol_hallucinations_in_content(file_path, content));
+    findings.extend(detect_ffi_speculative_apis_in_content(file_path, content));
     findings.into_iter().filter(|f| config.rules.get(&f.rule_id).map(|s| s != "off").unwrap_or(true)).map(|mut f| {
         if let Some(rule_setting) = config.rules.get(&f.rule_id) {
             if rule_setting == "error" {

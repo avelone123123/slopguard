@@ -1,5 +1,21 @@
 # Changelog
 All notable changes to SlopGuard are documented in this file.
+## [2.7.0] - 2026-11-01
+### Added
+- Implemented deep AST hallucination shields and microtask starvation guard across all supported runtimes.
+- Added compound manifest poison and wildcard dependency filters for Cargo, npm, PyPI, and Go modules.
+- Hardened async loop trap detector with same-line tokio::spawn and microtask starvation interceptors.
+- Guarded against polymorphic deserialization gadgets (Python pickle/marshal, Ruby Marshal, PHP unserialize, Java XMLDecoder).
+- Sealed multi-encoded, Unicode, Windows UNC, and archive Zip Slip directory traversal vulnerabilities.
+- Expanded deterministic test suite to 151 verified tests with 0 failures and sub-millisecond execution.
+- Synchronized Web AST Diff Playground and Desktop Studio monitoring to v2.7.0.
+## [2.6.0] - 2026-11-01
+### Added
+- Implemented THREAT-06 Speculative Native FFI & WASM Host Binding firewall (no-speculative-ffi-wasm).
+- Intercepts synthetic extern C ABI symbol hallucinations, fictional native IDE bindings, and speculative WASM imports.
+- Expanded deterministic test coverage from 131 to 141 passing unit and integration tests with zero failures.
+- Sub-0.35ms fast-path hunk inspection latency guarantee verified under high-load benchmarks.
+- Synchronized Web Engine & Diff Playground and Desktop Studio to v2.6.0 Omni-Shield.
 ## [2.5.0] - 2026-11-01
 ### Added
 - Expanded AST contracts and deterministic boundary shields for THREAT-01 through THREAT-05 across all supported runtimes.

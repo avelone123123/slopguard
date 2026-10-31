@@ -25,8 +25,8 @@ let mut findings = Vec::new();
 let multi_encoded_seq = Regex::new(r#"(?i)(?:\\u002e\\u002e[/\\%]|%252e%252e[/\\%]|%2e%2e[/\\%]|(?:\.\.[/\\])+|%00|\x00)"#).unwrap();
 let node_traversal_join = Regex::new(r#"(?i)\bpath\.(?:join|resolve|normalize)\s*\([^)]*(?:req\.(?:params|query|body)|params\.|request\.|query\.|user_input|filename|filepath)"#).unwrap();
 let node_traversal_stream = Regex::new(r#"(?i)\bfs\.(?:createReadStream|createWriteStream|readFile|readFileSync)\s*\([^)]*(?:req\.(?:params|query|body)|params\.|request\.)"#).unwrap();
-let py_zip_slip = Regex::new(r#"(?i)(?:tarfile\.open\([^)]*\)\.extractall\(|zipfile\.ZipFile\([^)]*\)\.extractall\()"#).unwrap();
-let rust_file_format = Regex::new(r#"(?i)File::(?:create|open)\s*\(\s*format!\s*\([^)]*\{[^}]*\}/\{[^}]*"#).unwrap();
+let py_zip_slip = Regex::new(r#"(?i)(?:tarfile\.open\([^)]*\)\.extractall\(|zipfile\.ZipFile\([^)]*\)\.extractall\(|(?:archive|[a-zA-Z0-9_]+)\.(?:extractall|extract)\s*\()"#).unwrap();
+let rust_file_format = Regex::new(r#"(?i)(?:File::(?:create|open)\s*\(\s*)?format!\s*\(\s*["'][^"']*(?:\{}/|\{\}\\)[^"']*["']\s*,\s*[a-zA-Z0-9_]+\s*,\s*(?:req|param|query|input|[a-zA-Z0-9_]*param|[a-zA-Z0-9_]*input)"#).unwrap();
 for df in diff_files {
 let path = if !df.new_path.is_empty() { &df.new_path } else { &df.old_path };
 if !is_supported_ext(path) {
@@ -71,8 +71,8 @@ return findings;
 let multi_encoded_seq = Regex::new(r#"(?i)(?:\\u002e\\u002e[/\\%]|%252e%252e[/\\%]|%2e%2e[/\\%]|(?:\.\.[/\\])+|%00|\x00)"#).unwrap();
 let node_traversal_join = Regex::new(r#"(?i)\bpath\.(?:join|resolve|normalize)\s*\([^)]*(?:req\.(?:params|query|body)|params\.|request\.|query\.|user_input|filename|filepath)"#).unwrap();
 let node_traversal_stream = Regex::new(r#"(?i)\bfs\.(?:createReadStream|createWriteStream|readFile|readFileSync)\s*\([^)]*(?:req\.(?:params|query|body)|params\.|request\.)"#).unwrap();
-let py_zip_slip = Regex::new(r#"(?i)(?:tarfile\.open\([^)]*\)\.extractall\(|zipfile\.ZipFile\([^)]*\)\.extractall\()"#).unwrap();
-let rust_file_format = Regex::new(r#"(?i)File::(?:create|open)\s*\(\s*format!\s*\([^)]*\{[^}]*\}/\{[^}]*"#).unwrap();
+let py_zip_slip = Regex::new(r#"(?i)(?:tarfile\.open\([^)]*\)\.extractall\(|zipfile\.ZipFile\([^)]*\)\.extractall\(|(?:archive|[a-zA-Z0-9_]+)\.(?:extractall|extract)\s*\()"#).unwrap();
+let rust_file_format = Regex::new(r#"(?i)(?:File::(?:create|open)\s*\(\s*)?format!\s*\(\s*["'][^"']*(?:\{}/|\{\}\\)[^"']*["']\s*,\s*[a-zA-Z0-9_]+\s*,\s*(?:req|param|query|input|[a-zA-Z0-9_]*param|[a-zA-Z0-9_]*input)"#).unwrap();
 let lines: Vec<&str> = content.lines().collect();
 for (idx, line) in lines.iter().enumerate() {
 let line_str = line.trim();

@@ -77,7 +77,7 @@ pub fn detect_insecure_crypto_in_content(file_path: &str, content: &str) -> Vec<
             });
             continue;
         }
-        if (is_js || (!is_python && !is_rust && !is_golang && !trimmed.contains("def ") && !trimmed.contains("func "))) && js_prng_re.is_match(trimmed) && sensitive_re.is_match(trimmed) {
+        if js_prng_re.is_match(trimmed) && sensitive_re.is_match(trimmed) {
             findings.push(SlopFinding {
                 file: file_path.to_string(),
                 line: line_num,
@@ -197,7 +197,7 @@ pub fn detect_insecure_crypto_in_diff(diff_files: &[DiffFile]) -> Vec<SlopFindin
                     });
                     continue;
                 }
-                if (is_js || (!is_python && !is_rust && !is_golang && !trimmed.contains("def ") && !trimmed.contains("func "))) && js_prng_re.is_match(trimmed) && sensitive_re.is_match(trimmed) {
+                if js_prng_re.is_match(trimmed) && sensitive_re.is_match(trimmed) {
                     findings.push(SlopFinding {
                         file: target_path.to_string(),
                         line: line_num,
