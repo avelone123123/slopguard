@@ -125,7 +125,7 @@ fn main() {
     let cwd = env::current_dir().unwrap_or_else(|_| Path::new(".").to_path_buf());
     let target_root = if is_git_repo(&cwd) { get_git_root(&cwd) } else { cwd.clone() };
     if command == "--version" || command == "-v" || command == "version" {
-        println!("slopguard 1.5.0");
+        println!("slopguard {}", env!("CARGO_PKG_VERSION"));
         return;
     }
     if command == "mcp" {
