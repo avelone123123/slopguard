@@ -1,5 +1,11 @@
 # Changelog
 All notable changes to SlopGuard are documented in this file.
+## [1.2.0] - 2026-10-31
+### Added
+- Implemented `no-async-in-sync-callbacks` AST firewall detector for JS/TS (`.forEach`, `.reduce`), Python (`map()`, `filter()` coroutines), and Rust (`.for_each(|x| async move { ... })`).
+- Expanded `SlopCategory` with `LogicBypass`.
+- 4 new test suites (51 unit tests total, 100% pass rate).
+- Updated web landing page with 34 active AST rules & interactive playground scenario.
 ## [1.1.0] - 2026-10-31
 ### Added
 - Implemented `no-unbounded-concurrency` AST firewall for JS/TS, Python, and Rust.

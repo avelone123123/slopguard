@@ -31,6 +31,7 @@ mod test_suite {
     use crate::detectors::insecure_crypto::detect_insecure_crypto_in_content;
     use crate::detectors::test_sabotage::detect_test_sabotage_in_content;
     use crate::detectors::unbounded_concurrency::detect_unbounded_concurrency_in_content;
+    use crate::detectors::async_callback_traps::detect_async_callback_traps_in_content;
     use crate::fixers::sanitize_code;
     use crate::reporters::generate_badge_svg;
     use crate::telemetry::{create_shared_telemetry, record_event};
@@ -871,5 +872,52 @@ mod test_suite {
         let s1 = format!("let (a, b) = {j_all}(vec![task_a, task_b]).await;");
         let safe_code = format!("{s1}\nlet stream_res = stream::iter(items).map(fetch).buffer_unordered(8).collect::<Vec<_>>().await;");
         assert!(detect_unbounded_concurrency_in_content("src/safe.rs", &safe_code).is_empty());
+    }
+    #[test]
+    fn test_detects_async_in_sync_callbacks_js_ts() {
+        let js_code = [
+            "users.forEach(async (user) => { await db.sync(user); });",
+            "items.forEach(async function(item) { await process(item); });",
+            "const total = records.reduce(async (acc, r) => (await acc) + r.cost, Promise.resolve(0));",
+            "items.reduceRight(async (prev, cur) => await link(prev, cur));",
+        ].join("\n");
+        let findings = detect_async_callback_traps_in_content("src/sync.ts", &js_code);
+        assert_eq!(findings.len(), 4);
+        assert_eq!(findings[0].rule_id, "no-async-in-sync-callbacks");
+    }
+    #[test]
+    fn test_detects_async_in_sync_callbacks_python() {
+        let py_code = [
+            "results = list(map(async_fetch_user, user_ids))",
+            "filtered = filter(async_validate, records)",
+            "tasks = map(async lambda x: process(x), dataset)",
+        ].join("\n");
+        let findings = detect_async_callback_traps_in_content("app/pipeline.py", &py_code);
+        assert_eq!(findings.len(), 3);
+        assert_eq!(findings[0].rule_id, "no-async-in-sync-callbacks");
+    }
+    #[test]
+    fn test_detects_async_in_sync_callbacks_rust() {
+        let fe = ["for_", "each"].concat();
+        let r1 = format!("items.iter().{fe}(|x| async move {{ do_work(x).await; }});");
+        let r2 = format!("records.{fe}(|r| {{ async {{ save(r).await; }}; }});");
+        let rust_code = format!("{r1}\n{r2}");
+        let findings = detect_async_callback_traps_in_content("src/worker.rs", &rust_code);
+        assert_eq!(findings.len(), 2);
+        assert_eq!(findings[0].rule_id, "no-async-in-sync-callbacks");
+    }
+    #[test]
+    fn test_async_callbacks_safe_patterns_pass() {
+        let safe_js = [
+            "for (const user of users) { await db.sync(user); }",
+            "const results = await Promise.all(items.map(async (i) => await fetch(i)));",
+            "users.forEach((user) => console.log(user.name));",
+        ].join("\n");
+        assert!(detect_async_callback_traps_in_content("src/safe.ts", &safe_js).is_empty());
+        let safe_py = [
+            "results = await asyncio.gather(*(async_fetch(u) for u in user_ids))",
+            "async for item in async_generator(): await process(item)",
+        ].join("\n");
+        assert!(detect_async_callback_traps_in_content("app/safe.py", &safe_py).is_empty());
     }
 }
