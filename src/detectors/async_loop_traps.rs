@@ -49,6 +49,7 @@ return findings;
 let lines: Vec<&str> = content.lines().collect();
 let js_loop_re = get_js_loop_regex();
 let js_async_re = get_js_unawaited_async_regex();
+let foreach_async_re = Regex::new(r#"\.forEach\s*\(\s*async\s*(?:\([^)]*\)|[a-zA-Z0-9_$]+)\s*=>"#).unwrap();
 let py_loop_re = get_py_loop_regex();
 let py_async_re = get_py_unawaited_async_regex();
 let rs_loop_re = get_rust_loop_regex();
@@ -60,6 +61,21 @@ if trimmed.starts_with("//") || trimmed.starts_with("/*") || trimmed.starts_with
 continue;
 }
 if py && trimmed.starts_with('#') {
+continue;
+}
+if js && foreach_async_re.is_match(trimmed) {
+findings.push(SlopFinding {
+file: file_path.to_string(),
+line: line_num,
+column: 1,
+rule_id: "no-unawaited-async-in-loops".to_string(),
+category: SlopCategory::UnawaitedAsyncLoopTrap,
+severity: SlopSeverity::Error,
+message: "Synchronous forEach with async closure does not await promises, causing unhandled errors and detached execution".to_string(),
+snippet: trimmed.to_string(),
+fixable: false,
+suggestion: Some("Use 'for (const item of items)' with await or 'await Promise.all(items.map(...))'".to_string()),
+});
 continue;
 }
 if (trimmed.starts_with("yield ") || trimmed.starts_with("yield\t")) && (trimmed.contains("fetch(") || trimmed.contains("fetch (") || trimmed.contains("axios.") || trimmed.contains("db.query(") || trimmed.contains("client.get(")) && !trimmed.contains("await ") && !trimmed.contains("yield*") {

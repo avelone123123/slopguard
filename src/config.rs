@@ -42,6 +42,7 @@ pub fn default_config() -> SlopConfig {
     rules.insert("no-deep-path-traversal".to_string(), "error".to_string());
     rules.insert("no-async-pipeline-races".to_string(), "warning".to_string());
     rules.insert("no-phantom-cloud-sdks".to_string(), "error".to_string());
+    rules.insert("no-ide-protocol-hallucinations".to_string(), "error".to_string());
     SlopConfig {
         ignore: vec![
             "target".into(),
@@ -124,7 +125,7 @@ pub fn should_ignore_path(file_path: &str, ignore_patterns: &[String]) -> bool {
                 return true;
             }
         } else if normalized.contains(&format!("/{}/", clean)) || normalized.starts_with(&format!("{}/", clean)) || normalized == clean {
-            return true;
+                return true;
         }
     }
     false

@@ -23,7 +23,7 @@ fn is_unsafe_match(line: &str, re: &Regex, safe_opt: Option<&'static str>) -> bo
 pub const CONTRACT: crate::types::AstDetectorContract = crate::types::AstDetectorContract {
 rule_id: "no-unsafe-deserialization",
 severity: SlopSeverity::Error,
-category: SlopCategory::Security,
+category: SlopCategory::PolymorphicUnsafeDeserialization,
 target_languages: &["py", "js", "ts", "rb", "php", "java", "rs"],
 analyze_diff: detect_unsafe_deserialization_in_diff,
 analyze_content: detect_unsafe_deserialization_in_content,
@@ -34,11 +34,13 @@ fn get_deserialization_patterns(file_path: &str) -> Vec<(Regex, Option<&'static 
     if !specific || is_py(file_path) {
         patterns.push((Regex::new(r#"(?i)\b(?:pickle|_pickle|cPickle)\.(?:loads|load)\s*\("#).unwrap(), None, "Python pickle deserialization allows arbitrary code execution", "Replace pickle with json.loads, msgpack, or validated schemas (pydantic/msgspec)"));
         patterns.push((Regex::new(r#"(?i)\byaml\.(?:unsafe_load|load)\s*\("#).unwrap(), Some("SafeLoader"), "Unsafe YAML load allows arbitrary object instantiation", "Use yaml.safe_load(stream) or pass Loader=yaml.SafeLoader"));
+        patterns.push((Regex::new(r#"(?i)\byaml\.load\s*\([^)]*Loader\s*=\s*(?:yaml\.)?(?:UnsafeLoader|Loader)\b"#).unwrap(), None, "PyYAML unsafe Loader allows arbitrary Python object instantiation", "Use yaml.safe_load(stream) or pass Loader=yaml.SafeLoader"));
         patterns.push((Regex::new(r#"(?i)\bmarshal\.(?:loads|load)\s*\("#).unwrap(), None, "Python marshal deserialization allows arbitrary code execution", "Use structured JSON or Protocol Buffers instead of marshal"));
         patterns.push((Regex::new(r#"(?i)\bshelve\.open\s*\("#).unwrap(), None, "Python shelve storage uses pickle internally", "Use SQLite, Redis, or encrypted key-value stores with validated schemas"));
     }
     if !specific || is_js_ts(file_path) {
         patterns.push((Regex::new(r#"(?i)\b(?:node-serialize|serialize)\.unserialize\s*\("#).unwrap(), None, "node-serialize unserialize vulnerability allows RCE via IIFE gadget payloads", "Replace node-serialize with JSON.parse and strict runtime type validation"));
+        patterns.push((Regex::new(r#"(?i)\b(?:serialize-javascript|serializeJavascript|serialize)\.deserialize\s*\("#).unwrap(), None, "serialize-javascript deserialization allows remote code execution", "Parse untrusted state with JSON.parse and validated schemas"));
         patterns.push((Regex::new(r#"(?i)\beval\s*\(\s*["']\s*\(?["']\s*\+\s*[a-zA-Z_$]"#).unwrap(), None, "Unsafe eval JSON hydration evaluates arbitrary script payloads", "Use JSON.parse(payload) instead of eval"));
     }
     if !specific || is_php(file_path) {
@@ -65,7 +67,7 @@ pub fn detect_unsafe_deserialization_in_content(file_path: &str, content: &str) 
                     line: i + 1,
                     column: 1,
                     rule_id: "no-unsafe-deserialization".to_string(),
-                    category: SlopCategory::Security,
+                    category: SlopCategory::PolymorphicUnsafeDeserialization,
                     severity: SlopSeverity::Error,
                     message: format!("Insecure deserialization vulnerability: {desc}"),
                     snippet: line.trim().to_string(),
@@ -85,7 +87,7 @@ fn scan_diff_line(path: &str, line_num: usize, content: &str, patterns: &[(Regex
                 line: line_num,
                 column: 1,
                 rule_id: "no-unsafe-deserialization".to_string(),
-                category: SlopCategory::Security,
+                category: SlopCategory::PolymorphicUnsafeDeserialization,
                 severity: SlopSeverity::Error,
                 message: format!("Insecure deserialization vulnerability: {desc}"),
                 snippet: content.trim().to_string(),

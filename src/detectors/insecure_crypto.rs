@@ -53,6 +53,7 @@ pub fn detect_insecure_crypto_in_content(file_path: &str, content: &str) -> Vec<
     let py_prng_re = get_py_weak_prng_regex();
     let rs_prng_re = get_rs_weak_prng_regex();
     let go_prng_re = get_go_weak_prng_regex();
+    let static_seed_re = Regex::new(r#"(?:SeedableRng::seed_from_u64\s*\(\s*0\s*\)|StdRng::seed_from_u64\s*\(\s*[0-9]+\s*\)|random\.seed\s*\(\s*(?:0|42|1234|1337)\s*\))"#).unwrap();
     let hash_patterns = get_weak_hash_patterns();
     let is_js = is_js_ts(file_path);
     let is_python = is_py(file_path);
@@ -61,6 +62,21 @@ pub fn detect_insecure_crypto_in_content(file_path: &str, content: &str) -> Vec<
     for (idx, line) in content.lines().enumerate() {
         let line_num = idx + 1;
         let trimmed = line.trim();
+        if static_seed_re.is_match(trimmed) {
+            findings.push(SlopFinding {
+                file: file_path.to_string(),
+                line: line_num,
+                column: 1,
+                rule_id: "no-insecure-prng-tokens".to_string(),
+                category: SlopCategory::InsecureCryptographicEntropy,
+                severity: SlopSeverity::Error,
+                message: "Deterministic PRNG static seed undermines cryptographic entropy".to_string(),
+                snippet: trimmed.to_string(),
+                fixable: false,
+                suggestion: Some("Seed PRNG from OS entropy using rand::rngs::OsRng or secrets module".to_string()),
+            });
+            continue;
+        }
         if (is_js || (!is_python && !is_rust && !is_golang && !trimmed.contains("def ") && !trimmed.contains("func "))) && js_prng_re.is_match(trimmed) && sensitive_re.is_match(trimmed) {
             findings.push(SlopFinding {
                 file: file_path.to_string(),
@@ -148,6 +164,7 @@ pub fn detect_insecure_crypto_in_diff(diff_files: &[DiffFile]) -> Vec<SlopFindin
     let py_prng_re = get_py_weak_prng_regex();
     let rs_prng_re = get_rs_weak_prng_regex();
     let go_prng_re = get_go_weak_prng_regex();
+    let static_seed_re = Regex::new(r#"(?:SeedableRng::seed_from_u64\s*\(\s*0\s*\)|StdRng::seed_from_u64\s*\(\s*[0-9]+\s*\)|random\.seed\s*\(\s*(?:0|42|1234|1337)\s*\))"#).unwrap();
     let hash_patterns = get_weak_hash_patterns();
     for file in diff_files {
         if file.is_deleted {
@@ -165,6 +182,21 @@ pub fn detect_insecure_crypto_in_diff(diff_files: &[DiffFile]) -> Vec<SlopFindin
                 }
                 let trimmed = line.content.trim();
                 let line_num = line.new_line_number.unwrap_or(1);
+                if static_seed_re.is_match(trimmed) {
+                    findings.push(SlopFinding {
+                        file: target_path.to_string(),
+                        line: line_num,
+                        column: 1,
+                        rule_id: "no-insecure-prng-tokens".to_string(),
+                        category: SlopCategory::InsecureCryptographicEntropy,
+                        severity: SlopSeverity::Error,
+                        message: "Deterministic PRNG static seed undermines cryptographic entropy".to_string(),
+                        snippet: trimmed.to_string(),
+                        fixable: false,
+                        suggestion: Some("Seed PRNG from OS entropy using rand::rngs::OsRng or secrets module".to_string()),
+                    });
+                    continue;
+                }
                 if (is_js || (!is_python && !is_rust && !is_golang && !trimmed.contains("def ") && !trimmed.contains("func "))) && js_prng_re.is_match(trimmed) && sensitive_re.is_match(trimmed) {
                     findings.push(SlopFinding {
                         file: target_path.to_string(),

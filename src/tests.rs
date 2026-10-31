@@ -42,6 +42,7 @@ mod test_suite {
     use crate::detectors::path_traversal_deep::detect_deep_path_traversal_in_content;
     use crate::detectors::async_race_traps::detect_async_race_traps_in_content;
     use crate::detectors::phantom_cloud_sdks::detect_phantom_cloud_sdks_in_content;
+    use crate::detectors::ide_protocol::detect_ide_protocol_hallucinations_in_content;
     use crate::types::SlopCategory;
     use crate::fixers::sanitize_code;
     use crate::reporters::generate_badge_svg;
@@ -1495,5 +1496,47 @@ mod test_suite {
         let bad_unicode = "const target = '/var/data/' + '\\u002e\\u002e/etc/passwd';";
         assert!(!detect_deep_path_traversal_in_content("server.js", bad_norm).is_empty());
         assert!(!detect_deep_path_traversal_in_content("server.js", bad_unicode).is_empty());
+    }
+    #[test]
+    fn test_detects_ide_protocol_hallucinations_slop_055() {
+        let bad_vscode = "vscode.window.showAIMessage('Generating code with model...');";
+        let bad_cursor = "cursor.editor.injectPrompt({ prompt: 'Refactor function' });";
+        let bad_window_ai = "await window.ai.generateText('Explain diff');";
+        assert!(!detect_ide_protocol_hallucinations_in_content("extension.ts", bad_vscode).is_empty());
+        assert!(!detect_ide_protocol_hallucinations_in_content("plugin.js", bad_cursor).is_empty());
+        assert!(!detect_ide_protocol_hallucinations_in_content("index.tsx", bad_window_ai).is_empty());
+    }
+    #[test]
+    fn test_legitimate_editor_apis_zero_false_positives() {
+        let safe_vscode = "vscode.window.showInformationMessage('SlopGuard: Workspace Clean');";
+        let safe_command = "vscode.commands.executeCommand('workbench.action.reloadWindow');";
+        assert!(detect_ide_protocol_hallucinations_in_content("extension.ts", safe_vscode).is_empty());
+        assert!(detect_ide_protocol_hallucinations_in_content("extension.ts", safe_command).is_empty());
+    }
+    #[test]
+    fn test_detects_polymorphic_unsafe_deserialization_slop_056() {
+        let bad_yaml = "payload = yaml.load(user_stream, Loader=yaml.Loader)";
+        let bad_js = "const state = serializeJavascript.deserialize(req.body);";
+        assert!(!detect_unsafe_deserialization_in_content("server.py", bad_yaml).is_empty());
+        assert!(!detect_unsafe_deserialization_in_content("server.js", bad_js).is_empty());
+    }
+    #[test]
+    fn test_safe_deserializers_zero_false_positives() {
+        let safe_py = "data = yaml.safe_load(user_stream, Loader=yaml.SafeLoader)";
+        let safe_json = "const data = JSON.parse(user_input);";
+        assert!(detect_unsafe_deserialization_in_content("server.py", safe_py).is_empty());
+        assert!(detect_unsafe_deserialization_in_content("server.js", safe_json).is_empty());
+    }
+    #[test]
+    fn test_detects_unawaited_async_loop_traps_slop_057() {
+        let bad_foreach = "users.forEach(async user => { await sendEmail(user); });";
+        assert!(!detect_async_loop_traps_in_content("mailer.js", bad_foreach).is_empty());
+    }
+    #[test]
+    fn test_detects_static_prng_seed_and_weak_entropy_slop_058() {
+        let bad_rust = "let mut rng = StdRng::seed_from_u64(0);";
+        let bad_py = "random.seed(1337)\ntoken = f'token_{random.random()}'";
+        assert!(!detect_insecure_crypto_in_content("auth.rs", bad_rust).is_empty());
+        assert!(!detect_insecure_crypto_in_content("auth.py", bad_py).is_empty());
     }
 }

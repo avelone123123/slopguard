@@ -10,6 +10,8 @@ pub const RULE_NO_INSECURE_PRNG_TOKENS: &str = "no-insecure-prng-tokens";
 pub const RULE_NO_DEEP_PATH_TRAVERSAL: &str = "no-deep-path-traversal";
 #[allow(dead_code)]
 pub const RULE_NO_UNSAFE_DESERIALIZATION: &str = "no-unsafe-deserialization";
+#[allow(dead_code)]
+pub const RULE_NO_IDE_PROTOCOL_HALLUCINATIONS: &str = "no-ide-protocol-hallucinations";
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
 pub enum SlopCategory {
     Placeholder,
@@ -34,6 +36,10 @@ pub enum SlopCategory {
     PathTraversalSecurity,
     AsyncResourceLeak,
     CryptographicEntropy,
+    IdePluginProtocolHallucination,
+    PolymorphicUnsafeDeserialization,
+    UnawaitedAsyncLoopTrap,
+    InsecureCryptographicEntropy,
 }
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
 pub enum SlopSeverity {
