@@ -25,6 +25,8 @@ pub fn default_config() -> SlopConfig {
     rules.insert("no-unsafe-deserialization".to_string(), "error".to_string());
     rules.insert("no-insecure-cors".to_string(), "error".to_string());
     rules.insert("no-async-array-predicates".to_string(), "error".to_string());
+    rules.insert("no-inlined-secrets".to_string(), "error".to_string());
+    rules.insert("no-slopsquat-deps".to_string(), "warning".to_string());
     SlopConfig {
         ignore: vec![
             "target".into(),
@@ -85,6 +87,12 @@ pub fn is_supported_code_file(path_str: &str) -> bool {
         || lower.ends_with(".c")
         || lower.ends_with(".cs")
         || lower.ends_with(".rb")
+        || lower.ends_with(".env")
+        || lower.contains(".env.")
+        || lower.ends_with("package.json")
+        || lower.ends_with("requirements.txt")
+        || lower.ends_with("pyproject.toml")
+        || lower.ends_with("cargo.toml")
 }
 pub fn should_ignore_path(file_path: &str, ignore_patterns: &[String]) -> bool {
     let normalized = file_path.replace('\\', "/");

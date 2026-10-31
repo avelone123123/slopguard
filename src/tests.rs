@@ -26,6 +26,8 @@ mod test_suite {
     use crate::detectors::unsafe_deserialization::detect_unsafe_deserialization_in_content;
     use crate::detectors::insecure_cors::detect_insecure_cors_in_content;
     use crate::detectors::watermarks::detect_watermarks_in_content;
+    use crate::detectors::inlined_secrets::detect_inlined_secrets_in_content;
+    use crate::detectors::slopsquat::detect_slopsquat_in_content;
     use crate::fixers::sanitize_code;
     use crate::reporters::generate_badge_svg;
     use crate::telemetry::{create_shared_telemetry, record_event};
@@ -668,5 +670,27 @@ mod test_suite {
         ].join("\n");
         let safe_findings = detect_floating_promises_in_content("safe.ts", &safe_cases);
         assert_eq!(safe_findings.len(), 0);
+    }
+    #[test]
+    fn test_detects_inlined_client_secrets() {
+        let prefix = ["NEXT", "_PUBLIC_"].concat();
+        let role = ["SERVICE_", "ROLE_KEY"].concat();
+        let key_name = format!("{prefix}SUPABASE_{role}");
+        let code = format!("const client = createClient(url, process.env.{key_name});");
+        let findings = detect_inlined_secrets_in_content("src/app/page.tsx", &code);
+        assert_eq!(findings.len(), 1);
+        assert_eq!(findings[0].rule_id, "no-inlined-secrets");
+    }
+    #[test]
+    fn test_detects_slopsquat_hallucinated_dependencies() {
+        let pkg1 = ["crypto", "-secure-hash"].concat();
+        let pkg2 = ["starlette", "-reverse-proxy"].concat();
+        let manifest = format!("{{\n  \"dependencies\": {{\n    \"{pkg1}\": \"^1.0.0\"\n  }}\n}}");
+        let findings1 = detect_slopsquat_in_content("package.json", &manifest);
+        assert_eq!(findings1.len(), 1);
+        assert_eq!(findings1[0].rule_id, "no-slopsquat-deps");
+        let reqs = format!("{pkg2}==0.1.0\nuvicorn>=0.20.0");
+        let findings2 = detect_slopsquat_in_content("requirements.txt", &reqs);
+        assert_eq!(findings2.len(), 1);
     }
 }
