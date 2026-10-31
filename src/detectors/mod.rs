@@ -37,6 +37,10 @@ pub mod package_hallucinations;
 pub mod jwt_leakage;
 pub mod broken_access_control;
 pub mod xxe_ssrf;
+pub mod speculative_orm;
+pub mod path_traversal_deep;
+pub mod async_race_traps;
+pub mod phantom_cloud_sdks;
 use crate::detectors::ai_bloat::{detect_ai_comment_bloat_in_content, detect_ai_comment_bloat_in_diff};
 use crate::detectors::circular_deps::{detect_circular_dependencies_in_content, detect_circular_dependencies_in_diff};
 use crate::detectors::command_injection::{detect_command_injection_in_content, detect_command_injection_in_diff};
@@ -75,6 +79,10 @@ use crate::detectors::package_hallucinations::{detect_package_hallucinations_in_
 use crate::detectors::jwt_leakage::{detect_jwt_leakage_in_content, detect_jwt_leakage_in_diff};
 use crate::detectors::broken_access_control::{detect_broken_access_control_in_content, detect_broken_access_control_in_diff};
 use crate::detectors::xxe_ssrf::{detect_xxe_ssrf_in_content, detect_xxe_ssrf_in_diff};
+use crate::detectors::speculative_orm::{detect_speculative_orm_in_content, detect_speculative_orm_in_diff};
+use crate::detectors::path_traversal_deep::{detect_deep_path_traversal_in_content, detect_deep_path_traversal_in_diff};
+use crate::detectors::async_race_traps::{detect_async_race_traps_in_content, detect_async_race_traps_in_diff};
+use crate::detectors::phantom_cloud_sdks::{detect_phantom_cloud_sdks_in_content, detect_phantom_cloud_sdks_in_diff};
 use crate::types::{DiffFile, SlopConfig, SlopFinding, SlopSeverity, SlopSummary};
 use std::path::Path;
 pub fn run_all_diff_detectors(diff_files: &[DiffFile], project_root: &Path, config: &SlopConfig) -> Vec<SlopFinding> {
@@ -194,6 +202,18 @@ pub fn run_all_diff_detectors(diff_files: &[DiffFile], project_root: &Path, conf
     if config.rules.get("no-unsafe-xml-or-ssrf").map(|s| s != "off").unwrap_or(true) {
         findings.extend(detect_xxe_ssrf_in_diff(diff_files));
     }
+    if config.rules.get("no-speculative-orm-methods").map(|s| s != "off").unwrap_or(true) {
+        findings.extend(detect_speculative_orm_in_diff(diff_files));
+    }
+    if config.rules.get("no-deep-path-traversal").map(|s| s != "off").unwrap_or(true) {
+        findings.extend(detect_deep_path_traversal_in_diff(diff_files));
+    }
+    if config.rules.get("no-async-pipeline-races").map(|s| s != "off").unwrap_or(true) {
+        findings.extend(detect_async_race_traps_in_diff(diff_files));
+    }
+    if config.rules.get("no-phantom-cloud-sdks").map(|s| s != "off").unwrap_or(true) {
+        findings.extend(detect_phantom_cloud_sdks_in_diff(diff_files));
+    }
     findings.into_iter().filter(|f| config.rules.get(&f.rule_id).map(|s| s != "off").unwrap_or(true)).map(|mut f| {
         if let Some(rule_setting) = config.rules.get(&f.rule_id) {
             if rule_setting == "error" {
@@ -243,6 +263,10 @@ pub fn run_all_content_detectors(file_path: &str, content: &str, project_root: &
     findings.extend(detect_jwt_leakage_in_content(file_path, content));
     findings.extend(detect_broken_access_control_in_content(file_path, content));
     findings.extend(detect_xxe_ssrf_in_content(file_path, content));
+    findings.extend(detect_speculative_orm_in_content(file_path, content));
+    findings.extend(detect_deep_path_traversal_in_content(file_path, content));
+    findings.extend(detect_async_race_traps_in_content(file_path, content));
+    findings.extend(detect_phantom_cloud_sdks_in_content(file_path, content));
     findings.into_iter().filter(|f| config.rules.get(&f.rule_id).map(|s| s != "off").unwrap_or(true)).map(|mut f| {
         if let Some(rule_setting) = config.rules.get(&f.rule_id) {
             if rule_setting == "error" {

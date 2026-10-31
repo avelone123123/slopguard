@@ -1,5 +1,13 @@
 # Changelog
 All notable changes to SlopGuard are documented in this file.
+## [1.7.0] - 2026-10-31
+### Added
+- Implemented `no-speculative-orm-methods` AST detector (SLOP-039) catching speculative ORM/ODM method hallucinations across TypeScript, Python, and Rust.
+- Implemented `no-deep-path-traversal` security firewall (SLOP-040) preventing zip-slip and unconstrained path concatenations.
+- Implemented `no-async-pipeline-races` resource leak detector (SLOP-041) quarantining unshielded Promise.race and unmonitored stream pipes.
+- Implemented `no-phantom-cloud-sdks` supply chain firewall (SLOP-042) intercepting hallucinated cloud provider SDK dependencies in package manifests.
+- Expanded `SlopCategory` with `PathTraversalSecurity` and `AsyncResourceLeak`.
+- Added 16 new rigorous regression test suites raising total suite to 91 tests at 100% pass verification.
 ## [1.5.0] - 2026-10-31
 ### Added
 - Implemented `no-unawaited-async-in-loops` AST detector (SLOP-037) for JS/TS, Python, and Rust.

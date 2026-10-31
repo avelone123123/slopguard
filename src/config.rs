@@ -38,6 +38,10 @@ pub fn default_config() -> SlopConfig {
     rules.insert("no-hardcoded-jwt-secrets".to_string(), "error".to_string());
     rules.insert("no-unscoped-idor-queries".to_string(), "error".to_string());
     rules.insert("no-unsafe-xml-or-ssrf".to_string(), "error".to_string());
+    rules.insert("no-speculative-orm-methods".to_string(), "error".to_string());
+    rules.insert("no-deep-path-traversal".to_string(), "error".to_string());
+    rules.insert("no-async-pipeline-races".to_string(), "warning".to_string());
+    rules.insert("no-phantom-cloud-sdks".to_string(), "error".to_string());
     SlopConfig {
         ignore: vec![
             "target".into(),

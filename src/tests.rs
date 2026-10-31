@@ -38,6 +38,10 @@ mod test_suite {
     use crate::detectors::jwt_leakage::detect_jwt_leakage_in_content;
     use crate::detectors::broken_access_control::detect_broken_access_control_in_content;
     use crate::detectors::xxe_ssrf::detect_xxe_ssrf_in_content;
+    use crate::detectors::speculative_orm::detect_speculative_orm_in_content;
+    use crate::detectors::path_traversal_deep::detect_deep_path_traversal_in_content;
+    use crate::detectors::async_race_traps::detect_async_race_traps_in_content;
+    use crate::detectors::phantom_cloud_sdks::detect_phantom_cloud_sdks_in_content;
     use crate::types::SlopCategory;
     use crate::fixers::sanitize_code;
     use crate::reporters::generate_badge_svg;
@@ -1143,5 +1147,137 @@ mod test_suite {
         assert!(detect_jwt_leakage_in_content("safe.js", &safe_jwt).is_empty());
         let safe_xml = ["parser.setFeature('http://xml.org/sax/features/external-general-entities', false);"].join("\n");
         assert!(detect_xxe_ssrf_in_content("safe.js", &safe_xml).is_empty());
+    }
+    #[test]
+    fn test_detects_speculative_orm_prisma() {
+        let code = ["const user = await prisma.user.findOrCreate({ where: { email } });"].join("\n");
+        let findings = detect_speculative_orm_in_content("service.ts", &code);
+        assert_eq!(findings.len(), 1);
+        assert_eq!(findings[0].rule_id, "no-speculative-orm-methods");
+        assert_eq!(findings[0].category, SlopCategory::SpeculativeApi);
+    }
+    #[test]
+    fn test_detects_speculative_orm_django_sqlalchemy() {
+        let code = ["user = User.query.filter_by_slug(\"admin\")"].join("\n");
+        let findings = detect_speculative_orm_in_content("models.py", &code);
+        assert_eq!(findings.len(), 1);
+        assert_eq!(findings[0].rule_id, "no-speculative-orm-methods");
+        assert_eq!(findings[0].category, SlopCategory::SpeculativeApi);
+    }
+    #[test]
+    fn test_detects_speculative_orm_diesel_seaorm() {
+        let code = ["let res = users::table::find_or_create(&conn);"].join("\n");
+        let findings = detect_speculative_orm_in_content("repo.rs", &code);
+        assert_eq!(findings.len(), 1);
+        assert_eq!(findings[0].rule_id, "no-speculative-orm-methods");
+        assert_eq!(findings[0].category, SlopCategory::SpeculativeApi);
+    }
+    #[test]
+    fn test_speculative_orm_safe_patterns_pass() {
+        let ts_code = ["const user = await prisma.user.findUnique({ where: { id: 1 } });", "const repo = repository.findOneBy({ id: 1 });"].join("\n");
+        let py_code = ["user, created = User.objects.get_or_create(username='admin')"].join("\n");
+        let rs_code = ["let user = Entity::find().filter(Column::Id.eq(1)).one(&db).await?;", "let saved = repository.save(entity);"].join("\n");
+        assert!(detect_speculative_orm_in_content("repo.ts", &ts_code).is_empty());
+        assert!(detect_speculative_orm_in_content("models.py", &py_code).is_empty());
+        assert!(detect_speculative_orm_in_content("db.rs", &rs_code).is_empty());
+    }
+    #[test]
+    fn test_detects_deep_path_traversal_python_zip_slip() {
+        let code = ["tarfile.open(archive).extractall()"].join("\n");
+        let findings = detect_deep_path_traversal_in_content("extract.py", &code);
+        assert_eq!(findings.len(), 1);
+        assert_eq!(findings[0].rule_id, "no-deep-path-traversal");
+        assert_eq!(findings[0].category, SlopCategory::PathTraversalSecurity);
+    }
+    #[test]
+    fn test_detects_deep_path_traversal_node_params() {
+        let code = ["const stream = fs.createReadStream(path.join(root, req.params.file));"].join("\n");
+        let findings = detect_deep_path_traversal_in_content("server.js", &code);
+        assert!(!findings.is_empty());
+        assert_eq!(findings[0].rule_id, "no-deep-path-traversal");
+        assert_eq!(findings[0].category, SlopCategory::PathTraversalSecurity);
+    }
+    #[test]
+    fn test_detects_deep_path_traversal_rust_unconstrained() {
+        let code = ["let file = File::create(format!(\"{}/{}\", base, user_input));"].join("\n");
+        let findings = detect_deep_path_traversal_in_content("fs.rs", &code);
+        assert_eq!(findings.len(), 1);
+        assert_eq!(findings[0].rule_id, "no-deep-path-traversal");
+        assert_eq!(findings[0].category, SlopCategory::PathTraversalSecurity);
+    }
+    #[test]
+    fn test_deep_path_traversal_safe_guards_pass() {
+        let rs_code = ["let safe_path = path.canonicalize()?;", "let file = File::create(format!(\"{}/{}\", base, safe_path));"].join("\n");
+        let py_code = ["safe_name = secure_filename(filename)", "tarfile.open(safe_name).extractall()"].join("\n");
+        let js_code = ["if (filePath.startsWith('/safe/dir')) {", "    fs.createReadStream(path.join(root, req.params.file));", "}"].join("\n");
+        assert!(detect_deep_path_traversal_in_content("safe.rs", &rs_code).is_empty());
+        assert!(detect_deep_path_traversal_in_content("safe.py", &py_code).is_empty());
+        assert!(detect_deep_path_traversal_in_content("safe.js", &js_code).is_empty());
+    }
+    #[test]
+    fn test_detects_async_race_traps_js_uncaught() {
+        let code = ["const res = Promise.race([fetch(a), fetch(b)]);"].join("\n");
+        let findings = detect_async_race_traps_in_content("async_ops.ts", &code);
+        assert_eq!(findings.len(), 1);
+        assert_eq!(findings[0].rule_id, "no-async-pipeline-races");
+        assert_eq!(findings[0].category, SlopCategory::AsyncResourceLeak);
+    }
+    #[test]
+    fn test_detects_async_stream_pipe_leak_node() {
+        let code = ["readable.pipe(writable);"].join("\n");
+        let findings = detect_async_race_traps_in_content("stream.js", &code);
+        assert_eq!(findings.len(), 1);
+        assert_eq!(findings[0].rule_id, "no-async-pipeline-races");
+        assert_eq!(findings[0].category, SlopCategory::AsyncResourceLeak);
+    }
+    #[test]
+    fn test_detects_async_gather_unshielded_python() {
+        let code = ["results = await asyncio.gather(task1, task2)"].join("\n");
+        let findings = detect_async_race_traps_in_content("tasks.py", &code);
+        assert_eq!(findings.len(), 1);
+        assert_eq!(findings[0].rule_id, "no-async-pipeline-races");
+        assert_eq!(findings[0].category, SlopCategory::AsyncResourceLeak);
+    }
+    #[test]
+    fn test_async_race_safe_patterns_pass() {
+        let js_code = ["Promise.race([fetch(a), fetch(b)]).catch(handleError);"].join("\n");
+        let py_code = ["results = await asyncio.gather(task1, task2, return_exceptions=True)"].join("\n");
+        let stream_code = ["stream.pipeline(src, dest, callback);"].join("\n");
+        assert!(detect_async_race_traps_in_content("safe.ts", &js_code).is_empty());
+        assert!(detect_async_race_traps_in_content("safe.py", &py_code).is_empty());
+        assert!(detect_async_race_traps_in_content("safe.js", &stream_code).is_empty());
+    }
+    #[test]
+    fn test_detects_phantom_cloud_sdks_npm() {
+        let json = ["{", "  \"dependencies\": {", "    \"aws-sdk-v4\": \"^4.0.0\"", "  }", "}"].join("\n");
+        let findings = detect_phantom_cloud_sdks_in_content("package.json", &json);
+        assert_eq!(findings.len(), 1);
+        assert_eq!(findings[0].rule_id, "no-phantom-cloud-sdks");
+        assert_eq!(findings[0].category, SlopCategory::SupplyChainPoisoning);
+    }
+    #[test]
+    fn test_detects_phantom_cloud_sdks_pypi() {
+        let reqs = ["boto4>=1.0.0"].join("\n");
+        let findings = detect_phantom_cloud_sdks_in_content("requirements.txt", &reqs);
+        assert_eq!(findings.len(), 1);
+        assert_eq!(findings[0].rule_id, "no-phantom-cloud-sdks");
+        assert_eq!(findings[0].category, SlopCategory::SupplyChainPoisoning);
+    }
+    #[test]
+    fn test_detects_phantom_cloud_sdks_cargo() {
+        let toml = ["[dependencies]", "tokio-plus = \"1.0\""].join("\n");
+        let findings = detect_phantom_cloud_sdks_in_content("Cargo.toml", &toml);
+        assert_eq!(findings.len(), 1);
+        assert_eq!(findings[0].rule_id, "no-phantom-cloud-sdks");
+        assert_eq!(findings[0].category, SlopCategory::SupplyChainPoisoning);
+    }
+    #[test]
+    fn test_phantom_cloud_sdks_safe_pass() {
+        let safe_json = ["{", "  \"dependencies\": {", "    \"@aws-sdk/client-s3\": \"^3.500.0\",", "    \"azure-identity\": \"^4.0.0\",", "    \"openai\": \"^4.0.0\"", "  }", "}"].join("\n");
+        let safe_reqs = ["boto3>=1.34.0", "google-cloud-storage>=2.14.0"].join("\n");
+        let safe_toml = ["[dependencies]", "tokio = \"1.38\""].join("\n");
+        assert!(detect_phantom_cloud_sdks_in_content("package.json", &safe_json).is_empty());
+        assert!(detect_phantom_cloud_sdks_in_content("requirements.txt", &safe_reqs).is_empty());
+        assert!(detect_phantom_cloud_sdks_in_content("Cargo.toml", &safe_toml).is_empty());
     }
 }
