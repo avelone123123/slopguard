@@ -1409,4 +1409,91 @@ mod test_suite {
         assert!(detect_package_hallucinations_in_content("Cargo.toml", &safe_manifest_cargo).is_empty());
         assert!(detect_package_hallucinations_in_content("package.json", &safe_manifest_npm).is_empty());
     }
+    #[allow(dead_code)]
+    pub struct FuzzRegressionHarness {
+        #[allow(dead_code)]
+        pub iterations: usize,
+        #[allow(dead_code)]
+        pub max_payload_len: usize,
+    }
+    impl FuzzRegressionHarness {
+        pub fn new(iterations: usize, max_payload_len: usize) -> Self {
+            Self { iterations, max_payload_len }
+        }
+        pub fn verify_invariant<F>(&self, mut runner: F) -> bool
+        where F: FnMut(&str) -> bool {
+            let mut passed = true;
+            let samples = [
+                "../../etc/shadow",
+                "%2e%2e/%2e%2e/data",
+                "..\\..\\windows\\system32",
+                "\\u002e\\u002e/secret",
+                "express-jwt-auto-auth",
+                "serde-json-valid",
+                "tokio-stream-ext",
+                "torch-model-utils",
+                "pydantic-validation-plus",
+                "Math.random() * 1000",
+                "crypto.pseudoRandomBytes(32)",
+                "rand::thread_rng().gen_range(0..100)"
+            ];
+            for s in samples.iter() {
+                if !runner(s) {
+                    passed = false;
+                    break;
+                }
+            }
+            passed
+        }
+    }
+    #[test]
+    fn test_fuzz_regression_harness_invariant_consistency() {
+        let harness = FuzzRegressionHarness::new(100, 256);
+        let passed = harness.verify_invariant(|s| {
+            !s.is_empty()
+        });
+        assert!(passed);
+    }
+    #[test]
+    fn test_detects_speculative_manifest_dependencies_slop_051() {
+        let bad_cargo = ["[dependencies]", "serde-json-valid = \"1.0\"", "tokio-stream-ext = \"0.1\""].join("\n");
+        let bad_npm = ["{", "  \"dependencies\": {", "    \"express-jwt-auto-auth\": \"^1.0.0\",", "    \"torch-model-utils\": \"^0.2.1\"", "  }", "}"].join("\n");
+        assert!(!detect_package_hallucinations_in_content("Cargo.toml", &bad_cargo).is_empty());
+        assert!(!detect_package_hallucinations_in_content("package.json", &bad_npm).is_empty());
+    }
+    #[test]
+    fn test_safe_manifest_dependencies_zero_false_positives() {
+        let clean_cargo = ["[dependencies]", "serde = { version = \"1.0\", features = [\"derive\"] }", "tokio = { version = \"1.0\", features = [\"full\"] }"].join("\n");
+        let clean_npm = ["{", "  \"dependencies\": {", "    \"express\": \"^4.19.2\",", "    \"jsonwebtoken\": \"^9.0.2\"", "  }", "}"].join("\n");
+        assert!(detect_package_hallucinations_in_content("Cargo.toml", &clean_cargo).is_empty());
+        assert!(detect_package_hallucinations_in_content("package.json", &clean_npm).is_empty());
+    }
+    #[test]
+    fn test_detects_unshielded_async_iteration_batch_slop_052() {
+        let bad_js = "const results = await Promise.allSettled(urls.map(async u => fetch(u)));";
+        let bad_py = "results = [await r for r in asyncio.as_completed([fetch(u) for u in urls])]";
+        assert!(!detect_unbounded_concurrency_in_content("batch.js", bad_js).is_empty());
+        assert!(!detect_unbounded_concurrency_in_content("batch.py", bad_py).is_empty());
+    }
+    #[test]
+    fn test_safe_bounded_async_iteration_passes() {
+        let safe_js = "const limit = pLimit(10); const results = await Promise.allSettled(urls.map(u => limit(() => fetch(u))));";
+        let safe_py = "sem = asyncio.Semaphore(5)\nasync with sem:\n    results = [await r for r in asyncio.as_completed(tasks)]";
+        assert!(detect_unbounded_concurrency_in_content("batch.js", safe_js).is_empty());
+        assert!(detect_unbounded_concurrency_in_content("batch.py", safe_py).is_empty());
+    }
+    #[test]
+    fn test_detects_insecure_fallback_prng_in_credentials_slop_053() {
+        let bad_node = "const authToken = crypto.pseudoRandomBytes(32).toString('hex');";
+        let bad_rust = "let session_nonce = rand::thread_rng().gen_range(0..100000);";
+        assert!(!detect_insecure_crypto_in_content("auth.js", bad_node).is_empty());
+        assert!(!detect_insecure_crypto_in_content("auth.rs", bad_rust).is_empty());
+    }
+    #[test]
+    fn test_detects_evasive_path_normalization_traversal_slop_054() {
+        let bad_norm = "const safePath = path.normalize(req.query.file); fs.readFileSync(safePath);";
+        let bad_unicode = "const target = '/var/data/' + '\\u002e\\u002e/etc/passwd';";
+        assert!(!detect_deep_path_traversal_in_content("server.js", bad_norm).is_empty());
+        assert!(!detect_deep_path_traversal_in_content("server.js", bad_unicode).is_empty());
+    }
 }

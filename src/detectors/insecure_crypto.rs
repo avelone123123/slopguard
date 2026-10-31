@@ -17,7 +17,7 @@ fn get_sensitive_identifier_regex() -> Regex {
     Regex::new(r#"(?i)\b[a-zA-Z0-9_$]*(?:token|secret|api_?key|nonce|password|passwd|auth|session|salt|reset|otp|pin|csrf)[a-zA-Z0-9_$]*\b"#).unwrap()
 }
 fn get_js_weak_prng_regex() -> Regex {
-    Regex::new(r#"\bMath\.random\s*\("#).unwrap()
+    Regex::new(r#"(?:\bMath\.random|\bcrypto\.pseudoRandomBytes)\s*\("#).unwrap()
 }
 fn get_py_weak_prng_regex() -> Regex {
     Regex::new(r#"\brandom\.(?:random|choice|choices|randint|sample|randrange)\s*\("#).unwrap()

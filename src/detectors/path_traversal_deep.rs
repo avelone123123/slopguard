@@ -29,8 +29,8 @@ pub const CONTRACT: crate::types::AstDetectorContract = crate::types::AstDetecto
 };
 pub fn detect_deep_path_traversal_in_diff(diff_files: &[DiffFile]) -> Vec<SlopFinding> {
     let mut findings = Vec::new();
-    let multi_encoded_seq = Regex::new(r#"(?i)(?:%2e%2e[/\\%]|%252e%252e[/\\%]|(?:\.\.[/\\])+|%00|\x00)"#).unwrap();
-    let node_traversal_join = Regex::new(r#"(?i)\bpath\.(?:join|resolve)\s*\([^)]*(?:req\.(?:params|query|body)|params\.|request\.)"#).unwrap();
+    let multi_encoded_seq = Regex::new(r#"(?i)(?:\\u002e\\u002e[/\\%]|%252e%252e[/\\%]|%2e%2e[/\\%]|(?:\.\.[/\\])+|%00|\x00)"#).unwrap();
+    let node_traversal_join = Regex::new(r#"(?i)\bpath\.(?:join|resolve|normalize)\s*\([^)]*(?:req\.(?:params|query|body)|params\.|request\.|query\.)"#).unwrap();
     let node_traversal_stream = Regex::new(r#"(?i)\bfs\.(?:createReadStream|createWriteStream|readFile|readFileSync)\s*\([^)]*(?:req\.(?:params|query|body)|params\.|request\.)"#).unwrap();
     let py_zip_slip = Regex::new(r#"(?i)(?:tarfile\.open\([^)]*\)\.extractall\(|zipfile\.ZipFile\([^)]*\)\.extractall\()"#).unwrap();
     let rust_file_format = Regex::new(r#"(?i)File::(?:create|open)\s*\(\s*format!\s*\([^)]*\{[^}]*\}/\{[^}]*"#).unwrap();
@@ -80,8 +80,8 @@ pub fn detect_deep_path_traversal_in_content(file_path: &str, content: &str) -> 
     if !is_supported_ext(file_path) {
         return findings;
     }
-    let multi_encoded_seq = Regex::new(r#"(?i)(?:%2e%2e[/\\%]|%252e%252e[/\\%]|(?:\.\.[/\\])+|%00|\x00)"#).unwrap();
-    let node_traversal_join = Regex::new(r#"(?i)\bpath\.(?:join|resolve)\s*\([^)]*(?:req\.(?:params|query|body)|params\.|request\.)"#).unwrap();
+    let multi_encoded_seq = Regex::new(r#"(?i)(?:\\u002e\\u002e[/\\%]|%252e%252e[/\\%]|%2e%2e[/\\%]|(?:\.\.[/\\])+|%00|\x00)"#).unwrap();
+    let node_traversal_join = Regex::new(r#"(?i)\bpath\.(?:join|resolve|normalize)\s*\([^)]*(?:req\.(?:params|query|body)|params\.|request\.|query\.)"#).unwrap();
     let node_traversal_stream = Regex::new(r#"(?i)\bfs\.(?:createReadStream|createWriteStream|readFile|readFileSync)\s*\([^)]*(?:req\.(?:params|query|body)|params\.|request\.)"#).unwrap();
     let py_zip_slip = Regex::new(r#"(?i)(?:tarfile\.open\([^)]*\)\.extractall\(|zipfile\.ZipFile\([^)]*\)\.extractall\()"#).unwrap();
     let rust_file_format = Regex::new(r#"(?i)File::(?:create|open)\s*\(\s*format!\s*\([^)]*\{[^}]*\}/\{[^}]*"#).unwrap();

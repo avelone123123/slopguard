@@ -33,6 +33,7 @@ pub enum SlopCategory {
     SsrfHazard,
     PathTraversalSecurity,
     AsyncResourceLeak,
+    CryptographicEntropy,
 }
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
 pub enum SlopSeverity {

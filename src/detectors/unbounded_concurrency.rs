@@ -14,7 +14,7 @@ fn has_js_throttle_guard(snippet: &str) -> bool {
 snippet.contains("pLimit") || snippet.contains("p-limit") || snippet.contains("limit(") || snippet.contains("pMap") || snippet.contains("p-map") || snippet.contains("chunk") || snippet.contains("batch") || snippet.contains("concurrency") || snippet.contains("Semaphore") || snippet.contains("semaphore") || snippet.contains("pQueue") || snippet.contains("PQueue")
 }
 fn has_py_throttle_guard(snippet: &str) -> bool {
-snippet.contains("Semaphore") || snippet.contains("semaphore") || snippet.contains("sem") || snippet.contains("as_completed") || snippet.contains("chunk") || snippet.contains("batch") || snippet.contains("Queue") || snippet.contains("queue")
+snippet.contains("Semaphore") || snippet.contains("semaphore") || snippet.contains("sem") || snippet.contains("chunk") || snippet.contains("batch") || snippet.contains("Queue") || snippet.contains("queue")
 }
 fn has_rust_throttle_guard(snippet: &str) -> bool {
 snippet.contains("buffer_unordered") || snippet.contains("buffered") || snippet.contains("chunks") || snippet.contains("Semaphore") || snippet.contains("semaphore")
@@ -33,6 +33,7 @@ let js_map_re = Regex::new(r#"\.map\s*\(\s*(?:async\b|\([^)]*\)\s*=>|[a-zA-Z0-9_
 let py_gather_comp_re = Regex::new(r#"asyncio\.gather\s*\(\s*\*\s*\[[^\n]*?for\s+[a-zA-Z0-9_$,\s]+\s+in\s+"#).unwrap();
 let py_gather_gen_re = Regex::new(r#"asyncio\.gather\s*\(\s*\*\s*\([^\n]*?for\s+[a-zA-Z0-9_$,\s]+\s+in\s+"#).unwrap();
 let py_create_task_re = Regex::new(r#"\b(?:asyncio|loop)\.create_task\s*\("#).unwrap();
+let py_as_completed_re = Regex::new(r#"asyncio\.as_completed\s*\(\s*\[?[^]]*for\s+[a-zA-Z0-9_$,\s]+\s+in\s+"#).unwrap();
 let py_loop_re = Regex::new(r#"^\s*(?:for\s+[a-zA-Z0-9_$,\s]+\s+in\s+|while\s+)"#).unwrap();
 let rust_join_all_re = Regex::new(r#"(?:futures::future::join_all|future::join_all|\bjoin_all)\s*\("#).unwrap();
 let rust_map_re = Regex::new(r#"\.map\s*\("#).unwrap();
@@ -113,6 +114,33 @@ message: "Unbounded concurrency detected: 'asyncio.gather' over unbounded compre
 snippet: trimmed.to_string(),
 fixable: false,
 suggestion: Some("Throttle concurrent execution using 'asyncio.Semaphore(limit)' or process with 'asyncio.as_completed'".to_string()),
+});
+continue;
+}
+}
+if py_as_completed_re.is_match(trimmed) && !has_py_throttle_guard(trimmed) {
+let mut guarded = false;
+for lookback in (0..idx).rev().take(15) {
+if let Some(prev_line) = lines.get(lookback) {
+let prev_trimmed = prev_line.trim();
+if has_py_throttle_guard(prev_trimmed) {
+guarded = true;
+break;
+}
+}
+}
+if !guarded {
+findings.push(SlopFinding {
+file: file_path.to_string(),
+line: line_num,
+column: 1,
+rule_id: "no-unbounded-concurrency".to_string(),
+category: SlopCategory::AsyncIterationHazard,
+severity: SlopSeverity::Warning,
+message: "Unshielded 'asyncio.as_completed' batch call without concurrency bounding primitives".to_string(),
+snippet: trimmed.to_string(),
+fixable: false,
+suggestion: Some("Guard concurrency with 'asyncio.Semaphore(limit)' or worker queue".to_string()),
 });
 continue;
 }
@@ -202,6 +230,7 @@ let js_map_re = Regex::new(r#"\.map\s*\(\s*(?:async\b|\([^)]*\)\s*=>|[a-zA-Z0-9_
 let py_gather_comp_re = Regex::new(r#"asyncio\.gather\s*\(\s*\*\s*\[[^\n]*?for\s+[a-zA-Z0-9_$,\s]+\s+in\s+"#).unwrap();
 let py_gather_gen_re = Regex::new(r#"asyncio\.gather\s*\(\s*\*\s*\([^\n]*?for\s+[a-zA-Z0-9_$,\s]+\s+in\s+"#).unwrap();
 let py_create_task_re = Regex::new(r#"\b(?:asyncio|loop)\.create_task\s*\("#).unwrap();
+let py_as_completed_re = Regex::new(r#"asyncio\.as_completed\s*\(\s*\[?[^]]*for\s+[a-zA-Z0-9_$,\s]+\s+in\s+"#).unwrap();
 let py_loop_re = Regex::new(r#"^\s*(?:for\s+[a-zA-Z0-9_$,\s]+\s+in\s+|while\s+)"#).unwrap();
 let rust_join_all_re = Regex::new(r#"(?:futures::future::join_all|future::join_all|\bjoin_all)\s*\("#).unwrap();
 let rust_map_re = Regex::new(r#"\.map\s*\("#).unwrap();
@@ -287,6 +316,32 @@ fixable: false,
 suggestion: Some("Throttle concurrent execution using 'asyncio.Semaphore(limit)' or process with 'asyncio.as_completed'".to_string()),
 });
 continue;
+}
+if py_as_completed_re.is_match(trimmed) && !has_py_throttle_guard(trimmed) {
+let mut guarded = false;
+for lookback in (0..idx).rev().take(15) {
+let prev_dl = &chunk.lines[lookback];
+let prev_trimmed = prev_dl.content.trim();
+if has_py_throttle_guard(prev_trimmed) {
+guarded = true;
+break;
+}
+}
+if !guarded {
+findings.push(SlopFinding {
+file: target_path.to_string(),
+line: line_num,
+column: 1,
+rule_id: "no-unbounded-concurrency".to_string(),
+category: SlopCategory::AsyncIterationHazard,
+severity: SlopSeverity::Warning,
+message: "Unshielded 'asyncio.as_completed' batch call without concurrency bounding primitives".to_string(),
+snippet: trimmed.to_string(),
+fixable: false,
+suggestion: Some("Guard concurrency with 'asyncio.Semaphore(limit)' or worker queue".to_string()),
+});
+continue;
+}
 }
 if py_create_task_re.is_match(trimmed) && !has_py_throttle_guard(trimmed) {
 let mut in_loop = false;
