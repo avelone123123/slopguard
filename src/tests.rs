@@ -24,6 +24,7 @@ mod test_suite {
     use crate::detectors::type_degradation::detect_type_degradation_in_content;
     use crate::detectors::unsafe_eval::detect_unsafe_eval_in_content;
     use crate::detectors::unsafe_deserialization::detect_unsafe_deserialization_in_content;
+    use crate::detectors::insecure_cors::detect_insecure_cors_in_content;
     use crate::detectors::watermarks::detect_watermarks_in_content;
     use crate::fixers::sanitize_code;
     use crate::reporters::generate_badge_svg;
@@ -577,5 +578,56 @@ mod test_suite {
         let safe_php = "$user = json_decode($_COOKIE['user'], true);\n$obj = unserialize($data, ['allowed_classes' => false]);\n";
         let safe_php_findings = detect_unsafe_deserialization_in_content("safe.php", safe_php);
         assert_eq!(safe_php_findings.len(), 0);
+    }
+    #[test]
+    fn test_detects_insecure_cors_node_and_express() {
+        let code_bare = "app.use(cors());\n";
+        let findings_bare = detect_insecure_cors_in_content("server.js", code_bare);
+        assert_eq!(findings_bare.len(), 1);
+        assert_eq!(findings_bare[0].rule_id, "no-insecure-cors");
+        let code_header = "res.setHeader('Access-Control-Allow-Origin', '*');\n";
+        let findings_header = detect_insecure_cors_in_content("api.ts", code_header);
+        assert_eq!(findings_header.len(), 1);
+        let code_opts = "const config = { origin: '*' };\n";
+        let findings_opts = detect_insecure_cors_in_content("cors.ts", code_opts);
+        assert_eq!(findings_opts.len(), 1);
+    }
+    #[test]
+    fn test_detects_insecure_cors_python() {
+        let py_fastapi = "app.add_middleware(CORSMiddleware, allow_origins=['*'])\n";
+        let findings_fastapi = detect_insecure_cors_in_content("main.py", py_fastapi);
+        assert_eq!(findings_fastapi.len(), 1);
+        let py_flask = "CORS(app)\n";
+        let findings_flask = detect_insecure_cors_in_content("app.py", py_flask);
+        assert_eq!(findings_flask.len(), 1);
+        let py_django = "CORS_ALLOW_ALL_ORIGINS = True\n";
+        let findings_django = detect_insecure_cors_in_content("settings.py", py_django);
+        assert_eq!(findings_django.len(), 1);
+    }
+    #[test]
+    fn test_detects_insecure_cors_go_and_rust() {
+        let go_default = "router.Use(cors.Default())\n";
+        let findings_go = detect_insecure_cors_in_content("main.go", go_default);
+        assert_eq!(findings_go.len(), 1);
+        let go_cfg = "cfg := cors.Config{ AllowAllOrigins: true }\n";
+        let findings_cfg = detect_insecure_cors_in_content("server.go", go_cfg);
+        assert_eq!(findings_cfg.len(), 1);
+        let actix_token = ["Cors::", "permissive()"].concat();
+        let rust_actix = format!("let cors = {actix_token};\n");
+        let findings_rust = detect_insecure_cors_in_content("api.rs", &rust_actix);
+        assert_eq!(findings_rust.len(), 1);
+        let tower_token = ["CorsLayer::", "permissive()"].concat();
+        let rust_tower = format!("let layer = {tower_token};\n");
+        let findings_tower = detect_insecure_cors_in_content("layer.rs", &rust_tower);
+        assert_eq!(findings_tower.len(), 1);
+    }
+    #[test]
+    fn test_insecure_cors_safe_configurations_ignored() {
+        let safe_node = "app.use(cors({ origin: ['https://app.example.com'] }));\n";
+        assert!(detect_insecure_cors_in_content("server.js", safe_node).is_empty());
+        let safe_py = "app.add_middleware(CORSMiddleware, allow_origins=['https://app.example.com'])\n";
+        assert!(detect_insecure_cors_in_content("main.py", safe_py).is_empty());
+        let safe_rust = "let cors = Cors::default().allowed_origin(\"https://app.example.com\");\n";
+        assert!(detect_insecure_cors_in_content("main.rs", safe_rust).is_empty());
     }
 }
