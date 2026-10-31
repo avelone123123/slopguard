@@ -1,0 +1,39 @@
+name: Release
+on:
+  push:
+    tags:
+      - 'v*'
+permissions:
+  contents: write
+jobs:
+  build:
+    strategy:
+      matrix:
+        include:
+          - target: x86_64-pc-windows-msvc
+            os: windows-latest
+            artifact_name: slopguard.exe
+            release_asset: slopguard-windows-x64.exe
+          - target: x86_64-unknown-linux-gnu
+            os: ubuntu-latest
+            artifact_name: slopguard
+            release_asset: slopguard-linux-x64
+          - target: x86_64-apple-darwin
+            os: macos-latest
+            artifact_name: slopguard
+            release_asset: slopguard-macos-x64
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+      - run: cargo build --release --target ${{ matrix.target }}
+      - name: Stage Artifact
+        shell: bash
+        run: |
+          mkdir -p dist
+          cp target/${{ matrix.target }}/release/${{ matrix.artifact_name }} dist/${{ matrix.release_asset }}
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: dist/${{ matrix.release_asset }}

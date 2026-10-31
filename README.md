@@ -229,6 +229,7 @@ Opens a fast, embedded local web interface at `http://127.0.0.1:4545`:
 | `no-duplicate-shadow-utilities`| `WARN` | Re-invented helper functions that duplicate existing utilities |
 | `no-ai-conversational-bloat`| `WARN` | Conversational comments (`// Here is the fix:`, `// Step 1:`) |
 | `no-excessive-scope-drift` | `WARN` | Agent touching >12 files or sensitive `.env` / config files |
+| `no-unbounded-concurrency` | `WARN` | Unthrottled concurrent iterations (`Promise.all` over `.map`, `asyncio.gather` comprehension, `join_all`) risking socket & EMFILE exhaustion |
 
 ---
 
