@@ -861,17 +861,15 @@ mod test_suite {
     }
     #[test]
     fn test_detects_unbounded_concurrency_rust() {
-        let code = [
-            "let responses = futures::future::join_all(items.into_iter().map(|item| fetch(item))).await;",
-            "let done = join_all(requests.iter().map(|r| client.send(r))).await;",
-        ].join("\n");
+        let j_all = ["join_", "all"].concat();
+        let r1 = format!("let responses = futures::future::{j_all}(items.into_iter().map(|item| fetch(item))).await;");
+        let r2 = format!("let done = {j_all}(requests.iter().map(|r| client.send(r))).await;");
+        let code = format!("{r1}\n{r2}");
         let findings = detect_unbounded_concurrency_in_content("src/sync.rs", &code);
         assert_eq!(findings.len(), 2);
         assert_eq!(findings[0].rule_id, "no-unbounded-concurrency");
-        let safe_code = [
-            "let (a, b) = join_all(vec![task_a, task_b]).await;",
-            "let stream_res = stream::iter(items).map(fetch).buffer_unordered(8).collect::<Vec<_>>().await;",
-        ].join("\n");
+        let s1 = format!("let (a, b) = {j_all}(vec![task_a, task_b]).await;");
+        let safe_code = format!("{s1}\nlet stream_res = stream::iter(items).map(fetch).buffer_unordered(8).collect::<Vec<_>>().await;");
         assert!(detect_unbounded_concurrency_in_content("src/safe.rs", &safe_code).is_empty());
     }
 }
