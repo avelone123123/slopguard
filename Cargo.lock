@@ -292,7 +292,7 @@ dependencies = [
 
 [[package]]
 name = "slopguard"
-version = "1.7.0"
+version = "1.8.0"
 dependencies = [
  "crossterm",
  "regex",

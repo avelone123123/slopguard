@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 use std::collections::{HashMap, HashSet};
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
 pub enum SlopCategory {
     Placeholder,
     Duplicate,
@@ -24,11 +24,21 @@ pub enum SlopCategory {
     PathTraversalSecurity,
     AsyncResourceLeak,
 }
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
 pub enum SlopSeverity {
     Error,
     Warning,
     Info,
+}
+#[derive(Clone, Copy)]
+#[allow(dead_code)]
+pub struct AstDetectorContract {
+    pub rule_id: &'static str,
+    pub severity: SlopSeverity,
+    pub category: SlopCategory,
+    pub target_languages: &'static [&'static str],
+    pub analyze_diff: fn(&[DiffFile]) -> Vec<SlopFinding>,
+    pub analyze_content: fn(&str, &str) -> Vec<SlopFinding>,
 }
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SlopFinding {

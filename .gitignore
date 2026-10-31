@@ -1,6 +1,6 @@
 /target
 slopguard-badge.svg
 *.log
-slopguard.exe
+*.exe
 .slopguard
 slopguard-audit-report.json

@@ -16,6 +16,15 @@ Regex::new(r#"\b(?:map|filter)\s*\(\s*(?:async\s+lambda[^,]*|[a-zA-Z0-9_]*async[
 fn get_rust_async_foreach_regex() -> Regex {
 Regex::new(r#"\.for_each\s*\(\s*(?:move\s*)?\|[^|]*\|\s*(?:async\b|\{\s*async\b)"#).unwrap()
 }
+#[allow(dead_code)]
+pub const CONTRACT: crate::types::AstDetectorContract = crate::types::AstDetectorContract {
+rule_id: "no-async-in-sync-callbacks",
+severity: SlopSeverity::Error,
+category: SlopCategory::AsyncIterationHazard,
+target_languages: &[".js", ".ts", ".jsx", ".tsx", ".py", ".rs"],
+analyze_diff: detect_async_callback_traps_in_diff,
+analyze_content: detect_async_callback_traps_in_content,
+};
 pub fn detect_async_callback_traps_in_content(file_path: &str, content: &str) -> Vec<SlopFinding> {
 let mut findings = Vec::new();
 let (js, py, rs) = check_file_type(file_path);
@@ -42,7 +51,7 @@ file: file_path.to_string(),
 line: line_num,
 column: 1,
 rule_id: "no-async-in-sync-callbacks".to_string(),
-category: SlopCategory::LogicBypass,
+category: SlopCategory::AsyncIterationHazard,
 severity: SlopSeverity::Error,
 message: "Async callback passed to synchronous '.forEach()' floats unawaited and silently drops rejected promises".to_string(),
 snippet: trimmed.to_string(),
@@ -57,7 +66,7 @@ file: file_path.to_string(),
 line: line_num,
 column: 1,
 rule_id: "no-async-in-sync-callbacks".to_string(),
-category: SlopCategory::LogicBypass,
+category: SlopCategory::AsyncIterationHazard,
 severity: SlopSeverity::Error,
 message: "Async callback in '.reduce()' creates unhandled promise accumulator trap and sequencing hazards".to_string(),
 snippet: trimmed.to_string(),
@@ -73,7 +82,7 @@ file: file_path.to_string(),
 line: line_num,
 column: 1,
 rule_id: "no-async-in-sync-callbacks".to_string(),
-category: SlopCategory::LogicBypass,
+category: SlopCategory::AsyncIterationHazard,
 severity: SlopSeverity::Error,
 message: "Coroutine or async callback passed to synchronous 'map()' / 'filter()' executes without event loop scheduling".to_string(),
 snippet: trimmed.to_string(),
@@ -88,7 +97,7 @@ file: file_path.to_string(),
 line: line_num,
 column: 1,
 rule_id: "no-async-in-sync-callbacks".to_string(),
-category: SlopCategory::LogicBypass,
+category: SlopCategory::AsyncIterationHazard,
 severity: SlopSeverity::Error,
 message: "Async block in synchronous iterator '.for_each()' creates unpolled Future that is immediately dropped".to_string(),
 snippet: trimmed.to_string(),
@@ -101,10 +110,6 @@ findings
 }
 pub fn detect_async_callback_traps_in_diff(diff_files: &[DiffFile]) -> Vec<SlopFinding> {
 let mut findings = Vec::new();
-let js_foreach_re = get_js_async_foreach_regex();
-let js_reduce_re = get_js_async_reduce_regex();
-let py_iter_re = get_py_async_sync_iter_regex();
-let rs_foreach_re = get_rust_async_foreach_regex();
 for file in diff_files {
 if file.is_deleted {
 continue;
@@ -114,82 +119,16 @@ let (js, py, rs) = check_file_type(target_path);
 if !js && !py && !rs {
 continue;
 }
+let mut added_lines = Vec::new();
 for chunk in &file.chunks {
 for line in &chunk.lines {
-if line.line_type != DiffLineType::Add {
-continue;
-}
-let trimmed = line.content.trim();
-let line_num = line.new_line_number.unwrap_or(1);
-if trimmed.starts_with("//") || trimmed.starts_with("/*") || trimmed.starts_with('*') {
-continue;
-}
-if py && trimmed.starts_with('#') {
-continue;
-}
-if js {
-if js_foreach_re.is_match(trimmed) {
-findings.push(SlopFinding {
-file: target_path.to_string(),
-line: line_num,
-column: 1,
-rule_id: "no-async-in-sync-callbacks".to_string(),
-category: SlopCategory::LogicBypass,
-severity: SlopSeverity::Error,
-message: "Async callback passed to synchronous '.forEach()' floats unawaited and silently drops rejected promises".to_string(),
-snippet: trimmed.to_string(),
-fixable: false,
-suggestion: Some("Refactor to 'for (const item of items) { await ... }' or 'await Promise.all(items.map(async (item) => ...))'".to_string()),
-});
-continue;
-}
-if js_reduce_re.is_match(trimmed) {
-findings.push(SlopFinding {
-file: target_path.to_string(),
-line: line_num,
-column: 1,
-rule_id: "no-async-in-sync-callbacks".to_string(),
-category: SlopCategory::LogicBypass,
-severity: SlopSeverity::Error,
-message: "Async callback in '.reduce()' creates unhandled promise accumulator trap and sequencing hazards".to_string(),
-snippet: trimmed.to_string(),
-fixable: false,
-suggestion: Some("Sequentially await promises inside 'for (const item of items)' loop instead of async '.reduce()'".to_string()),
-});
-continue;
-}
-}
-if py && py_iter_re.is_match(trimmed) {
-findings.push(SlopFinding {
-file: target_path.to_string(),
-line: line_num,
-column: 1,
-rule_id: "no-async-in-sync-callbacks".to_string(),
-category: SlopCategory::LogicBypass,
-severity: SlopSeverity::Error,
-message: "Coroutine or async callback passed to synchronous 'map()' / 'filter()' executes without event loop scheduling".to_string(),
-snippet: trimmed.to_string(),
-fixable: false,
-suggestion: Some("Schedule coroutines with 'await asyncio.gather(*(coroutine(item) for item in items))' or use an 'async for' loop".to_string()),
-});
-continue;
-}
-if rs && rs_foreach_re.is_match(trimmed) {
-findings.push(SlopFinding {
-file: target_path.to_string(),
-line: line_num,
-column: 1,
-rule_id: "no-async-in-sync-callbacks".to_string(),
-category: SlopCategory::LogicBypass,
-severity: SlopSeverity::Error,
-message: "Async block in synchronous iterator '.for_each()' creates unpolled Future that is immediately dropped".to_string(),
-snippet: trimmed.to_string(),
-fixable: false,
-suggestion: Some("Use 'stream.for_each_concurrent(limit, |item| async move { ... }).await' or iterate with 'while let Some(item) = stream.next().await'".to_string()),
-});
+if line.line_type == DiffLineType::Add {
+added_lines.push(line.content.as_str());
 }
 }
 }
+let content = added_lines.join("\n");
+findings.extend(detect_async_callback_traps_in_content(target_path, &content));
 }
 findings
 }

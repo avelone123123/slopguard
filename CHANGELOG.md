@@ -1,5 +1,13 @@
 # Changelog
 All notable changes to SlopGuard are documented in this file.
+## [1.8.0] - 2026-10-31
+### Added
+- Implemented formal `AstDetectorContract` architectural interface uniting AST analyzers across diff and whole-content modes.
+- Expanded `no-hallucinated-package-manifest` (SLOP-043) with speculative package signature patterns and compound agent suffixes.
+- Expanded `no-deep-path-traversal` (SLOP-044) with multi-encoded traversal sequences and strict boundary containment checks.
+- Formalized `no-unawaited-async-in-loops` and `no-async-in-sync-callbacks` (SLOP-045) preventing unawaited concurrency leaks and promise drops.
+- Hardened `no-insecure-prng-tokens` (SLOP-046) intercepting Math.random and non-cryptographic PRNG usage for sensitive tokens and credentials.
+- Added 6 rigorous regression test suites raising total test suite to 97 tests with 100% pass verification.
 ## [1.7.0] - 2026-10-31
 ### Added
 - Implemented `no-speculative-orm-methods` AST detector (SLOP-039) catching speculative ORM/ODM method hallucinations across TypeScript, Python, and Rust.

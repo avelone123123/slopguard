@@ -31,6 +31,15 @@ fn get_weak_hash_patterns() -> Vec<(Regex, &'static str)> {
         (Regex::new(r#"(?i)\b(?:md5|sha1)\s*\(\s*\$(?:password|pass|passwd|pwd|token|secret|salt|auth|pin|code|key)\b"#).unwrap(), "PHP weak hash invoked on credential or token variable"),
     ]
 }
+#[allow(dead_code)]
+pub const CONTRACT: crate::types::AstDetectorContract = crate::types::AstDetectorContract {
+    rule_id: "no-insecure-prng-tokens",
+    severity: SlopSeverity::Error,
+    category: SlopCategory::CryptoFlaw,
+    target_languages: &[".js", ".ts", ".py", ".rs"],
+    analyze_diff: detect_insecure_crypto_in_diff,
+    analyze_content: detect_insecure_crypto_in_content,
+};
 pub fn detect_insecure_crypto_in_content(file_path: &str, content: &str) -> Vec<SlopFinding> {
     let mut findings = Vec::new();
     let sensitive_re = get_sensitive_identifier_regex();

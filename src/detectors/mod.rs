@@ -85,6 +85,14 @@ use crate::detectors::async_race_traps::{detect_async_race_traps_in_content, det
 use crate::detectors::phantom_cloud_sdks::{detect_phantom_cloud_sdks_in_content, detect_phantom_cloud_sdks_in_diff};
 use crate::types::{DiffFile, SlopConfig, SlopFinding, SlopSeverity, SlopSummary};
 use std::path::Path;
+#[allow(dead_code)]
+pub static ACTIVE_CONTRACTS: &[crate::types::AstDetectorContract] = &[
+    package_hallucinations::CONTRACT,
+    path_traversal_deep::CONTRACT,
+    async_loop_traps::CONTRACT,
+    async_callback_traps::CONTRACT,
+    insecure_crypto::CONTRACT,
+];
 pub fn run_all_diff_detectors(diff_files: &[DiffFile], project_root: &Path, config: &SlopConfig) -> Vec<SlopFinding> {
     let mut findings = Vec::new();
     if config.rules.get("no-ai-todo-placeholders").map(|s| s != "off").unwrap_or(true) || config.rules.get("no-silent-catch-pass").map(|s| s != "off").unwrap_or(true) || config.rules.get("no-dummy-secrets-mocks").map(|s| s != "off").unwrap_or(true) {

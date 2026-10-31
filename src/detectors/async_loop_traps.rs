@@ -31,6 +31,15 @@ line.contains("await ") || line.contains(".append(") || line.contains("asyncio.g
 fn has_rust_sync_guard(line: &str) -> bool {
 line.contains(".await") || line.contains(".push(") || line.contains("join_all") || line.contains("Semaphore") || line.contains("join_set") || line.contains("JoinSet")
 }
+#[allow(dead_code)]
+pub const CONTRACT: crate::types::AstDetectorContract = crate::types::AstDetectorContract {
+rule_id: "no-unawaited-async-in-loops",
+severity: SlopSeverity::Error,
+category: SlopCategory::AsyncIterationHazard,
+target_languages: &[".js", ".ts", ".jsx", ".tsx", ".py", ".rs"],
+analyze_diff: detect_async_loop_traps_in_diff,
+analyze_content: detect_async_loop_traps_in_content,
+};
 pub fn detect_async_loop_traps_in_content(file_path: &str, content: &str) -> Vec<SlopFinding> {
 let mut findings = Vec::new();
 let (js, py, rs) = check_file_type(file_path);

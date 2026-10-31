@@ -1280,4 +1280,60 @@ mod test_suite {
         assert!(detect_phantom_cloud_sdks_in_content("requirements.txt", &safe_reqs).is_empty());
         assert!(detect_phantom_cloud_sdks_in_content("Cargo.toml", &safe_toml).is_empty());
     }
+    #[test]
+    fn test_detects_speculative_package_hallucinations_npm() {
+        let manifest = ["{", "  \"dependencies\": {", "    \"fast-jwt-verifier\": \"^1.0.0\",", "    \"express-jwt-auto-verify\": \"^2.0.0\"", "  }", "}"].join("\n");
+        let findings = detect_package_hallucinations_in_content("package.json", &manifest);
+        assert_eq!(findings.len(), 2);
+        assert_eq!(findings[0].rule_id, "no-hallucinated-package-manifest");
+        assert_eq!(findings[1].rule_id, "no-hallucinated-package-manifest");
+    }
+    #[test]
+    fn test_detects_speculative_package_hallucinations_python() {
+        let reqs = ["crypto-safe-random>=1.0.0", "requests-async-retry>=0.5.0"].join("\n");
+        let findings = detect_package_hallucinations_in_content("requirements.txt", &reqs);
+        assert_eq!(findings.len(), 2);
+        assert_eq!(findings[0].rule_id, "no-hallucinated-package-manifest");
+        assert_eq!(findings[1].rule_id, "no-hallucinated-package-manifest");
+    }
+    #[test]
+    fn test_detects_deep_path_traversal_multi_encoded() {
+        let code1 = ["let target = \"/var/data/%2e%2e%2fsecret.key\";"].join("\n");
+        let code2 = ["const resolved = path.join(__dirname, req.query.file);"].join("\n");
+        let f1 = detect_deep_path_traversal_in_content("server.js", &code1);
+        let f2 = detect_deep_path_traversal_in_content("server.js", &code2);
+        assert_eq!(f1.len(), 1);
+        assert_eq!(f1[0].rule_id, "no-deep-path-traversal");
+        assert_eq!(f2.len(), 1);
+        assert_eq!(f2[0].rule_id, "no-deep-path-traversal");
+    }
+    #[test]
+    fn test_deep_path_traversal_canonicalize_pass() {
+        let code1 = ["let safe = path.canonicalize()?;", "File::open(safe)?;"];
+        let code2 = ["filename = secure_filename(req.params.file)", "open(filename)"];
+        assert!(detect_deep_path_traversal_in_content("safe.rs", &code1.join("\n")).is_empty());
+        assert!(detect_deep_path_traversal_in_content("safe.py", &code2.join("\n")).is_empty());
+    }
+    #[test]
+    fn test_detects_unawaited_async_in_loops_and_foreach() {
+        let code_foreach = ["array.forEach(async (item) => {", "    await process(item);", "});"].join("\n");
+        let code_loop = ["for (const item of array) {", "    fetch('/api/' + item);", "}"].join("\n");
+        let f_foreach = crate::detectors::async_callback_traps::detect_async_callback_traps_in_content("worker.js", &code_foreach);
+        let f_loop = detect_async_loop_traps_in_content("worker.js", &code_loop);
+        assert_eq!(f_foreach.len(), 1);
+        assert_eq!(f_foreach[0].rule_id, "no-async-in-sync-callbacks");
+        assert_eq!(f_loop.len(), 1);
+        assert_eq!(f_loop[0].rule_id, "no-unawaited-async-in-loops");
+    }
+    #[test]
+    fn test_detects_insecure_prng_session_and_csrf() {
+        let js_code = ["const sessionToken = Math.random().toString(36);"].join("\n");
+        let py_code = ["csrf_token = random.randint(1000, 9999)"].join("\n");
+        let f_js = detect_insecure_crypto_in_content("auth.js", &js_code);
+        let f_py = detect_insecure_crypto_in_content("auth.py", &py_code);
+        assert_eq!(f_js.len(), 1);
+        assert_eq!(f_js[0].rule_id, "no-insecure-prng-tokens");
+        assert_eq!(f_py.len(), 1);
+        assert_eq!(f_py[0].rule_id, "no-insecure-prng-tokens");
+    }
 }
