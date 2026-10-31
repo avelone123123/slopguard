@@ -4,7 +4,7 @@ pub fn format_terminal_report(summary: &SlopSummary) -> String {
     let mut out = Vec::new();
     let border = "─".repeat(78);
     out.push(format!("\x1b[36m┌{}┐\x1b[0m", border));
-    out.push(format!("\x1b[36m│\x1b[0m  \x1b[1mSLOPGUARD (RUST)\x1b[0m \x1b[2mv1.0.0\x1b[0m - Native AI Slop & Hallucination Firewall          \x1b[36m│\x1b[0m"));
+    out.push(format!("\x1b[36m│\x1b[0m  \x1b[1mSLOPGUARD (RUST)\x1b[0m \x1b[2mv{}\x1b[0m - Native AI Slop & Hallucination Firewall          \x1b[36m│\x1b[0m", env!("CARGO_PKG_VERSION")));
     out.push(format!("\x1b[36m└{}┘\x1b[0m", border));
     if summary.findings.is_empty() {
         out.push(format!("\x1b[32m\x1b[1m[PASS]\x1b[0m Zero AI slop detected! Repository is clean and deterministic."));

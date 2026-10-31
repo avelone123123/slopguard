@@ -171,7 +171,7 @@ pub fn run_interactive_monitor(target_root: &Path) {
         let spin = spinners[(tick / 2) % spinners.len()];
         let mut screen = String::new();
         screen.push_str("\x1b[36m╔══════════════════════════════════════════════════════════════════════════════════════╗\x1b[0m\r\n");
-        screen.push_str("\x1b[36m║\x1b[0m  \x1b[1mSLOPGUARD NATIVE AI FIREWALL & LIVE MCP OBSERVER CONSOLE\x1b[0m                   \x1b[2mv1.0.0\x1b[0m  \x1b[36m║\x1b[0m\r\n");
+        screen.push_str(&format!("\x1b[36m║\x1b[0m  \x1b[1mSLOPGUARD NATIVE AI FIREWALL & LIVE MCP OBSERVER CONSOLE\x1b[0m                   \x1b[2mv{}\x1b[0m  \x1b[36m║\x1b[0m\r\n", env!("CARGO_PKG_VERSION")));
         screen.push_str("\x1b[36m╚══════════════════════════════════════════════════════════════════════════════════════╝\x1b[0m\r\n");
         let t1 = if current_tab == ActiveTab::Overview { "\x1b[46m\x1b[30m\x1b[1m [1] OVERVIEW \x1b[0m" } else { " [1] Overview " };
         let t2 = if current_tab == ActiveTab::Issues { "\x1b[46m\x1b[30m\x1b[1m [2] ISSUES \x1b[0m" } else { " [2] Issues " };

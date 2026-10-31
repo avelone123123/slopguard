@@ -40,7 +40,7 @@ fn handle_mcp_message(msg: &Value, target_root: &Path, shared: &SharedTelemetry)
             "result": {
                 "protocolVersion": "2024-11-05",
                 "capabilities": { "tools": {} },
-                "serverInfo": { "name": "slopguard", "version": "1.0.0" }
+                "serverInfo": { "name": "slopguard", "version": env!("CARGO_PKG_VERSION") }
             }
         }));
     }
