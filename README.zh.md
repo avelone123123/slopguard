@@ -2,10 +2,12 @@
   <img src="assets/logo.svg" alt="SlopGuard Logo" width="100%">
   <br>
 
-  [English](README.md) | [Русский](README.ru.md) | **简体中文**
+  [English](README.md) | [Русский](README.ru.md) | **简体中文** | [**Website &amp; Docs**](https://avelone123123.github.io/slopguard-site/) | [**Discord**](https://discord.gg/z7C9dprye) | [**Telegram**](https://t.me/SlopGuard)
 
   <br>
 
+  <a href="https://discord.gg/z7C9dprye"><img alt="Discord" src="https://img.shields.io/badge/Discord-Join%20Chat-5865F2?style=flat-square&logo=discord&logoColor=white"></a>
+  <a href="https://t.me/SlopGuard"><img alt="Telegram" src="https://img.shields.io/badge/Telegram-@SlopGuard-26A5E4?style=flat-square&logo=telegram&logoColor=white"></a>
   <img alt="100% Rust" src="https://img.shields.io/badge/100%25-Rust-b7410e?style=flat-square&logo=rust">
   <img alt="开源许可证: MIT" src="https://img.shields.io/badge/license-MIT-263146?style=flat-square">
   <img alt="极低延迟: <5ms" src="https://img.shields.io/badge/latency-%3C5ms-2f6f4f?style=flat-square">
@@ -151,6 +153,13 @@ slopguard ui
 - **AI 洁净度评分计**：随着代码生成动态评估代码健康度与评级。
 - **拦截垃圾计数器**：实时显示已拦截的未完成占位符、假数据与类型降级。
 - **毫秒级延迟图表**：验证 Rust 极致响应速度（<2ms），零开发卡顿。
+
+---
+
+## 社区与支持
+
+- **Discord 社区**: [discord.gg/z7C9dprye](https://discord.gg/z7C9dprye)
+- **Telegram 频道**: [@SlopGuard](https://t.me/SlopGuard)
 
 ---
 

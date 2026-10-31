@@ -2,10 +2,12 @@
   <img src="assets/logo.svg" alt="SlopGuard Logo" width="100%">
   <br>
 
-  [English](README.md) | **Русский** | [简体中文](README.zh.md) | [**Сайт и Документация**](https://avelone123123.github.io/slopguard-site/)
+  [English](README.md) | **Русский** | [简体中文](README.zh.md) | [**Сайт и Документация**](https://avelone123123.github.io/slopguard-site/) | [**Discord**](https://discord.gg/z7C9dprye) | [**Telegram**](https://t.me/SlopGuard)
 
   <br>
 
+  <a href="https://discord.gg/z7C9dprye"><img alt="Discord" src="https://img.shields.io/badge/Discord-Присоединиться-5865F2?style=flat-square&logo=discord&logoColor=white"></a>
+  <a href="https://t.me/SlopGuard"><img alt="Telegram" src="https://img.shields.io/badge/Telegram-@SlopGuard-26A5E4?style=flat-square&logo=telegram&logoColor=white"></a>
   <img alt="100% Rust" src="https://img.shields.io/badge/100%25-Rust-b7410e?style=flat-square&logo=rust">
   <img alt="Релиз: v1.2.0" src="https://img.shields.io/badge/release-v1.2.0-10b981?style=flat-square">
   <img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-263146?style=flat-square">
@@ -198,6 +200,13 @@ slopguard ui
 - **Индикатор чистоты кода**: динамический скоринг и рейтинг по мере генерации кода.
 - **Счетчик заблокированного слопа**: число перехваченных заглушек, фейковых токенов и сбросов типов.
 - **График задержки (Latency)**: доказательство скорости Rust (<2ms) без замедления процесса разработки.
+
+---
+
+## Сообщество и Поддержка
+
+- **Discord Сервер**: Обсуждения, примеры перехватов AI-галлюцинаций и поддержка: [discord.gg/z7C9dprye](https://discord.gg/z7C9dprye)
+- **Telegram Канал**: Официальные релизы, бюллетени безопасности и бенчмарки: [@SlopGuard](https://t.me/SlopGuard)
 
 ---
 

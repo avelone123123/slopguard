@@ -1,5 +1,14 @@
 # Changelog
 All notable changes to SlopGuard are documented in this file.
+## [1.4.0] - 2026-10-31
+### Added
+- Speculative dependency slopsquatting firewall (`no-slopsquat-deps`, SLOP-036) for npm, PyPI, and crates.io.
+- Live interactive AST playground and real-time diff auditor in official website.
+- Multi-ecosystem manifest regression suites (package.json, requirements.txt, pyproject.toml, Cargo.toml) reaching 62 unit tests at 100% pass rate.
+## [1.3.0] - 2026-10-31
+### Added
+- Hallucinated speculative stdlib APIs firewall (`no-hallucinated-speculative-apis`, SLOP-035).
+- Insecure PRNG detection (`no-insecure-prng-tokens`, SLOP-036).
 ## [1.2.0] - 2026-10-31
 ### Added
 - Implemented `no-async-in-sync-callbacks` AST firewall detector for JS/TS (`.forEach`, `.reduce`), Python (`map()`, `filter()` coroutines), and Rust (`.for_each(|x| async move { ... })`).

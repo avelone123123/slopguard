@@ -2,10 +2,12 @@
   <img src="assets/logo.svg" alt="SlopGuard Logo" width="100%">
   <br>
 
-  **English** | [Русский](README.ru.md) | [简体中文](README.zh.md) | [**Website &amp; Docs**](https://avelone123123.github.io/slopguard-site/)
+  **English** | [Русский](README.ru.md) | [简体中文](README.zh.md) | [**Website &amp; Docs**](https://avelone123123.github.io/slopguard-site/) | [**Discord**](https://discord.gg/z7C9dprye) | [**Telegram**](https://t.me/SlopGuard)
 
   <br>
 
+  <a href="https://discord.gg/z7C9dprye"><img alt="Discord" src="https://img.shields.io/badge/Discord-Join%20Chat-5865F2?style=flat-square&logo=discord&logoColor=white"></a>
+  <a href="https://t.me/SlopGuard"><img alt="Telegram" src="https://img.shields.io/badge/Telegram-@SlopGuard-26A5E4?style=flat-square&logo=telegram&logoColor=white"></a>
   <img alt="100% Rust" src="https://img.shields.io/badge/100%25-Rust-b7410e?style=flat-square&logo=rust">
   <img alt="Release: v1.2.0" src="https://img.shields.io/badge/release-v1.2.0-10b981?style=flat-square">
   <img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-263146?style=flat-square">
@@ -260,6 +262,13 @@ Customize behavior by creating a `.slopguardrc.json` in your repository root:
 | Biome | ~45ms | ~30ms | ~28 MB |
 | ESLint | ~620ms | ~480ms | ~140 MB |
 | SonarQube Scanner | ~4,200ms | ~3,100ms | ~600 MB |
+
+---
+
+## Community & Support
+
+- **Discord Server**: Join our engineering community for support, showcase, and discussions: [discord.gg/z7C9dprye](https://discord.gg/z7C9dprye)
+- **Telegram Channel**: Official real-time releases, CVE advisories, and benchmark proofs: [@SlopGuard](https://t.me/SlopGuard)
 
 ---
 

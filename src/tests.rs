@@ -1004,4 +1004,42 @@ mod test_suite {
         let findings_py = detect_insecure_crypto_in_content("safe.py", py_code);
         assert!(findings_py.iter().all(|f| f.rule_id != "no-insecure-prng-tokens"));
     }
+    #[test]
+    fn test_detects_slopsquat_npm_manifest() {
+        let manifest = "{\n  \"dependencies\": {\n    \"express\": \"^4.18.2\",\n    \"express-jwt-router\": \"^1.0.0\",\n    \"@types/node\": \"^20.0.0\"\n  }\n}";
+        let findings = detect_slopsquat_in_content("package.json", manifest);
+        assert_eq!(findings.len(), 1);
+        assert_eq!(findings[0].rule_id, "no-slopsquat-deps");
+        assert_eq!(findings[0].line, 4);
+    }
+    #[test]
+    fn test_detects_slopsquat_python_requirements() {
+        let reqs = "fastapi>=0.100.0\nfastapi-auth-bearer-v2==1.0.0\nuvicorn>=0.20.0";
+        let findings = detect_slopsquat_in_content("requirements.txt", reqs);
+        assert_eq!(findings.len(), 1);
+        assert_eq!(findings[0].rule_id, "no-slopsquat-deps");
+        assert_eq!(findings[0].line, 2);
+    }
+    #[test]
+    fn test_detects_slopsquat_pyproject_toml() {
+        let toml = "[project.dependencies]\npython = \">=3.11\"\npydantic-mongo-helpers = \"^0.2.0\"\nrequests = \">=2.31.0\"";
+        let findings = detect_slopsquat_in_content("pyproject.toml", toml);
+        assert_eq!(findings.len(), 1);
+        assert_eq!(findings[0].rule_id, "no-slopsquat-deps");
+        assert_eq!(findings[0].line, 3);
+    }
+    #[test]
+    fn test_detects_slopsquat_cargo_manifest() {
+        let cargo = "[dependencies]\nserde = \"1.0\"\ncrypto-token-generator = \"0.1\"\ntokio = { version = \"1\", features = [\"full\"] }";
+        let findings = detect_slopsquat_in_content("Cargo.toml", cargo);
+        assert_eq!(findings.len(), 1);
+        assert_eq!(findings[0].rule_id, "no-slopsquat-deps");
+        assert_eq!(findings[0].line, 3);
+    }
+    #[test]
+    fn test_slopsquat_whitelist_legit_packages() {
+        let manifest = "{\n  \"dependencies\": {\n    \"@types/react\": \"^18.0.0\",\n    \"@nestjs/common\": \"^10.0.0\",\n    \"local-lib\": \"file:../lib\"\n  }\n}";
+        let findings = detect_slopsquat_in_content("package.json", manifest);
+        assert_eq!(findings.len(), 0);
+    }
 }
