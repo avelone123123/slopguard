@@ -29,6 +29,7 @@ mod test_suite {
     use crate::detectors::inlined_secrets::detect_inlined_secrets_in_content;
     use crate::detectors::slopsquat::detect_slopsquat_in_content;
     use crate::detectors::insecure_crypto::detect_insecure_crypto_in_content;
+    use crate::detectors::test_sabotage::detect_test_sabotage_in_content;
     use crate::fixers::sanitize_code;
     use crate::reporters::generate_badge_svg;
     use crate::telemetry::{create_shared_telemetry, record_event};
@@ -755,5 +756,66 @@ mod test_suite {
             "pw_hash = hashlib.sha256(data).hexdigest()",
         ].join("\n");
         assert!(detect_insecure_crypto_in_content("game.py", &safe_py).is_empty());
+    }
+    #[test]
+    fn test_detects_test_sabotage_js_ts() {
+        let sk = ["sk", "ip"].concat();
+        let on = ["on", "ly"].concat();
+        let f_it = ["f", "it"].concat();
+        let x_it = ["x", "it"].concat();
+        let js_code = [
+            format!("describe.{sk}('Billing integration', () => {{}});"),
+            format!("it.{sk}('verifies signature', () => {{}});"),
+            format!("test.{on}('isolated sanity check', () => {{}});"),
+            format!("{f_it}('focused test case', () => {{}});"),
+            format!("{x_it}('muted test case', () => {{}});"),
+        ].join("\n");
+        let findings = detect_test_sabotage_in_content("tests/billing.test.ts", &js_code);
+        assert_eq!(findings.len(), 5);
+        assert_eq!(findings[0].rule_id, "no-test-sabotage");
+    }
+    #[test]
+    fn test_detects_test_sabotage_python() {
+        let sk = ["sk", "ip"].concat();
+        let p_xf = ["@", "pytest.mark.xfail(strict=True)"].concat();
+        let u_sk = ["@", "unittest.skip('temporarily skipped')"].concat();
+        let py_code = [
+            format!("@pytest.mark.{sk}(reason='broken in CI')"),
+            "def test_payment(): pass".to_string(),
+            p_xf,
+            "def test_webhook(): pass".to_string(),
+            format!("pytest.{sk}('skipping network test')"),
+            u_sk,
+            "def test_legacy(): pass".to_string(),
+        ].join("\n");
+        let findings = detect_test_sabotage_in_content("tests/test_auth.py", &py_code);
+        assert_eq!(findings.len(), 4);
+        assert_eq!(findings[0].rule_id, "no-test-sabotage");
+    }
+    #[test]
+    fn test_detects_test_sabotage_rust() {
+        let ign = ["ign", "ore"].concat();
+        let rust_code = [
+            "#[cfg(test)]",
+            "mod tests {",
+            "    #[test]",
+            &format!("    #[{ign}]"),
+            "    fn test_crypto_handshake() {}",
+            "}",
+        ].join("\n");
+        let findings = detect_test_sabotage_in_content("src/crypto_test.rs", &rust_code);
+        assert_eq!(findings.len(), 1);
+        assert_eq!(findings[0].rule_id, "no-test-sabotage");
+    }
+    #[test]
+    fn test_test_sabotage_clean_tests_pass() {
+        let clean_js = [
+            "describe('Auth Gateway', () => {",
+            "    it('validates jwt token', () => {",
+            "        expect(verifyToken(token)).toBe(true);",
+            "    });",
+            "});",
+        ].join("\n");
+        assert!(detect_test_sabotage_in_content("tests/auth.test.ts", &clean_js).is_empty());
     }
 }
