@@ -35,6 +35,9 @@ pub fn default_config() -> SlopConfig {
     rules.insert("no-insecure-prng-tokens".to_string(), "error".to_string());
     rules.insert("no-unawaited-async-in-loops".to_string(), "error".to_string());
     rules.insert("no-hallucinated-package-manifest".to_string(), "error".to_string());
+    rules.insert("no-hardcoded-jwt-secrets".to_string(), "error".to_string());
+    rules.insert("no-unscoped-idor-queries".to_string(), "error".to_string());
+    rules.insert("no-unsafe-xml-or-ssrf".to_string(), "error".to_string());
     SlopConfig {
         ignore: vec![
             "target".into(),

@@ -18,6 +18,9 @@ pub enum SlopCategory {
     CryptoFlaw,
     SupplyChainPoisoning,
     AsyncIterationHazard,
+    AuthLeakage,
+    BrokenAccessControl,
+    SsrfHazard,
 }
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub enum SlopSeverity {

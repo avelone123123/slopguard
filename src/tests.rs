@@ -35,6 +35,9 @@ mod test_suite {
     use crate::detectors::hallucinated_speculative_apis::detect_speculative_apis_in_content;
     use crate::detectors::async_loop_traps::detect_async_loop_traps_in_content;
     use crate::detectors::package_hallucinations::detect_package_hallucinations_in_content;
+    use crate::detectors::jwt_leakage::detect_jwt_leakage_in_content;
+    use crate::detectors::broken_access_control::detect_broken_access_control_in_content;
+    use crate::detectors::xxe_ssrf::detect_xxe_ssrf_in_content;
     use crate::types::SlopCategory;
     use crate::fixers::sanitize_code;
     use crate::reporters::generate_badge_svg;
@@ -1100,5 +1103,45 @@ mod test_suite {
     fn test_hallucinated_package_manifest_safe_deps_pass() {
         let safe_json = ["{", "  \"dependencies\": {", "    \"react\": \"^18.2.0\",", "    \"@types/node\": \"^20.0.0\",", "    \"@prisma/client\": \"^5.0.0\"", "  }", "}"].join("\n");
         assert!(detect_package_hallucinations_in_content("package.json", &safe_json).is_empty());
+    }
+    #[test]
+    fn test_detects_hardcoded_jwt_secrets_and_weak_keys() {
+        let js_code = ["const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIn0.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c';", "const sign = jwt.sign(payload, 'secret');"].join("\n");
+        let findings = detect_jwt_leakage_in_content("auth.js", &js_code);
+        assert_eq!(findings.len(), 2);
+        assert_eq!(findings[0].rule_id, "no-hardcoded-jwt-secrets");
+        assert_eq!(findings[0].category, SlopCategory::AuthLeakage);
+    }
+    #[test]
+    fn test_detects_jwt_alg_none_bypass() {
+        let py_code = ["decoded = jwt.decode(token, algorithms=['none'])"].join("\n");
+        let findings = detect_jwt_leakage_in_content("auth.py", &py_code);
+        assert_eq!(findings.len(), 1);
+        assert_eq!(findings[0].rule_id, "no-hardcoded-jwt-secrets");
+    }
+    #[test]
+    fn test_detects_broken_access_control_idor_queries() {
+        let sql_code = ["DELETE FROM orders WHERE id = $1"].join("\n");
+        let findings = detect_broken_access_control_in_content("repo.js", &sql_code);
+        assert_eq!(findings.len(), 1);
+        assert_eq!(findings[0].rule_id, "no-unscoped-idor-queries");
+        assert_eq!(findings[0].category, SlopCategory::BrokenAccessControl);
+    }
+    #[test]
+    fn test_detects_unsafe_xml_xxe_and_metadata_ssrf() {
+        let xxe_code = ["parser.setFeature('http://xml.org/sax/features/external-general-entities', true);", "const url = 'http://169.254.169.254/latest/meta-data/';"].join("\n");
+        let findings = detect_xxe_ssrf_in_content("xml_helper.ts", &xxe_code);
+        assert_eq!(findings.len(), 2);
+        assert_eq!(findings[0].rule_id, "no-unsafe-xml-or-ssrf");
+        assert_eq!(findings[0].category, SlopCategory::SsrfHazard);
+    }
+    #[test]
+    fn test_safe_auth_and_access_control_patterns_pass() {
+        let safe_sql = ["DELETE FROM orders WHERE id = $1 AND user_id = $auth_user_id;"].join("\n");
+        assert!(detect_broken_access_control_in_content("safe.js", &safe_sql).is_empty());
+        let safe_jwt = ["const secret = process.env.JWT_SECRET;", "jwt.verify(token, secret, { algorithms: ['RS256'] });"].join("\n");
+        assert!(detect_jwt_leakage_in_content("safe.js", &safe_jwt).is_empty());
+        let safe_xml = ["parser.setFeature('http://xml.org/sax/features/external-general-entities', false);"].join("\n");
+        assert!(detect_xxe_ssrf_in_content("safe.js", &safe_xml).is_empty());
     }
 }

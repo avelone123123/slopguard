@@ -34,6 +34,9 @@ pub mod async_callback_traps;
 pub mod hallucinated_speculative_apis;
 pub mod async_loop_traps;
 pub mod package_hallucinations;
+pub mod jwt_leakage;
+pub mod broken_access_control;
+pub mod xxe_ssrf;
 use crate::detectors::ai_bloat::{detect_ai_comment_bloat_in_content, detect_ai_comment_bloat_in_diff};
 use crate::detectors::circular_deps::{detect_circular_dependencies_in_content, detect_circular_dependencies_in_diff};
 use crate::detectors::command_injection::{detect_command_injection_in_content, detect_command_injection_in_diff};
@@ -69,6 +72,9 @@ use crate::detectors::async_callback_traps::{detect_async_callback_traps_in_cont
 use crate::detectors::hallucinated_speculative_apis::{detect_speculative_apis_in_content, detect_speculative_apis_in_diff};
 use crate::detectors::async_loop_traps::{detect_async_loop_traps_in_content, detect_async_loop_traps_in_diff};
 use crate::detectors::package_hallucinations::{detect_package_hallucinations_in_content, detect_package_hallucinations_in_diff};
+use crate::detectors::jwt_leakage::{detect_jwt_leakage_in_content, detect_jwt_leakage_in_diff};
+use crate::detectors::broken_access_control::{detect_broken_access_control_in_content, detect_broken_access_control_in_diff};
+use crate::detectors::xxe_ssrf::{detect_xxe_ssrf_in_content, detect_xxe_ssrf_in_diff};
 use crate::types::{DiffFile, SlopConfig, SlopFinding, SlopSeverity, SlopSummary};
 use std::path::Path;
 pub fn run_all_diff_detectors(diff_files: &[DiffFile], project_root: &Path, config: &SlopConfig) -> Vec<SlopFinding> {
@@ -179,6 +185,15 @@ pub fn run_all_diff_detectors(diff_files: &[DiffFile], project_root: &Path, conf
     if config.rules.get("no-hallucinated-package-manifest").map(|s| s != "off").unwrap_or(true) {
         findings.extend(detect_package_hallucinations_in_diff(diff_files));
     }
+    if config.rules.get("no-hardcoded-jwt-secrets").map(|s| s != "off").unwrap_or(true) {
+        findings.extend(detect_jwt_leakage_in_diff(diff_files));
+    }
+    if config.rules.get("no-unscoped-idor-queries").map(|s| s != "off").unwrap_or(true) {
+        findings.extend(detect_broken_access_control_in_diff(diff_files));
+    }
+    if config.rules.get("no-unsafe-xml-or-ssrf").map(|s| s != "off").unwrap_or(true) {
+        findings.extend(detect_xxe_ssrf_in_diff(diff_files));
+    }
     findings.into_iter().filter(|f| config.rules.get(&f.rule_id).map(|s| s != "off").unwrap_or(true)).map(|mut f| {
         if let Some(rule_setting) = config.rules.get(&f.rule_id) {
             if rule_setting == "error" {
@@ -225,6 +240,9 @@ pub fn run_all_content_detectors(file_path: &str, content: &str, project_root: &
     findings.extend(detect_speculative_apis_in_content(file_path, content));
     findings.extend(detect_async_loop_traps_in_content(file_path, content));
     findings.extend(detect_package_hallucinations_in_content(file_path, content));
+    findings.extend(detect_jwt_leakage_in_content(file_path, content));
+    findings.extend(detect_broken_access_control_in_content(file_path, content));
+    findings.extend(detect_xxe_ssrf_in_content(file_path, content));
     findings.into_iter().filter(|f| config.rules.get(&f.rule_id).map(|s| s != "off").unwrap_or(true)).map(|mut f| {
         if let Some(rule_setting) = config.rules.get(&f.rule_id) {
             if rule_setting == "error" {
