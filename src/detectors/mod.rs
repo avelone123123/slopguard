@@ -29,6 +29,7 @@ pub mod inlined_secrets;
 pub mod slopsquat;
 pub mod insecure_crypto;
 pub mod test_sabotage;
+pub mod unbounded_concurrency;
 use crate::detectors::ai_bloat::{detect_ai_comment_bloat_in_content, detect_ai_comment_bloat_in_diff};
 use crate::detectors::circular_deps::{detect_circular_dependencies_in_content, detect_circular_dependencies_in_diff};
 use crate::detectors::command_injection::{detect_command_injection_in_content, detect_command_injection_in_diff};
@@ -59,6 +60,7 @@ use crate::detectors::inlined_secrets::{detect_inlined_secrets_in_content, detec
 use crate::detectors::slopsquat::{detect_slopsquat_in_content, detect_slopsquat_in_diff};
 use crate::detectors::insecure_crypto::{detect_insecure_crypto_in_content, detect_insecure_crypto_in_diff};
 use crate::detectors::test_sabotage::{detect_test_sabotage_in_content, detect_test_sabotage_in_diff};
+use crate::detectors::unbounded_concurrency::{detect_unbounded_concurrency_in_content, detect_unbounded_concurrency_in_diff};
 use crate::types::{DiffFile, SlopConfig, SlopFinding, SlopSeverity, SlopSummary};
 use std::path::Path;
 pub fn run_all_diff_detectors(diff_files: &[DiffFile], project_root: &Path, config: &SlopConfig) -> Vec<SlopFinding> {
@@ -154,6 +156,9 @@ pub fn run_all_diff_detectors(diff_files: &[DiffFile], project_root: &Path, conf
     if config.rules.get("no-test-sabotage").map(|s| s != "off").unwrap_or(true) {
         findings.extend(detect_test_sabotage_in_diff(diff_files));
     }
+    if config.rules.get("no-unbounded-concurrency").map(|s| s != "off").unwrap_or(true) {
+        findings.extend(detect_unbounded_concurrency_in_diff(diff_files));
+    }
     findings.into_iter().filter(|f| config.rules.get(&f.rule_id).map(|s| s != "off").unwrap_or(true)).map(|mut f| {
         if let Some(rule_setting) = config.rules.get(&f.rule_id) {
             if rule_setting == "error" {
@@ -195,6 +200,7 @@ pub fn run_all_content_detectors(file_path: &str, content: &str, project_root: &
     findings.extend(detect_slopsquat_in_content(file_path, content));
     findings.extend(detect_insecure_crypto_in_content(file_path, content));
     findings.extend(detect_test_sabotage_in_content(file_path, content));
+    findings.extend(detect_unbounded_concurrency_in_content(file_path, content));
     findings.into_iter().filter(|f| config.rules.get(&f.rule_id).map(|s| s != "off").unwrap_or(true)).map(|mut f| {
         if let Some(rule_setting) = config.rules.get(&f.rule_id) {
             if rule_setting == "error" {

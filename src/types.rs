@@ -12,6 +12,7 @@ pub enum SlopCategory {
     GhostEnv,
     Complexity,
     Security,
+    AsyncAntiPattern,
 }
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub enum SlopSeverity {

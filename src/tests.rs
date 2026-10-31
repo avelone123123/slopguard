@@ -30,6 +30,7 @@ mod test_suite {
     use crate::detectors::slopsquat::detect_slopsquat_in_content;
     use crate::detectors::insecure_crypto::detect_insecure_crypto_in_content;
     use crate::detectors::test_sabotage::detect_test_sabotage_in_content;
+    use crate::detectors::unbounded_concurrency::detect_unbounded_concurrency_in_content;
     use crate::fixers::sanitize_code;
     use crate::reporters::generate_badge_svg;
     use crate::telemetry::{create_shared_telemetry, record_event};
@@ -817,5 +818,60 @@ mod test_suite {
             "});",
         ].join("\n");
         assert!(detect_test_sabotage_in_content("tests/auth.test.ts", &clean_js).is_empty());
+    }
+    #[test]
+    fn test_detects_unbounded_concurrency_js_ts() {
+        let code = [
+            "const results = await Promise.all(users.map(async (u) => fetchUser(u)));",
+            "const settled = await Promise.allSettled(records.map(async r => sync(r)));",
+            "await Promise.all(",
+            "    items.map(async (item) => {",
+            "        return process(item);",
+            "    })",
+            ");",
+        ].join("\n");
+        let findings = detect_unbounded_concurrency_in_content("src/batch.ts", &code);
+        assert_eq!(findings.len(), 3);
+        assert_eq!(findings[0].rule_id, "no-unbounded-concurrency");
+        let safe_code = [
+            "const [config, user] = await Promise.all([fetchConfig(), fetchUser()]);",
+            "const throttled = await Promise.all(items.map(item => limit(() => fetchItem(item))));",
+            "const chunked = await Promise.all(chunks.map(async c => processChunk(c)));",
+        ].join("\n");
+        assert!(detect_unbounded_concurrency_in_content("src/safe.ts", &safe_code).is_empty());
+    }
+    #[test]
+    fn test_detects_unbounded_concurrency_python() {
+        let code = [
+            "results = await asyncio.gather(*[fetch(u) for u in urls])",
+            "gen_res = await asyncio.gather(*(process(x) for x in items))",
+            "for item in items:",
+            "    asyncio.create_task(process(item))",
+        ].join("\n");
+        let findings = detect_unbounded_concurrency_in_content("services/worker.py", &code);
+        assert_eq!(findings.len(), 3);
+        assert_eq!(findings[0].rule_id, "no-unbounded-concurrency");
+        let safe_code = [
+            "res = await asyncio.gather(fetch_primary(), fetch_secondary())",
+            "sem = asyncio.Semaphore(10)",
+            "async with sem:",
+            "    await asyncio.gather(*[worker(x) for x in items])",
+        ].join("\n");
+        assert!(detect_unbounded_concurrency_in_content("services/safe.py", &safe_code).is_empty());
+    }
+    #[test]
+    fn test_detects_unbounded_concurrency_rust() {
+        let code = [
+            "let responses = futures::future::join_all(items.into_iter().map(|item| fetch(item))).await;",
+            "let done = join_all(requests.iter().map(|r| client.send(r))).await;",
+        ].join("\n");
+        let findings = detect_unbounded_concurrency_in_content("src/sync.rs", &code);
+        assert_eq!(findings.len(), 2);
+        assert_eq!(findings[0].rule_id, "no-unbounded-concurrency");
+        let safe_code = [
+            "let (a, b) = join_all(vec![task_a, task_b]).await;",
+            "let stream_res = stream::iter(items).map(fetch).buffer_unordered(8).collect::<Vec<_>>().await;",
+        ].join("\n");
+        assert!(detect_unbounded_concurrency_in_content("src/safe.rs", &safe_code).is_empty());
     }
 }
