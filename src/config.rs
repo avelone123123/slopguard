@@ -24,6 +24,7 @@ pub fn default_config() -> SlopConfig {
     rules.insert("no-disabled-tls".to_string(), "error".to_string());
     rules.insert("no-unsafe-deserialization".to_string(), "error".to_string());
     rules.insert("no-insecure-cors".to_string(), "error".to_string());
+    rules.insert("no-async-array-predicates".to_string(), "error".to_string());
     SlopConfig {
         ignore: vec![
             "target".into(),

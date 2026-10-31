@@ -104,7 +104,7 @@ pub fn run_all_diff_detectors(diff_files: &[DiffFile], project_root: &Path, conf
     if config.rules.get("no-sql-injection-risk").map(|s| s != "off").unwrap_or(true) {
         findings.extend(detect_sql_injection_in_diff(diff_files));
     }
-    if config.rules.get("no-floating-promises").map(|s| s != "off").unwrap_or(true) {
+    if config.rules.get("no-floating-promises").map(|s| s != "off").unwrap_or(true) || config.rules.get("no-async-array-predicates").map(|s| s != "off").unwrap_or(true) {
         findings.extend(detect_floating_promises_in_diff(diff_files));
     }
     if config.rules.get("no-prototype-pollution").map(|s| s != "off").unwrap_or(true) {

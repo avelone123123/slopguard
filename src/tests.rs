@@ -630,4 +630,43 @@ mod test_suite {
         let safe_rust = "let cors = Cors::default().allowed_origin(\"https://app.example.com\");\n";
         assert!(detect_insecure_cors_in_content("main.rs", safe_rust).is_empty());
     }
+    #[test]
+    fn test_detects_async_array_predicates_truthy_trap() {
+        let f1 = detect_floating_promises_in_content("auth.ts", "const allowed = users.filter(async (u) => await checkUserPermission(u.id));\n");
+        assert_eq!(f1.len(), 1);
+        assert_eq!(f1[0].rule_id, "no-async-array-predicates");
+        let f2 = detect_floating_promises_in_content("auth.ts", "const hasAccess = roles.some(async (r) => await authService.checkRole(r));\n");
+        assert_eq!(f2.len(), 1);
+        assert_eq!(f2[0].rule_id, "no-async-array-predicates");
+        let f3 = detect_floating_promises_in_content("validator.ts", "const allValid = records.every(async (i) => await validate(i));\n");
+        assert_eq!(f3.len(), 1);
+        assert_eq!(f3[0].rule_id, "no-async-array-predicates");
+        let f4 = detect_floating_promises_in_content("find.ts", "const target = list.find(async (i) => await match(i));\n");
+        assert_eq!(f4.len(), 1);
+        assert_eq!(f4[0].rule_id, "no-async-array-predicates");
+        let f5 = detect_floating_promises_in_content("find.ts", "const idx = list.findIndex(async (i) => await match(i));\n");
+        assert_eq!(f5.len(), 1);
+        assert_eq!(f5[0].rule_id, "no-async-array-predicates");
+        let f6 = detect_floating_promises_in_content("find.ts", "const last = list.findLast(async (i) => await match(i));\n");
+        assert_eq!(f6.len(), 1);
+        assert_eq!(f6[0].rule_id, "no-async-array-predicates");
+        let f7 = detect_floating_promises_in_content("find.ts", "const lastIdx = list.findLastIndex(async (i) => await match(i));\n");
+        assert_eq!(f7.len(), 1);
+        assert_eq!(f7[0].rule_id, "no-async-array-predicates");
+        let f8 = detect_floating_promises_in_content("typed.ts", "const filtered = users.filter((u: User): Promise<boolean> => check(u));\n");
+        assert_eq!(f8.len(), 1);
+        assert_eq!(f8[0].rule_id, "no-async-array-predicates");
+        let f9 = detect_floating_promises_in_content("worker.ts", "items.map(async (item) => { await processItem(item); });\n");
+        assert_eq!(f9.len(), 1);
+        assert_eq!(f9[0].rule_id, "no-floating-promises");
+        let safe_cases = [
+            "const active = users.filter((u) => u.isActive);",
+            "await Promise.all(items.map(async (i) => await process(i)));",
+            "const promises = items.map(async (i) => await process(i));",
+            "return Promise.all(items.map(async (i) => await process(i)));",
+            "for (const item of items) { await processItem(item); }",
+        ].join("\n");
+        let safe_findings = detect_floating_promises_in_content("safe.ts", &safe_cases);
+        assert_eq!(safe_findings.len(), 0);
+    }
 }
