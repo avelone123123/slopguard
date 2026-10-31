@@ -3,7 +3,7 @@ use crate::dashboard::spawn_dashboard_thread;
 use crate::detectors::{compute_summary, run_all_content_detectors, run_all_diff_detectors};
 use crate::fixers::sanitize_file;
 use crate::git::{get_diff_output, get_git_root, is_git_repo, parse_unified_diff};
-use crate::telemetry::{create_shared_telemetry, record_event, SharedTelemetry};
+use crate::telemetry::{create_shared_telemetry, record_telemetry_event, SharedTelemetry};
 use serde_json::{json, Value};
 use std::io::{self, BufRead, Write};
 use std::path::Path;
@@ -107,7 +107,7 @@ fn handle_mcp_message(msg: &Value, target_root: &Path, shared: &SharedTelemetry)
             let elapsed = start.elapsed().as_millis();
             let summary = compute_summary(findings, diff_files.len(), elapsed);
             let msg = if summary.errors > 0 { format!("Intercepted {} critical issues", summary.errors) } else { "Clean working tree".to_string() };
-            record_event(shared, target_root, "slopguard_scan_diff", "git diff", summary.errors, summary.score, elapsed, &msg);
+            record_telemetry_event(shared, target_root, "slopguard_scan_diff", "git diff", summary.errors, summary.score, elapsed, &msg);
             return Some(json!({
                 "jsonrpc": "2.0",
                 "id": id,
@@ -124,7 +124,7 @@ fn handle_mcp_message(msg: &Value, target_root: &Path, shared: &SharedTelemetry)
             let elapsed = start.elapsed().as_millis();
             let summary = compute_summary(findings, 1, elapsed);
             let msg = if summary.errors > 0 { format!("Blocked {} code slop issues", summary.errors) } else { "Verified clean snippet".to_string() };
-            record_event(shared, target_root, "slopguard_check_snippet", file_path, summary.errors, summary.score, elapsed, &msg);
+            record_telemetry_event(shared, target_root, "slopguard_check_snippet", file_path, summary.errors, summary.score, elapsed, &msg);
             return Some(json!({
                 "jsonrpc": "2.0",
                 "id": id,
@@ -138,7 +138,7 @@ fn handle_mcp_message(msg: &Value, target_root: &Path, shared: &SharedTelemetry)
             let file_path = args.and_then(|a| a.get("filePath")).and_then(|v| v.as_str()).unwrap_or("");
             let ok = sanitize_file(Path::new(file_path));
             let elapsed = start.elapsed().as_millis();
-            record_event(shared, target_root, "slopguard_sanitize_file", file_path, 0, 100, elapsed, if ok { "Sanitized AI bloat" } else { "File unmodified" });
+            record_telemetry_event(shared, target_root, "slopguard_sanitize_file", file_path, 0, 100, elapsed, if ok { "Sanitized AI bloat" } else { "File unmodified" });
             return Some(json!({
                 "jsonrpc": "2.0",
                 "id": id,

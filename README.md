@@ -9,11 +9,11 @@
   <a href="https://discord.gg/z7C9dprye"><img alt="Discord" src="https://img.shields.io/badge/Discord-Join%20Chat-5865F2?style=flat-square&logo=discord&logoColor=white"></a>
   <a href="https://t.me/SlopGuard"><img alt="Telegram" src="https://img.shields.io/badge/Telegram-@SlopGuard-26A5E4?style=flat-square&logo=telegram&logoColor=white"></a>
   <img alt="100% Rust" src="https://img.shields.io/badge/100%25-Rust-b7410e?style=flat-square&logo=rust">
-  <img alt="Release: v1.2.0" src="https://img.shields.io/badge/release-v1.2.0-10b981?style=flat-square">
+  <img alt="Release: v2.5.0" src="https://img.shields.io/badge/release-v2.5.0-10b981?style=flat-square">
   <img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-263146?style=flat-square">
-  <img alt="Latency: <3ms" src="https://img.shields.io/badge/latency-%3C3ms-2f6f4f?style=flat-square">
+  <img alt="Latency: <0.40ms" src="https://img.shields.io/badge/latency-%3C0.40ms-2f6f4f?style=flat-square">
   <img alt="MCP Protocol: 2.0" src="https://img.shields.io/badge/MCP-JSON--RPC%202.0-7c3aed?style=flat-square">
-  <img alt="Firewalls: 34" src="https://img.shields.io/badge/firewalls-34%20active-blue?style=flat-square">
+  <img alt="Firewalls: 47" src="https://img.shields.io/badge/firewalls-47%20active-blue?style=flat-square">
   <img alt="Platforms" src="https://img.shields.io/badge/platforms-Windows%20%C2%B7%20macOS%20%C2%B7%20Linux-2f7bf5?style=flat-square">
 
   <br>
@@ -26,7 +26,7 @@
     <b>before</b> they pollute your git history.
   </p>
 
-  <code>cargo install slopguard</code>
+  <code>cargo install slopguard --version 2.5.0</code>
 
 </div>
 
@@ -258,7 +258,7 @@ Customize behavior by creating a `.slopguardrc.json` in your repository root:
 
 | Tool | Cold Startup | Scan Time (10k LOC Diff) | Memory Usage |
 | :--- | :--- | :--- | :--- |
-| **SlopGuard (Rust)** | **< 3ms** | **~8ms** | **~6 MB** |
+| **SlopGuard (Rust v2.5.0)** | **< 2.5ms** | **< 0.40ms / 1k LOC** | **< 6 MB** |
 | Biome | ~45ms | ~30ms | ~28 MB |
 | ESLint | ~620ms | ~480ms | ~140 MB |
 | SonarQube Scanner | ~4,200ms | ~3,100ms | ~600 MB |

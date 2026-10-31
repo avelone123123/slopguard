@@ -46,7 +46,7 @@ mod test_suite {
     use crate::types::SlopCategory;
     use crate::fixers::sanitize_code;
     use crate::reporters::generate_badge_svg;
-    use crate::telemetry::{create_shared_telemetry, record_event};
+    use crate::telemetry::{create_shared_telemetry, record_event, record_telemetry_event};
     use std::path::Path;
     #[test]
     fn test_detects_placeholders_and_dummy_tokens() {
@@ -104,7 +104,7 @@ mod test_suite {
     #[test]
     fn test_telemetry_event_recording() {
         let shared = create_shared_telemetry();
-        record_event(&shared, Path::new("."), "test_tool", "src/auth.rs", 2, 85, 3, "Blocked 2 items");
+        record_telemetry_event(&shared, Path::new("."), "test_tool", "src/auth.rs", 2, 85, 3, "Blocked 2 items");
         let state = shared.lock().unwrap();
         assert_eq!(state.total_scans, 1);
         assert_eq!(state.total_slop_blocked, 2);
@@ -1595,5 +1595,70 @@ mod test_suite {
         let safe_path = "const targetPath = path.resolve(baseDir, req.params.filePath);\nif (!targetPath.startsWith(baseDir)) { throw new Error('Traversal attempt'); }\n";
         let safe_findings = detect_deep_path_traversal_in_content("safeServer.ts", safe_path);
         assert_eq!(safe_findings.len(), 0);
+    }
+    #[test]
+    fn test_threat_01_speculative_manifest_poisoning_v250() {
+        let py_speculative = "pydantic-validation-plus==1.0.0\ntokio-stream-ext==0.1.0\n";
+        let py_findings = detect_package_hallucinations_in_content("requirements.txt", py_speculative);
+        assert_eq!(py_findings.len(), 2);
+        let cargo_speculative = "[dependencies]\nserde-json-valid = \"1.0\"\n";
+        let cargo_findings = detect_package_hallucinations_in_content("Cargo.toml", cargo_speculative);
+        assert_eq!(cargo_findings.len(), 1);
+    }
+    #[test]
+    fn test_threat_02_microtask_starvation_foreach_async_v250() {
+        let bad_code = "async function syncAll(users) { users.forEach(async u => { await push(u); }); }";
+        let findings = detect_async_loop_traps_in_content("dispatcher.ts", bad_code);
+        assert!(!findings.is_empty());
+        let safe_code = "async function syncAll(users) { for (const u of users) { await push(u); } }";
+        let clean_findings = detect_async_loop_traps_in_content("safe_dispatcher.ts", safe_code);
+        assert_eq!(clean_findings.len(), 0);
+    }
+    #[test]
+    fn test_threat_03_polymorphic_deserialization_gadgets_v250() {
+        let bad_yaml = "doc = yaml.load(payload, Loader=yaml.UnsafeLoader)";
+        assert_eq!(detect_unsafe_deserialization_in_content("worker.py", bad_yaml).len(), 1);
+        let bad_pickle = "obj = pickle.loads(untrusted_stream)";
+        assert_eq!(detect_unsafe_deserialization_in_content("worker.py", bad_pickle).len(), 1);
+        let safe_yaml = "doc = yaml.safe_load(payload)";
+        assert_eq!(detect_unsafe_deserialization_in_content("worker.py", safe_yaml).len(), 0);
+    }
+    #[test]
+    fn test_threat_04_weak_crypto_prng_in_token_salt_v250() {
+        let bad_token = "const session_token = Math.random().toString(36).slice(2);";
+        assert_eq!(detect_insecure_crypto_in_content("session.js", bad_token).len(), 1);
+        let bad_py_salt = "auth_salt = f'salt_{random.random()}'";
+        assert_eq!(detect_insecure_crypto_in_content("hasher.py", bad_py_salt).len(), 1);
+        let safe_token = "const session_token = crypto.randomUUID();";
+        assert_eq!(detect_insecure_crypto_in_content("session.js", safe_token).len(), 0);
+    }
+    #[test]
+    fn test_threat_05_evasive_path_traversal_boundary_v250() {
+        let bad_endpoint = "const target = path.join(uploadDir, req.body.filename);";
+        assert_eq!(detect_deep_path_traversal_in_content("upload.ts", bad_endpoint).len(), 1);
+        let safe_endpoint = "const target = path.join(uploadDir, req.body.filename);\nif (!target.startsWith(uploadDir)) throw new Error();";
+        assert_eq!(detect_deep_path_traversal_in_content("upload.ts", safe_endpoint).len(), 0);
+    }
+    #[test]
+    fn test_ast_detector_contract_matrix_integrity_v250() {
+        for contract in crate::detectors::ACTIVE_CONTRACTS {
+            assert!(!contract.rule_id.is_empty());
+            assert!(!contract.target_languages.is_empty());
+        }
+    }
+    #[test]
+    fn test_threat_01_to_05_sanitizer_and_safe_code_passes_v250() {
+        let valid_cargo = "[dependencies]\nserde = \"1.0\"\ntokio = { version = \"1\", features = [\"full\"] }\n";
+        assert_eq!(detect_package_hallucinations_in_content("Cargo.toml", valid_cargo).len(), 0);
+        let valid_async = "await Promise.all(items.map(async item => process(item)));";
+        assert_eq!(detect_async_loop_traps_in_content("batch.js", valid_async).len(), 0);
+    }
+    #[test]
+    fn test_telemetry_event_streaming_bridge_v250() {
+        let telemetry = create_shared_telemetry();
+        record_event(&telemetry, "THREAT_01_INTERCEPTED", "serde-json-valid detected in Cargo.toml");
+        let events = telemetry.lock().unwrap().get_events();
+        assert_eq!(events.len(), 1);
+        assert_eq!(events[0].category, "THREAT_01_INTERCEPTED");
     }
 }

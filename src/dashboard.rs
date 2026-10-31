@@ -2,7 +2,7 @@ use crate::config::{is_supported_code_file, load_config, should_ignore_path};
 use crate::detectors::{compute_summary, run_all_diff_detectors};
 use crate::fixers::sanitize_file;
 use crate::git::{get_diff_output, is_git_repo, parse_unified_diff};
-use crate::telemetry::{load_persisted_telemetry, record_event, SharedTelemetry};
+use crate::telemetry::{load_persisted_telemetry, record_telemetry_event, SharedTelemetry};
 use std::io::{Read, Write};
 use std::net::TcpListener;
 use std::path::PathBuf;
@@ -160,7 +160,7 @@ fn audit_workspace(target_root: &PathBuf, shared: &SharedTelemetry) -> String {
     let elapsed = start.elapsed().as_millis();
     let summary = compute_summary(findings, files_count, elapsed);
     let msg = if summary.errors > 0 { format!("Found {} critical slop issues", summary.errors) } else { "Clean working tree".to_string() };
-    record_event(shared, target_root, "dashboard_scan", "repository", summary.errors, summary.score, elapsed, &msg);
+    record_telemetry_event(shared, target_root, "dashboard_scan", "repository", summary.errors, summary.score, elapsed, &msg);
     serde_json::to_string(&summary).unwrap_or_else(|_| "{}".to_string())
 }
 fn sanitize_workspace(target_root: &PathBuf, shared: &SharedTelemetry) -> usize {
@@ -186,7 +186,7 @@ fn sanitize_workspace(target_root: &PathBuf, shared: &SharedTelemetry) -> usize 
         }
     }
     let elapsed = start.elapsed().as_millis();
-    record_event(shared, target_root, "dashboard_sanitize", "all files", 0, 100, elapsed, &format!("Sanitized {fixed} file(s)"));
+    record_telemetry_event(shared, target_root, "dashboard_sanitize", "all files", 0, 100, elapsed, &format!("Sanitized {fixed} file(s)"));
     fixed
 }
 pub fn start_dashboard_server(port: u16, target_root: PathBuf, shared: SharedTelemetry) {

@@ -2,7 +2,7 @@ use crate::config::{is_supported_code_file, load_config, should_ignore_path};
 use crate::detectors::{compute_summary, run_all_diff_detectors};
 use crate::fixers::sanitize_file;
 use crate::git::{get_current_branch, get_diff_output, get_latest_commit, get_untracked_files, is_git_repo, parse_unified_diff};
-use crate::telemetry::{create_shared_telemetry, load_persisted_telemetry, record_event, McpTelemetryEvent, TelemetryState};
+use crate::telemetry::{create_shared_telemetry, load_persisted_telemetry, record_telemetry_event, McpTelemetryEvent, TelemetryState};
 use crate::types::{SlopFinding, SlopSeverity, SlopSummary};
 use crossterm::{
     cursor::{Hide, MoveTo, Show},
@@ -46,7 +46,7 @@ fn perform_scan_action(target_root: &Path) -> SlopSummary {
     let summary = compute_summary(findings, files_count, elapsed);
     let msg = if summary.errors > 0 { format!("Intercepted {} issues", summary.errors) } else { "Clean working tree".to_string() };
     let shared = create_shared_telemetry();
-    record_event(&shared, target_root, "terminal_audit", "workspace", summary.errors, summary.score, elapsed, &msg);
+    record_telemetry_event(&shared, target_root, "terminal_audit", "workspace", summary.errors, summary.score, elapsed, &msg);
     summary
 }
 fn perform_sanitize_action(target_root: &Path) -> usize {
@@ -73,7 +73,7 @@ fn perform_sanitize_action(target_root: &Path) -> usize {
     }
     let elapsed = start.elapsed().as_millis();
     let shared = create_shared_telemetry();
-    record_event(&shared, target_root, "terminal_sanitize", "workspace", 0, 100, elapsed, &format!("Sanitized {count} file(s)"));
+    record_telemetry_event(&shared, target_root, "terminal_sanitize", "workspace", 0, 100, elapsed, &format!("Sanitized {count} file(s)"));
     count
 }
 fn export_report(target_root: &Path, summary: &SlopSummary) -> String {

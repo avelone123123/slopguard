@@ -30,7 +30,7 @@ analyze_content: detect_unsafe_deserialization_in_content,
 };
 fn get_deserialization_patterns(file_path: &str, has_read_object: bool) -> Vec<(Regex, Option<&'static str>, &'static str, &'static str)> {
 let mut patterns = Vec::new();
-let specific = is_py(file_path) || is_js_ts(file_path) || is_php(file_path) || is_rb(file_path) || is_java(file_path);
+let specific = is_py(file_path) || is_js_ts(file_path) || is_php(file_path) || is_rb(file_path) || is_java(file_path) || file_path.to_lowercase().ends_with(".rs");
 if !specific || is_py(file_path) {
 patterns.push((Regex::new(r#"(?i)\b(?:pickle|_pickle|cPickle)\.(?:loads|load)\s*\("#).unwrap(), None, "Python pickle deserialization allows arbitrary code execution", "Replace pickle with json.loads, msgpack, or validated schemas (pydantic/msgspec)"));
 patterns.push((Regex::new(r#"(?i)\byaml\.(?:unsafe_load|load)\s*\("#).unwrap(), Some("SafeLoader"), "Unsafe YAML load allows arbitrary object instantiation", "Use yaml.safe_load(stream) or pass Loader=yaml.SafeLoader"));

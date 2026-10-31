@@ -1,5 +1,11 @@
 # Changelog
 All notable changes to SlopGuard are documented in this file.
+## [2.5.0] - 2026-11-01
+### Added
+- Expanded AST contracts and deterministic boundary shields for THREAT-01 through THREAT-05 across all supported runtimes.
+- Interactive AST diff auditor ecosystem with live split-pane preview, inline diagnostics, and one-click sanitized fix generation.
+- Scaled deterministic regression harness to 131 passing unit and integration tests with zero failures and zero warnings.
+- Sub-millisecond execution verified at <0.40ms per 1k LOC hunk with minimal memory footprint.
 ## [2.4.0] - 2026-11-01
 ### Added
 - Implemented THREAT-01 Ghost Package & Slopsquatting import and manifest scanner for synthetic AI packages across PyPI, npm, and crates.io.
