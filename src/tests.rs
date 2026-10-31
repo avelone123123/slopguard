@@ -1539,4 +1539,61 @@ mod test_suite {
         assert!(!detect_insecure_crypto_in_content("auth.rs", bad_rust).is_empty());
         assert!(!detect_insecure_crypto_in_content("auth.py", bad_py).is_empty());
     }
+    #[test]
+    fn test_detects_ghost_package_slopsquatting_v240() {
+        let py_hallucinated = "import requests_async\nimport boto4\nfrom flask_jwt_simple import JWTManager\n";
+        let py_findings = detect_package_hallucinations_in_content("service.py", py_hallucinated);
+        assert_eq!(py_findings.len(), 3);
+        let js_hallucinated = "const cryptoNode = require('crypto-node');\nimport { verify } from 'jsonwebtoken-async';\n";
+        let js_findings = detect_package_hallucinations_in_content("auth.ts", js_hallucinated);
+        assert_eq!(js_findings.len(), 2);
+        let rs_hallucinated = "use tokio_requests::Client;\nuse anyhow_derive::Error;\n";
+        let rs_findings = detect_package_hallucinations_in_content("lib.rs", rs_hallucinated);
+        assert_eq!(rs_findings.len(), 2);
+        let legit_deps = "import boto3\nimport httpx\nimport jwt\nconst crypto = require('crypto');\nuse reqwest::Client;\n";
+        let legit_findings = detect_package_hallucinations_in_content("clean.ts", legit_deps);
+        assert_eq!(legit_findings.len(), 0);
+    }
+    #[test]
+    fn test_detects_async_loop_traps_v240() {
+        let foreach_trap = "records.forEach(async (record) => { await db.save(record); });\n";
+        let foreach_findings = detect_async_loop_traps_in_content("worker.js", foreach_trap);
+        assert!(!foreach_findings.is_empty());
+        let safe_promise_all = "await Promise.all(records.map(async (record) => { return await db.save(record); }));\n";
+        let safe_findings = detect_async_loop_traps_in_content("safe_worker.js", safe_promise_all);
+        assert_eq!(safe_findings.len(), 0);
+    }
+    #[test]
+    fn test_detects_unsafe_deserialization_cloader_and_marshal_v240() {
+        let py_cloader = "data = yaml.load(user_stream, Loader=yaml.CLoader)\n";
+        let cloader_findings = detect_unsafe_deserialization_in_content("parser.py", py_cloader);
+        assert_eq!(cloader_findings.len(), 1);
+        let py_marshal = "raw_data = marshal.loads(crafted_bytes)\n";
+        let marshal_findings = detect_unsafe_deserialization_in_content("loader.py", py_marshal);
+        assert_eq!(marshal_findings.len(), 1);
+        let java_ois = "ObjectInputStream ois = new ObjectInputStream(untrustedStream);\n";
+        let java_findings = detect_unsafe_deserialization_in_content("Handler.java", java_ois);
+        assert_eq!(java_findings.len(), 1);
+    }
+    #[test]
+    fn test_detects_weak_prng_in_session_salt_v240() {
+        let js_salt = "const salt = Math.random().toString(36).substring(2);\n";
+        let salt_findings = detect_insecure_crypto_in_content("auth.js", js_salt);
+        assert_eq!(salt_findings.len(), 1);
+        let py_token = "reset_token = f'key_{random.randint(100000, 999999)}'\n";
+        let token_findings = detect_insecure_crypto_in_content("user.py", py_token);
+        assert_eq!(token_findings.len(), 1);
+        let safe_crypto = "const token = crypto.randomBytes(32).toString('hex');\n";
+        let safe_findings = detect_insecure_crypto_in_content("secure.js", safe_crypto);
+        assert_eq!(safe_findings.len(), 0);
+    }
+    #[test]
+    fn test_detects_deep_path_traversal_param_resolution_v240() {
+        let bad_path = "const targetPath = path.resolve(baseDir, req.params.filePath);\n";
+        let bad_findings = detect_deep_path_traversal_in_content("fileServer.ts", bad_path);
+        assert_eq!(bad_findings.len(), 1);
+        let safe_path = "const targetPath = path.resolve(baseDir, req.params.filePath);\nif (!targetPath.startsWith(baseDir)) { throw new Error('Traversal attempt'); }\n";
+        let safe_findings = detect_deep_path_traversal_in_content("safeServer.ts", safe_path);
+        assert_eq!(safe_findings.len(), 0);
+    }
 }
