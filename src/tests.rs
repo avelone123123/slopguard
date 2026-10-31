@@ -23,6 +23,7 @@ mod test_suite {
     use crate::detectors::sql_injection::detect_sql_injection_in_content;
     use crate::detectors::type_degradation::detect_type_degradation_in_content;
     use crate::detectors::unsafe_eval::detect_unsafe_eval_in_content;
+    use crate::detectors::unsafe_deserialization::detect_unsafe_deserialization_in_content;
     use crate::detectors::watermarks::detect_watermarks_in_content;
     use crate::fixers::sanitize_code;
     use crate::reporters::generate_badge_svg;
@@ -545,5 +546,36 @@ mod test_suite {
         let rust_code = format!("let client = reqwest::Client::builder().{rs_danger}.build()?;\n");
         let findings_rust = detect_insecure_transport_in_content("fetcher.rs", &rust_code);
         assert_eq!(findings_rust.len(), 1);
+    }
+    #[test]
+    fn test_detects_unsafe_deserialization() {
+        let py_pick = ["data = pick", "le.loads(payload)"].concat();
+        let py_findings1 = detect_unsafe_deserialization_in_content("cache.py", &py_pick);
+        assert_eq!(py_findings1.len(), 1);
+        assert_eq!(py_findings1[0].rule_id, "no-unsafe-deserialization");
+        let py_yaml = ["config = ya", "ml.load(stream)"].concat();
+        let py_findings2 = detect_unsafe_deserialization_in_content("config.py", &py_yaml);
+        assert_eq!(py_findings2.len(), 1);
+        let py_marsh = ["obj = mar", "shal.loads(data)"].concat();
+        let py_findings3 = detect_unsafe_deserialization_in_content("store.py", &py_marsh);
+        assert_eq!(py_findings3.len(), 1);
+        let js_ser = ["const obj = node-serialize.unser", "ialize(cookie);"].concat();
+        let js_findings = detect_unsafe_deserialization_in_content("session.ts", &js_ser);
+        assert_eq!(js_findings.len(), 1);
+        let php_code = ["$user = unser", "ialize($_COOKIE['user']);"].concat();
+        let php_findings = detect_unsafe_deserialization_in_content("auth.php", &php_code);
+        assert_eq!(php_findings.len(), 1);
+        let rb_code = ["data = Mar", "shal.load(payload)"].concat();
+        let rb_findings = detect_unsafe_deserialization_in_content("worker.rb", &rb_code);
+        assert_eq!(rb_findings.len(), 1);
+        let safe_py = "data = json.loads(payload)\nconfig = yaml.safe_load(stream)\n";
+        let safe_py_findings = detect_unsafe_deserialization_in_content("safe.py", safe_py);
+        assert_eq!(safe_py_findings.len(), 0);
+        let safe_js = "const obj = JSON.parse(cookie);\n";
+        let safe_js_findings = detect_unsafe_deserialization_in_content("safe.ts", safe_js);
+        assert_eq!(safe_js_findings.len(), 0);
+        let safe_php = "$user = json_decode($_COOKIE['user'], true);\n$obj = unserialize($data, ['allowed_classes' => false]);\n";
+        let safe_php_findings = detect_unsafe_deserialization_in_content("safe.php", safe_php);
+        assert_eq!(safe_php_findings.len(), 0);
     }
 }

@@ -22,6 +22,7 @@ pub fn default_config() -> SlopConfig {
     rules.insert("no-redos-vulnerability".to_string(), "error".to_string());
     rules.insert("no-coverage-theater".to_string(), "warning".to_string());
     rules.insert("no-disabled-tls".to_string(), "error".to_string());
+    rules.insert("no-unsafe-deserialization".to_string(), "error".to_string());
     SlopConfig {
         ignore: vec![
             "target".into(),
@@ -81,6 +82,7 @@ pub fn is_supported_code_file(path_str: &str) -> bool {
         || lower.ends_with(".cpp")
         || lower.ends_with(".c")
         || lower.ends_with(".cs")
+        || lower.ends_with(".rb")
 }
 pub fn should_ignore_path(file_path: &str, ignore_patterns: &[String]) -> bool {
     let normalized = file_path.replace('\\', "/");
