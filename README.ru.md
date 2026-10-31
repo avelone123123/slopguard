@@ -203,4 +203,4 @@ slopguard ui
 
 ## Лицензия
 
-MIT © [avelo](https://github.com/avelo)
+MIT © [avelo](https://github.com/avelone123123)
