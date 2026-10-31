@@ -2,7 +2,7 @@
 name = "slopguard"
 version = "1.0.0"
 edition = "2021"
-authors = ["avelo"]
+authors = ["avelone123123"]
 description = "Zero-latency native Rust AI slop and hallucination firewall for Cursor, Claude Code, and vibe-coders"
 license = "MIT"
 [dependencies]

@@ -1,0 +1,29 @@
+name: Bug Report
+description: File a bug report for SlopGuard
+title: "[BUG]: "
+labels: ["bug", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: Thank you for reporting an issue in SlopGuard!
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: Describe the bug encountered during scanning or execution.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction Snippet
+      description: Provide the code snippet or diff that triggered the unexpected behavior.
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: SlopGuard Version
+      placeholder: v1.0.0
+    validations:
+      required: true

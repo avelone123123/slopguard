@@ -128,18 +128,18 @@ fn main() {
         start_mcp_server();
         return;
     }
-    if command == "monitor" || command == "tui" || is_interactive {
+    if command == "monitor" || command == "tui" {
         crate::monitor::run_interactive_monitor(&target_root);
         return;
     }
-    if command == "dashboard" || command == "ui" {
+    if command == "dashboard" || command == "ui" || is_interactive {
         let shared = create_shared_telemetry();
         let port = 4545;
         let url = format!("http://127.0.0.1:{port}");
         println!("\x1b[36m┌──────────────────────────────────────────────────────────────────────────────┐\x1b[0m");
-        println!("\x1b[36m│\x1b[0m  \x1b[1mSLOPGUARD LIVE MCP TELEMETRY DASHBOARD\x1b[0m                                      \x1b[36m│\x1b[0m");
+        println!("\x1b[36m│\x1b[0m  \x1b[1mSLOPGUARD AI DEFENSE PLATFORM - LIVE DASHBOARD\x1b[0m                             \x1b[36m│\x1b[0m");
         println!("\x1b[36m└──────────────────────────────────────────────────────────────────────────────┘\x1b[0m");
-        println!("Web UI running at: \x1b[32m\x1b[1m{url}\x1b[0m");
+        println!("Web Dashboard: \x1b[32m\x1b[1m{url}\x1b[0m");
         println!("Opening live dashboard in default browser...");
         open_browser(&url);
         start_dashboard_server(port, target_root, shared);

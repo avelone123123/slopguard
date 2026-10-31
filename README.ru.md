@@ -77,7 +77,7 @@ cargo install slopguard
 Либо сборка из исходников:
 
 ```bash
-git clone https://github.com/avelo/slopguard.git
+git clone https://github.com/avelone123123/slopguard.git
 cd slopguard
 cargo build --release
 ```
@@ -203,4 +203,4 @@ slopguard ui
 
 ## Лицензия
 
-MIT © [avelo](https://github.com/avelone123123)
+MIT © [avelone123123](https://github.com/avelone123123)

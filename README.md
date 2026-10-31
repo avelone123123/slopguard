@@ -72,7 +72,7 @@ cargo install slopguard
 Or build from source:
 
 ```bash
-git clone https://github.com/avelo/slopguard.git
+git clone https://github.com/avelone123123/slopguard.git
 cd slopguard
 cargo build --release
 ```
@@ -264,4 +264,4 @@ Customize behavior by creating a `.slopguardrc.json` in your repository root:
 
 ## License
 
-MIT © [avelo](https://github.com/avelone123123)
+MIT © [avelone123123](https://github.com/avelone123123)

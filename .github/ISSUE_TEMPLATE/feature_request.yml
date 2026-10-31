@@ -1,0 +1,19 @@
+name: Feature Request
+description: Suggest an idea or capability for SlopGuard
+title: "[FEAT]: "
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: feature-description
+    attributes:
+      label: Feature Description
+      description: What capability would make SlopGuard better for your workflow?
+    validations:
+      required: true
+  - type: textarea
+    id: proposed-solution
+    attributes:
+      label: Proposed Solution or UX
+      description: How should this feature look or function?
+    validations:
+      required: true

@@ -1,0 +1,19 @@
+name: AST Detector Proposal
+description: Propose a new AI slop or hallucination pattern detector
+title: "[DETECTOR]: "
+labels: ["detector", "security"]
+body:
+  - type: textarea
+    id: pattern-description
+    attributes:
+      label: Hallucination Pattern
+      description: What specific AI hallucination or bug pattern should be caught?
+    validations:
+      required: true
+  - type: textarea
+    id: code-examples
+    attributes:
+      label: Code Examples (Vulnerable vs Safe)
+      description: Provide vulnerable AI output and expected clean code.
+    validations:
+      required: true
