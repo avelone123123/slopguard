@@ -32,6 +32,8 @@ mod test_suite {
     use crate::detectors::test_sabotage::detect_test_sabotage_in_content;
     use crate::detectors::unbounded_concurrency::detect_unbounded_concurrency_in_content;
     use crate::detectors::async_callback_traps::detect_async_callback_traps_in_content;
+    use crate::detectors::hallucinated_speculative_apis::detect_speculative_apis_in_content;
+    use crate::types::SlopCategory;
     use crate::fixers::sanitize_code;
     use crate::reporters::generate_badge_svg;
     use crate::telemetry::{create_shared_telemetry, record_event};
@@ -710,7 +712,7 @@ mod test_suite {
         ].join("\n");
         let findings = detect_insecure_crypto_in_content("src/auth/token.ts", &js_code);
         assert_eq!(findings.len(), 6);
-        assert_eq!(findings[0].rule_id, "no-insecure-crypto");
+        assert_eq!(findings[0].rule_id, "no-insecure-prng-tokens");
     }
     #[test]
     fn test_detects_insecure_crypto_weak_prng_python() {
@@ -723,7 +725,7 @@ mod test_suite {
         ].join("\n");
         let findings = detect_insecure_crypto_in_content("auth/security.py", &py_code);
         assert_eq!(findings.len(), 5);
-        assert_eq!(findings[0].rule_id, "no-insecure-crypto");
+        assert_eq!(findings[0].rule_id, "no-insecure-prng-tokens");
     }
     #[test]
     fn test_detects_insecure_crypto_broken_hashes() {
@@ -919,5 +921,86 @@ mod test_suite {
             "async for item in async_generator(): await process(item)",
         ].join("\n");
         assert!(detect_async_callback_traps_in_content("app/safe.py", &safe_py).is_empty());
+    }
+    #[test]
+    fn test_detects_speculative_apis_python() {
+        let code = [
+            "raw = json.loadf(fp)",
+            "path = os.path.joinpath(\"a\", \"b\")",
+            "hex_val = hashlib.sha256(b).hex()",
+        ].join("\n");
+        let findings = detect_speculative_apis_in_content("script.py", &code);
+        assert_eq!(findings.len(), 3);
+        for f in &findings {
+            assert_eq!(f.rule_id, "no-hallucinated-speculative-apis");
+            assert_eq!(f.category, SlopCategory::SpeculativeApi);
+            assert!(f.suggestion.is_some());
+        }
+    }
+    #[test]
+    fn test_detects_speculative_apis_js_ts() {
+        let code = [
+            "fs.writeJsonSync(path, data);",
+            "const id = crypto.randomUUIDv4();",
+        ].join("\n");
+        let findings = detect_speculative_apis_in_content("app.ts", &code);
+        assert_eq!(findings.len(), 2);
+        for f in &findings {
+            assert_eq!(f.rule_id, "no-hallucinated-speculative-apis");
+            assert_eq!(f.category, SlopCategory::SpeculativeApi);
+        }
+    }
+    #[test]
+    fn test_detects_speculative_apis_rust() {
+        let code = [
+            "let val = Option::expect_or_default(\"err\");",
+            "Vec::push_all(&slice);",
+        ].join("\n");
+        let findings = detect_speculative_apis_in_content("src/main.rs", &code);
+        assert_eq!(findings.len(), 2);
+        for f in &findings {
+            assert_eq!(f.rule_id, "no-hallucinated-speculative-apis");
+            assert_eq!(f.category, SlopCategory::SpeculativeApi);
+        }
+    }
+    #[test]
+    fn test_speculative_apis_legitimate_calls_pass() {
+        let py_code = [
+            "data = json.loads(text)",
+            "p = pathlib.Path(\"a\").joinpath(\"b\")",
+        ].join("\n");
+        assert!(detect_speculative_apis_in_content("safe.py", &py_code).is_empty());
+        let rs_code = "vec.extend_from_slice(&s);";
+        assert!(detect_speculative_apis_in_content("safe.rs", rs_code).is_empty());
+    }
+    #[test]
+    fn test_detects_insecure_prng_tokens_js_py_rust() {
+        let js_code = "const sessionToken = Math.random().toString(36);";
+        let findings_js = detect_insecure_crypto_in_content("token.js", js_code);
+        assert_eq!(findings_js.len(), 1);
+        assert_eq!(findings_js[0].rule_id, "no-insecure-prng-tokens");
+        assert_eq!(findings_js[0].category, SlopCategory::CryptoFlaw);
+        let py_code = "api_key = random.choices(string.ascii_letters, k=32)";
+        let findings_py = detect_insecure_crypto_in_content("auth.py", py_code);
+        assert_eq!(findings_py.len(), 1);
+        assert_eq!(findings_py[0].rule_id, "no-insecure-prng-tokens");
+        assert_eq!(findings_py[0].category, SlopCategory::CryptoFlaw);
+        let rs_code = "let csrf_token = rand::thread_rng().gen::<u64>();";
+        let findings_rs = detect_insecure_crypto_in_content("auth.rs", rs_code);
+        assert_eq!(findings_rs.len(), 1);
+        assert_eq!(findings_rs[0].rule_id, "no-insecure-prng-tokens");
+        assert_eq!(findings_rs[0].category, SlopCategory::CryptoFlaw);
+    }
+    #[test]
+    fn test_insecure_prng_tokens_safe_entropy_pass() {
+        let js_code = [
+            "const entropy = crypto.randomBytes(32);",
+            "let dice_roll = Math.random();",
+        ].join("\n");
+        let findings_js = detect_insecure_crypto_in_content("safe.js", &js_code);
+        assert!(findings_js.iter().all(|f| f.rule_id != "no-insecure-prng-tokens"));
+        let py_code = "token = secrets.token_hex(32)";
+        let findings_py = detect_insecure_crypto_in_content("safe.py", py_code);
+        assert!(findings_py.iter().all(|f| f.rule_id != "no-insecure-prng-tokens"));
     }
 }

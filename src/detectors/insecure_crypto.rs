@@ -7,6 +7,9 @@ fn is_js_ts(path: &str) -> bool {
 fn is_py(path: &str) -> bool {
     path.to_lowercase().ends_with(".py")
 }
+fn is_rs(path: &str) -> bool {
+    path.to_lowercase().ends_with(".rs")
+}
 fn get_sensitive_identifier_regex() -> Regex {
     Regex::new(r#"(?i)\b[a-zA-Z0-9_$]*(?:token|secret|api_?key|nonce|password|passwd|auth|session|salt|reset|otp|pin|csrf)[a-zA-Z0-9_$]*\b"#).unwrap()
 }
@@ -15,6 +18,9 @@ fn get_js_weak_prng_regex() -> Regex {
 }
 fn get_py_weak_prng_regex() -> Regex {
     Regex::new(r#"\brandom\.(?:random|choice|choices|randint|sample|randrange)\s*\("#).unwrap()
+}
+fn get_rs_weak_prng_regex() -> Regex {
+    Regex::new(r#"\b(?:rand::thread_rng|rand::random)\s*\("#).unwrap()
 }
 fn get_weak_hash_patterns() -> Vec<(Regex, &'static str)> {
     vec![
@@ -30,39 +36,56 @@ pub fn detect_insecure_crypto_in_content(file_path: &str, content: &str) -> Vec<
     let sensitive_re = get_sensitive_identifier_regex();
     let js_prng_re = get_js_weak_prng_regex();
     let py_prng_re = get_py_weak_prng_regex();
+    let rs_prng_re = get_rs_weak_prng_regex();
     let hash_patterns = get_weak_hash_patterns();
     let is_js = is_js_ts(file_path);
     let is_python = is_py(file_path);
+    let is_rust = is_rs(file_path);
     for (idx, line) in content.lines().enumerate() {
         let line_num = idx + 1;
         let trimmed = line.trim();
-        if (is_js || (!is_python && !trimmed.contains("def "))) && js_prng_re.is_match(trimmed) && sensitive_re.is_match(trimmed) {
+        if (is_js || (!is_python && !is_rust && !trimmed.contains("def "))) && js_prng_re.is_match(trimmed) && sensitive_re.is_match(trimmed) {
             findings.push(SlopFinding {
                 file: file_path.to_string(),
                 line: line_num,
                 column: 1,
-                rule_id: "no-insecure-crypto".to_string(),
-                category: SlopCategory::Security,
+                rule_id: "no-insecure-prng-tokens".to_string(),
+                category: SlopCategory::CryptoFlaw,
                 severity: SlopSeverity::Error,
-                message: "Insecure PRNG used for security-sensitive token/credential (CWE-330): Math.random is cryptographically predictable".to_string(),
+                message: "Insecure pseudo-random number generator (Math.random) used for security-sensitive token/credential (CWE-330)".to_string(),
                 snippet: trimmed.to_string(),
-                fixable: false,
-                suggestion: Some("Use crypto.randomBytes(n), crypto.randomUUID(), or crypto.getRandomValues() for cryptographic entropy".to_string()),
+                fixable: true,
+                suggestion: Some("Use crypto.randomBytes(n), crypto.randomUUID(), or crypto.getRandomValues()".to_string()),
             });
             continue;
         }
-        if (is_python || (!is_js && trimmed.contains("def "))) && py_prng_re.is_match(trimmed) && sensitive_re.is_match(trimmed) {
+        if (is_python || (!is_js && !is_rust && trimmed.contains("def "))) && py_prng_re.is_match(trimmed) && sensitive_re.is_match(trimmed) {
             findings.push(SlopFinding {
                 file: file_path.to_string(),
                 line: line_num,
                 column: 1,
-                rule_id: "no-insecure-crypto".to_string(),
-                category: SlopCategory::Security,
+                rule_id: "no-insecure-prng-tokens".to_string(),
+                category: SlopCategory::CryptoFlaw,
                 severity: SlopSeverity::Error,
-                message: "Insecure PRNG used for security-sensitive token/credential (CWE-330): Python random module is predictable".to_string(),
+                message: "Insecure pseudo-random generator (Python random module) used for security token/credential (CWE-330)".to_string(),
                 snippet: trimmed.to_string(),
-                fixable: false,
+                fixable: true,
                 suggestion: Some("Use the standard secrets module (secrets.token_hex(), secrets.token_urlsafe(), secrets.choice())".to_string()),
+            });
+            continue;
+        }
+        if (is_rust || (!is_js && !is_python && trimmed.contains("fn "))) && rs_prng_re.is_match(trimmed) && sensitive_re.is_match(trimmed) {
+            findings.push(SlopFinding {
+                file: file_path.to_string(),
+                line: line_num,
+                column: 1,
+                rule_id: "no-insecure-prng-tokens".to_string(),
+                category: SlopCategory::CryptoFlaw,
+                severity: SlopSeverity::Error,
+                message: "Insecure PRNG (rand::thread_rng/rand::random) used for security token/credential without CSPRNG guarantees (CWE-330)".to_string(),
+                snippet: trimmed.to_string(),
+                fixable: true,
+                suggestion: Some("Use rand::rngs::OsRng or ring::rand::SystemRandom for cryptographic secrets".to_string()),
             });
             continue;
         }
@@ -91,6 +114,7 @@ pub fn detect_insecure_crypto_in_diff(diff_files: &[DiffFile]) -> Vec<SlopFindin
     let sensitive_re = get_sensitive_identifier_regex();
     let js_prng_re = get_js_weak_prng_regex();
     let py_prng_re = get_py_weak_prng_regex();
+    let rs_prng_re = get_rs_weak_prng_regex();
     let hash_patterns = get_weak_hash_patterns();
     for file in diff_files {
         if file.is_deleted {
@@ -99,6 +123,7 @@ pub fn detect_insecure_crypto_in_diff(diff_files: &[DiffFile]) -> Vec<SlopFindin
         let target_path = if !file.new_path.is_empty() { &file.new_path } else { &file.old_path };
         let is_js = is_js_ts(target_path);
         let is_python = is_py(target_path);
+        let is_rust = is_rs(target_path);
         for chunk in &file.chunks {
             for line in &chunk.lines {
                 if line.line_type != DiffLineType::Add {
@@ -106,33 +131,48 @@ pub fn detect_insecure_crypto_in_diff(diff_files: &[DiffFile]) -> Vec<SlopFindin
                 }
                 let trimmed = line.content.trim();
                 let line_num = line.new_line_number.unwrap_or(1);
-                if (is_js || (!is_python && !trimmed.contains("def "))) && js_prng_re.is_match(trimmed) && sensitive_re.is_match(trimmed) {
+                if (is_js || (!is_python && !is_rust && !trimmed.contains("def "))) && js_prng_re.is_match(trimmed) && sensitive_re.is_match(trimmed) {
                     findings.push(SlopFinding {
                         file: target_path.to_string(),
                         line: line_num,
                         column: 1,
-                        rule_id: "no-insecure-crypto".to_string(),
-                        category: SlopCategory::Security,
+                        rule_id: "no-insecure-prng-tokens".to_string(),
+                        category: SlopCategory::CryptoFlaw,
                         severity: SlopSeverity::Error,
-                        message: "Insecure PRNG used for security-sensitive token/credential (CWE-330): Math.random is cryptographically predictable".to_string(),
+                        message: "Insecure pseudo-random number generator (Math.random) used for security-sensitive token/credential (CWE-330)".to_string(),
                         snippet: trimmed.to_string(),
-                        fixable: false,
-                        suggestion: Some("Use crypto.randomBytes(n), crypto.randomUUID(), or crypto.getRandomValues() for cryptographic entropy".to_string()),
+                        fixable: true,
+                        suggestion: Some("Use crypto.randomBytes(n), crypto.randomUUID(), or crypto.getRandomValues()".to_string()),
                     });
                     continue;
                 }
-                if (is_python || (!is_js && trimmed.contains("def "))) && py_prng_re.is_match(trimmed) && sensitive_re.is_match(trimmed) {
+                if (is_python || (!is_js && !is_rust && trimmed.contains("def "))) && py_prng_re.is_match(trimmed) && sensitive_re.is_match(trimmed) {
                     findings.push(SlopFinding {
                         file: target_path.to_string(),
                         line: line_num,
                         column: 1,
-                        rule_id: "no-insecure-crypto".to_string(),
-                        category: SlopCategory::Security,
+                        rule_id: "no-insecure-prng-tokens".to_string(),
+                        category: SlopCategory::CryptoFlaw,
                         severity: SlopSeverity::Error,
-                        message: "Insecure PRNG used for security-sensitive token/credential (CWE-330): Python random module is predictable".to_string(),
+                        message: "Insecure pseudo-random generator (Python random module) used for security token/credential (CWE-330)".to_string(),
                         snippet: trimmed.to_string(),
-                        fixable: false,
+                        fixable: true,
                         suggestion: Some("Use the standard secrets module (secrets.token_hex(), secrets.token_urlsafe(), secrets.choice())".to_string()),
+                    });
+                    continue;
+                }
+                if (is_rust || (!is_js && !is_python && trimmed.contains("fn "))) && rs_prng_re.is_match(trimmed) && sensitive_re.is_match(trimmed) {
+                    findings.push(SlopFinding {
+                        file: target_path.to_string(),
+                        line: line_num,
+                        column: 1,
+                        rule_id: "no-insecure-prng-tokens".to_string(),
+                        category: SlopCategory::CryptoFlaw,
+                        severity: SlopSeverity::Error,
+                        message: "Insecure PRNG (rand::thread_rng/rand::random) used for security token/credential without CSPRNG guarantees (CWE-330)".to_string(),
+                        snippet: trimmed.to_string(),
+                        fixable: true,
+                        suggestion: Some("Use rand::rngs::OsRng or ring::rand::SystemRandom for cryptographic secrets".to_string()),
                     });
                     continue;
                 }
