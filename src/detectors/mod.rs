@@ -2,11 +2,13 @@ pub mod ai_bloat;
 pub mod circular_deps;
 pub mod command_injection;
 pub mod complexity;
+pub mod coverage_theater;
 pub mod duplicates;
 pub mod env_vars;
 pub mod floating_promises;
 pub mod ghost_dependencies;
 pub mod hallucinated_imports;
+pub mod insecure_transport;
 pub mod mocks;
 pub mod path_traversal;
 pub mod phantom_routes;
@@ -25,11 +27,13 @@ use crate::detectors::ai_bloat::{detect_ai_comment_bloat_in_content, detect_ai_c
 use crate::detectors::circular_deps::{detect_circular_dependencies_in_content, detect_circular_dependencies_in_diff};
 use crate::detectors::command_injection::{detect_command_injection_in_content, detect_command_injection_in_diff};
 use crate::detectors::complexity::{detect_nesting_sprawl_in_content, detect_nesting_sprawl_in_diff};
+use crate::detectors::coverage_theater::{detect_coverage_theater_in_content, detect_coverage_theater_in_diff};
 use crate::detectors::duplicates::{detect_duplicate_utilities, index_existing_functions};
 use crate::detectors::env_vars::{detect_ghost_env_vars_in_content, detect_ghost_env_vars_in_diff};
 use crate::detectors::floating_promises::{detect_floating_promises_in_content, detect_floating_promises_in_diff};
 use crate::detectors::ghost_dependencies::{detect_ghost_dependencies_in_content, detect_ghost_dependencies_in_diff};
 use crate::detectors::hallucinated_imports::{detect_hallucinated_imports_in_content, detect_hallucinated_imports_in_diff};
+use crate::detectors::insecure_transport::{detect_insecure_transport_in_content, detect_insecure_transport_in_diff};
 use crate::detectors::mocks::{detect_mocks_in_content, detect_mocks_in_diff};
 use crate::detectors::path_traversal::{detect_path_traversal_in_content, detect_path_traversal_in_diff};
 use crate::detectors::phantom_routes::{detect_phantom_routes_in_content, detect_phantom_routes_in_diff};
@@ -114,6 +118,12 @@ pub fn run_all_diff_detectors(diff_files: &[DiffFile], project_root: &Path, conf
     if config.rules.get("no-redos-vulnerability").map(|s| s != "off").unwrap_or(true) {
         findings.extend(detect_redos_in_diff(diff_files));
     }
+    if config.rules.get("no-coverage-theater").map(|s| s != "off").unwrap_or(true) {
+        findings.extend(detect_coverage_theater_in_diff(diff_files));
+    }
+    if config.rules.get("no-disabled-tls").map(|s| s != "off").unwrap_or(true) {
+        findings.extend(detect_insecure_transport_in_diff(diff_files));
+    }
     findings.into_iter().filter(|f| config.rules.get(&f.rule_id).map(|s| s != "off").unwrap_or(true)).map(|mut f| {
         if let Some(rule_setting) = config.rules.get(&f.rule_id) {
             if rule_setting == "error" {
@@ -147,6 +157,8 @@ pub fn run_all_content_detectors(file_path: &str, content: &str, project_root: &
     findings.extend(detect_path_traversal_in_content(file_path, content));
     findings.extend(detect_silent_errors_in_content(file_path, content));
     findings.extend(detect_redos_in_content(file_path, content));
+    findings.extend(detect_coverage_theater_in_content(file_path, content));
+    findings.extend(detect_insecure_transport_in_content(file_path, content));
     findings.into_iter().filter(|f| config.rules.get(&f.rule_id).map(|s| s != "off").unwrap_or(true)).map(|mut f| {
         if let Some(rule_setting) = config.rules.get(&f.rule_id) {
             if rule_setting == "error" {

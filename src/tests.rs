@@ -6,10 +6,12 @@ mod test_suite {
     use crate::detectors::command_injection::detect_command_injection_in_content;
     use crate::detectors::complexity::detect_nesting_sprawl_in_content;
     use crate::detectors::compute_summary;
+    use crate::detectors::coverage_theater::detect_coverage_theater_in_content;
     use crate::detectors::env_vars::detect_ghost_env_vars_in_content;
     use crate::detectors::floating_promises::detect_floating_promises_in_content;
     use crate::detectors::ghost_dependencies::detect_ghost_dependencies_in_content;
     use crate::detectors::hallucinated_imports::detect_hallucinated_imports_in_content;
+    use crate::detectors::insecure_transport::detect_insecure_transport_in_content;
     use crate::detectors::mocks::detect_mocks_in_content;
     use crate::detectors::path_traversal::detect_path_traversal_in_content;
     use crate::detectors::phantom_routes::detect_phantom_routes_in_content;
@@ -514,5 +516,34 @@ mod test_suite {
         let safe_code = "const safeSlug = /^[a-z0-9_-]+$/;\nconst datePattern = /^\\d{4}-\\d{2}-\\d{2}$/;\n";
         let safe_findings = detect_redos_in_content("safe.ts", safe_code);
         assert_eq!(safe_findings.len(), 0);
+    }
+    #[test]
+    fn test_detects_coverage_theater_and_vacuous_assertions() {
+        let ts_code = "describe('auth', () => {\n  it('should pass', () => {\n    expect(true).toBe(true);\n    expect(1).toEqual(1);\n  });\n  it('empty stub', () => {});\n});\n";
+        let findings_ts = detect_coverage_theater_in_content("auth.test.ts", ts_code);
+        assert!(findings_ts.len() >= 3);
+        let py_code = "def test_service():\n    assert True\n    assert 1 == 1\ndef test_empty():\n    pass\n";
+        let findings_py = detect_coverage_theater_in_content("test_service.py", py_code);
+        assert!(findings_py.len() >= 3);
+    }
+    #[test]
+    fn test_detects_insecure_transport_and_tls_bypass() {
+        let node_var = ["NODE_TLS_", "REJECT_UNAUTHORIZED"].concat();
+        let rej_unauth = ["reject", "Unauthorized"].concat();
+        let node_code = format!("process.env.{node_var} = '0';\nconst agent = new https.Agent({{ {rej_unauth}: false }});\n");
+        let findings_node = detect_insecure_transport_in_content("client.ts", &node_code);
+        assert_eq!(findings_node.len(), 2);
+        let py_ver = ["veri", "fy=False"].concat();
+        let py_code = format!("response = requests.get('https://internal.local', {py_ver})\nurllib3.disable_warnings()\n");
+        let findings_py = detect_insecure_transport_in_content("api.py", &py_code);
+        assert_eq!(findings_py.len(), 2);
+        let go_skip = ["Insecure", "SkipVerify: true"].concat();
+        let go_code = format!("cfg := &tls.Config{{{go_skip}}}\n");
+        let findings_go = detect_insecure_transport_in_content("main.go", &go_code);
+        assert_eq!(findings_go.len(), 1);
+        let rs_danger = ["danger_accept_", "invalid_certs(true)"].concat();
+        let rust_code = format!("let client = reqwest::Client::builder().{rs_danger}.build()?;\n");
+        let findings_rust = detect_insecure_transport_in_content("fetcher.rs", &rust_code);
+        assert_eq!(findings_rust.len(), 1);
     }
 }
