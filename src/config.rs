@@ -27,6 +27,7 @@ pub fn default_config() -> SlopConfig {
     rules.insert("no-async-array-predicates".to_string(), "error".to_string());
     rules.insert("no-inlined-secrets".to_string(), "error".to_string());
     rules.insert("no-slopsquat-deps".to_string(), "warning".to_string());
+    rules.insert("no-insecure-crypto".to_string(), "error".to_string());
     SlopConfig {
         ignore: vec![
             "target".into(),

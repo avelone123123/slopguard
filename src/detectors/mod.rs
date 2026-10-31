@@ -27,6 +27,7 @@ pub mod insecure_cors;
 pub mod watermarks;
 pub mod inlined_secrets;
 pub mod slopsquat;
+pub mod insecure_crypto;
 use crate::detectors::ai_bloat::{detect_ai_comment_bloat_in_content, detect_ai_comment_bloat_in_diff};
 use crate::detectors::circular_deps::{detect_circular_dependencies_in_content, detect_circular_dependencies_in_diff};
 use crate::detectors::command_injection::{detect_command_injection_in_content, detect_command_injection_in_diff};
@@ -55,6 +56,7 @@ use crate::detectors::insecure_cors::{detect_insecure_cors_in_content, detect_in
 use crate::detectors::watermarks::{detect_watermarks_in_content, detect_watermarks_in_diff};
 use crate::detectors::inlined_secrets::{detect_inlined_secrets_in_content, detect_inlined_secrets_in_diff};
 use crate::detectors::slopsquat::{detect_slopsquat_in_content, detect_slopsquat_in_diff};
+use crate::detectors::insecure_crypto::{detect_insecure_crypto_in_content, detect_insecure_crypto_in_diff};
 use crate::types::{DiffFile, SlopConfig, SlopFinding, SlopSeverity, SlopSummary};
 use std::path::Path;
 pub fn run_all_diff_detectors(diff_files: &[DiffFile], project_root: &Path, config: &SlopConfig) -> Vec<SlopFinding> {
@@ -144,6 +146,9 @@ pub fn run_all_diff_detectors(diff_files: &[DiffFile], project_root: &Path, conf
     if config.rules.get("no-slopsquat-deps").map(|s| s != "off").unwrap_or(true) {
         findings.extend(detect_slopsquat_in_diff(diff_files));
     }
+    if config.rules.get("no-insecure-crypto").map(|s| s != "off").unwrap_or(true) {
+        findings.extend(detect_insecure_crypto_in_diff(diff_files));
+    }
     findings.into_iter().filter(|f| config.rules.get(&f.rule_id).map(|s| s != "off").unwrap_or(true)).map(|mut f| {
         if let Some(rule_setting) = config.rules.get(&f.rule_id) {
             if rule_setting == "error" {
@@ -183,6 +188,7 @@ pub fn run_all_content_detectors(file_path: &str, content: &str, project_root: &
     findings.extend(detect_insecure_cors_in_content(file_path, content));
     findings.extend(detect_inlined_secrets_in_content(file_path, content));
     findings.extend(detect_slopsquat_in_content(file_path, content));
+    findings.extend(detect_insecure_crypto_in_content(file_path, content));
     findings.into_iter().filter(|f| config.rules.get(&f.rule_id).map(|s| s != "off").unwrap_or(true)).map(|mut f| {
         if let Some(rule_setting) = config.rules.get(&f.rule_id) {
             if rule_setting == "error" {

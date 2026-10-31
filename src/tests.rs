@@ -28,6 +28,7 @@ mod test_suite {
     use crate::detectors::watermarks::detect_watermarks_in_content;
     use crate::detectors::inlined_secrets::detect_inlined_secrets_in_content;
     use crate::detectors::slopsquat::detect_slopsquat_in_content;
+    use crate::detectors::insecure_crypto::detect_insecure_crypto_in_content;
     use crate::fixers::sanitize_code;
     use crate::reporters::generate_badge_svg;
     use crate::telemetry::{create_shared_telemetry, record_event};
@@ -692,5 +693,67 @@ mod test_suite {
         let reqs = format!("{pkg2}==0.1.0\nuvicorn>=0.20.0");
         let findings2 = detect_slopsquat_in_content("requirements.txt", &reqs);
         assert_eq!(findings2.len(), 1);
+    }
+    #[test]
+    fn test_detects_insecure_crypto_weak_prng_js_ts() {
+        let m_rnd = ["Math.", "random()"].concat();
+        let js_code = [
+            format!("const sessionToken = {m_rnd}.toString(36).substring(2);"),
+            format!("let resetPasswordToken = {m_rnd}.toString();"),
+            format!("const apiKey = \"ak_\" + {m_rnd}.toString(16);"),
+            format!("const otp = Math.floor(100000 + {m_rnd} * 900000);"),
+            format!("function generateAuthNonce() {{ return {m_rnd}.toString(36); }}"),
+            format!("const csrfToken = {m_rnd}.toString();"),
+        ].join("\n");
+        let findings = detect_insecure_crypto_in_content("src/auth/token.ts", &js_code);
+        assert_eq!(findings.len(), 6);
+        assert_eq!(findings[0].rule_id, "no-insecure-crypto");
+    }
+    #[test]
+    fn test_detects_insecure_crypto_weak_prng_python() {
+        let py_code = [
+            "token = ''.join(random.choice(chars) for _ in range(32))",
+            "secret_key = random.randint(100000, 999999)",
+            "reset_code = random.randrange(100000, 999999)",
+            "session_id = ''.join(random.choices(string.ascii_letters, k=32))",
+            "salt = random.sample(alphabet, 16)",
+        ].join("\n");
+        let findings = detect_insecure_crypto_in_content("auth/security.py", &py_code);
+        assert_eq!(findings.len(), 5);
+        assert_eq!(findings[0].rule_id, "no-insecure-crypto");
+    }
+    #[test]
+    fn test_detects_insecure_crypto_broken_hashes() {
+        let m5 = ["m", "d5"].concat();
+        let code_node = format!("const hash = crypto.createHash('{m5}').update(pwd).digest('hex');\n");
+        let findings1 = detect_insecure_crypto_in_content("hash.js", &code_node);
+        assert_eq!(findings1.len(), 1);
+        let code_py = format!("digest = hashlib.{m5}(token.encode()).hexdigest()\n");
+        let findings2 = detect_insecure_crypto_in_content("hasher.py", &code_py);
+        assert_eq!(findings2.len(), 1);
+        let code_go = format!("h := {m5}.New()\n");
+        let findings3 = detect_insecure_crypto_in_content("hash.go", &code_go);
+        assert_eq!(findings3.len(), 1);
+        let code_php = format!("$hash = {m5}($password);\n");
+        let findings4 = detect_insecure_crypto_in_content("login.php", &code_php);
+        assert_eq!(findings4.len(), 1);
+    }
+    #[test]
+    fn test_insecure_crypto_safe_patterns_ignored() {
+        let safe_js = [
+            "const width = Math.random() * 800;",
+            "const diceRoll = Math.floor(Math.random() * 6) + 1;",
+            "const token = crypto.randomBytes(32).toString('hex');",
+            "const id = crypto.randomUUID();",
+            "const digest = crypto.createHash('sha256').update(data).digest('hex');",
+        ].join("\n");
+        assert!(detect_insecure_crypto_in_content("visuals.js", &safe_js).is_empty());
+        let safe_py = [
+            "color = random.choice(['red', 'green', 'blue'])",
+            "die = random.randint(1, 6)",
+            "auth_token = secrets.token_hex(32)",
+            "pw_hash = hashlib.sha256(data).hexdigest()",
+        ].join("\n");
+        assert!(detect_insecure_crypto_in_content("game.py", &safe_py).is_empty());
     }
 }
