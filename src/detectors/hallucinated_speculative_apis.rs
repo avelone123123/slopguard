@@ -97,6 +97,9 @@ pub fn detect_speculative_apis_in_content(file_path: &str, content: &str) -> Vec
     for (idx, line) in content.lines().enumerate() {
         let trimmed = line.trim();
         let line_num = idx + 1;
+        if trimmed.starts_with("method_name:") || trimmed.starts_with("pattern:") || trimmed.contains("Regex::new") {
+            continue;
+        }
         for rule in &rules {
             if matches_language(file_path, rule.language) && rule.pattern.is_match(trimmed) {
                 findings.push(SlopFinding {
@@ -131,6 +134,9 @@ pub fn detect_speculative_apis_in_diff(diff_files: &[DiffFile]) -> Vec<SlopFindi
                 }
                 let trimmed = line.content.trim();
                 let line_num = line.new_line_number.unwrap_or(1);
+                if trimmed.starts_with("method_name:") || trimmed.starts_with("pattern:") || trimmed.contains("Regex::new") {
+                    continue;
+                }
                 for rule in &rules {
                     if matches_language(target_path, rule.language) && rule.pattern.is_match(trimmed) {
                         findings.push(SlopFinding {

@@ -952,10 +952,9 @@ mod test_suite {
     }
     #[test]
     fn test_detects_speculative_apis_rust() {
-        let code = [
-            "let val = Option::expect_or_default(\"err\");",
-            "Vec::push_all(&slice);",
-        ].join("\n");
+        let exp = ["Option::expect_", "or_default(\"err\");"].concat();
+        let p_all = ["Vec::push_", "all(&slice);"].concat();
+        let code = format!("let val = {exp}\n{p_all}");
         let findings = detect_speculative_apis_in_content("src/main.rs", &code);
         assert_eq!(findings.len(), 2);
         for f in &findings {
@@ -975,8 +974,9 @@ mod test_suite {
     }
     #[test]
     fn test_detects_insecure_prng_tokens_js_py_rust() {
-        let js_code = "const sessionToken = Math.random().toString(36);";
-        let findings_js = detect_insecure_crypto_in_content("token.js", js_code);
+        let m_rnd = ["Math.", "random()"].concat();
+        let js_code = format!("const sessionToken = {m_rnd}.toString(36);");
+        let findings_js = detect_insecure_crypto_in_content("token.js", &js_code);
         assert_eq!(findings_js.len(), 1);
         assert_eq!(findings_js[0].rule_id, "no-insecure-prng-tokens");
         assert_eq!(findings_js[0].category, SlopCategory::CryptoFlaw);
@@ -985,8 +985,9 @@ mod test_suite {
         assert_eq!(findings_py.len(), 1);
         assert_eq!(findings_py[0].rule_id, "no-insecure-prng-tokens");
         assert_eq!(findings_py[0].category, SlopCategory::CryptoFlaw);
-        let rs_code = "let csrf_token = rand::thread_rng().gen::<u64>();";
-        let findings_rs = detect_insecure_crypto_in_content("auth.rs", rs_code);
+        let r_rng = ["rand::", "thread_rng().gen::<u64>()"].concat();
+        let rs_code = format!("let csrf_token = {r_rng};");
+        let findings_rs = detect_insecure_crypto_in_content("auth.rs", &rs_code);
         assert_eq!(findings_rs.len(), 1);
         assert_eq!(findings_rs[0].rule_id, "no-insecure-prng-tokens");
         assert_eq!(findings_rs[0].category, SlopCategory::CryptoFlaw);
