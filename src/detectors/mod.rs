@@ -32,6 +32,8 @@ pub mod test_sabotage;
 pub mod unbounded_concurrency;
 pub mod async_callback_traps;
 pub mod hallucinated_speculative_apis;
+pub mod async_loop_traps;
+pub mod package_hallucinations;
 use crate::detectors::ai_bloat::{detect_ai_comment_bloat_in_content, detect_ai_comment_bloat_in_diff};
 use crate::detectors::circular_deps::{detect_circular_dependencies_in_content, detect_circular_dependencies_in_diff};
 use crate::detectors::command_injection::{detect_command_injection_in_content, detect_command_injection_in_diff};
@@ -65,6 +67,8 @@ use crate::detectors::test_sabotage::{detect_test_sabotage_in_content, detect_te
 use crate::detectors::unbounded_concurrency::{detect_unbounded_concurrency_in_content, detect_unbounded_concurrency_in_diff};
 use crate::detectors::async_callback_traps::{detect_async_callback_traps_in_content, detect_async_callback_traps_in_diff};
 use crate::detectors::hallucinated_speculative_apis::{detect_speculative_apis_in_content, detect_speculative_apis_in_diff};
+use crate::detectors::async_loop_traps::{detect_async_loop_traps_in_content, detect_async_loop_traps_in_diff};
+use crate::detectors::package_hallucinations::{detect_package_hallucinations_in_content, detect_package_hallucinations_in_diff};
 use crate::types::{DiffFile, SlopConfig, SlopFinding, SlopSeverity, SlopSummary};
 use std::path::Path;
 pub fn run_all_diff_detectors(diff_files: &[DiffFile], project_root: &Path, config: &SlopConfig) -> Vec<SlopFinding> {
@@ -169,6 +173,12 @@ pub fn run_all_diff_detectors(diff_files: &[DiffFile], project_root: &Path, conf
     if config.rules.get("no-async-in-sync-callbacks").map(|s| s != "off").unwrap_or(true) {
         findings.extend(detect_async_callback_traps_in_diff(diff_files));
     }
+    if config.rules.get("no-unawaited-async-in-loops").map(|s| s != "off").unwrap_or(true) {
+        findings.extend(detect_async_loop_traps_in_diff(diff_files));
+    }
+    if config.rules.get("no-hallucinated-package-manifest").map(|s| s != "off").unwrap_or(true) {
+        findings.extend(detect_package_hallucinations_in_diff(diff_files));
+    }
     findings.into_iter().filter(|f| config.rules.get(&f.rule_id).map(|s| s != "off").unwrap_or(true)).map(|mut f| {
         if let Some(rule_setting) = config.rules.get(&f.rule_id) {
             if rule_setting == "error" {
@@ -213,6 +223,8 @@ pub fn run_all_content_detectors(file_path: &str, content: &str, project_root: &
     findings.extend(detect_unbounded_concurrency_in_content(file_path, content));
     findings.extend(detect_async_callback_traps_in_content(file_path, content));
     findings.extend(detect_speculative_apis_in_content(file_path, content));
+    findings.extend(detect_async_loop_traps_in_content(file_path, content));
+    findings.extend(detect_package_hallucinations_in_content(file_path, content));
     findings.into_iter().filter(|f| config.rules.get(&f.rule_id).map(|s| s != "off").unwrap_or(true)).map(|mut f| {
         if let Some(rule_setting) = config.rules.get(&f.rule_id) {
             if rule_setting == "error" {

@@ -1,5 +1,12 @@
 # Changelog
 All notable changes to SlopGuard are documented in this file.
+## [1.5.0] - 2026-10-31
+### Added
+- Implemented `no-unawaited-async-in-loops` AST detector (SLOP-037) for JS/TS, Python, and Rust.
+- Implemented `no-hallucinated-package-manifest` zero-trust supply chain firewall (SLOP-038).
+- Expanded `SlopCategory` with `SupplyChainPoisoning` and `AsyncIterationHazard`.
+- Added 8 new regression test suites reaching 70 total tests with 100% pass verification.
+- Web playground interactive AST diff auditor and dependency slopsquatting firewall demo.
 ## [1.4.0] - 2026-10-31
 ### Added
 - Speculative dependency slopsquatting firewall (`no-slopsquat-deps`, SLOP-036) for npm, PyPI, and crates.io.

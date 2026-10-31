@@ -33,6 +33,8 @@ pub fn default_config() -> SlopConfig {
     rules.insert("no-async-in-sync-callbacks".to_string(), "error".to_string());
     rules.insert("no-hallucinated-speculative-apis".to_string(), "error".to_string());
     rules.insert("no-insecure-prng-tokens".to_string(), "error".to_string());
+    rules.insert("no-unawaited-async-in-loops".to_string(), "error".to_string());
+    rules.insert("no-hallucinated-package-manifest".to_string(), "error".to_string());
     SlopConfig {
         ignore: vec![
             "target".into(),

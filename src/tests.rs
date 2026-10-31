@@ -33,6 +33,8 @@ mod test_suite {
     use crate::detectors::unbounded_concurrency::detect_unbounded_concurrency_in_content;
     use crate::detectors::async_callback_traps::detect_async_callback_traps_in_content;
     use crate::detectors::hallucinated_speculative_apis::detect_speculative_apis_in_content;
+    use crate::detectors::async_loop_traps::detect_async_loop_traps_in_content;
+    use crate::detectors::package_hallucinations::detect_package_hallucinations_in_content;
     use crate::types::SlopCategory;
     use crate::fixers::sanitize_code;
     use crate::reporters::generate_badge_svg;
@@ -1041,5 +1043,62 @@ mod test_suite {
         let manifest = "{\n  \"dependencies\": {\n    \"@types/react\": \"^18.0.0\",\n    \"@nestjs/common\": \"^10.0.0\",\n    \"local-lib\": \"file:../lib\"\n  }\n}";
         let findings = detect_slopsquat_in_content("package.json", manifest);
         assert_eq!(findings.len(), 0);
+    }
+    #[test]
+    fn test_detects_unawaited_async_in_loops_js_ts() {
+        let code = ["for (const item of items) {", "    fetch('/api/process', { method: 'POST', body: JSON.stringify(item) });", "}"].join("\n");
+        let findings = detect_async_loop_traps_in_content("sync.ts", &code);
+        assert_eq!(findings.len(), 1);
+        assert_eq!(findings[0].rule_id, "no-unawaited-async-in-loops");
+        assert_eq!(findings[0].category, SlopCategory::AsyncIterationHazard);
+    }
+    #[test]
+    fn test_detects_unawaited_async_in_loops_python() {
+        let code = ["for payload in batch:", "    aiohttp.ClientSession().post('http://example.com', json=payload)"].join("\n");
+        let findings = detect_async_loop_traps_in_content("batch.py", &code);
+        assert_eq!(findings.len(), 1);
+        assert_eq!(findings[0].rule_id, "no-unawaited-async-in-loops");
+    }
+    #[test]
+    fn test_detects_unawaited_async_in_loops_rust() {
+        let code = ["for task in task_queue {", "    tokio::spawn(async move {", "        do_work().await;", "    });", "}"].join("\n");
+        let findings = detect_async_loop_traps_in_content("worker.rs", &code);
+        assert_eq!(findings.len(), 1);
+        assert_eq!(findings[0].rule_id, "no-unawaited-async-in-loops");
+    }
+    #[test]
+    fn test_async_loops_safe_awaited_patterns_pass() {
+        let js_code = ["for (const item of items) {", "    await fetch('/api/process', { method: 'POST', body: JSON.stringify(item) });", "}"].join("\n");
+        let py_code = ["for payload in batch:", "    await client.post('http://example.com', json=payload)"].join("\n");
+        let rs_code = ["for task in task_queue {", "    let permit = sem.clone().acquire_owned().await.unwrap();", "    join_set.spawn(async move {", "        let _p = permit;", "        do_work().await;", "    });", "}"].join("\n");
+        assert!(detect_async_loop_traps_in_content("ok.ts", &js_code).is_empty());
+        assert!(detect_async_loop_traps_in_content("ok.py", &py_code).is_empty());
+        assert!(detect_async_loop_traps_in_content("ok.rs", &rs_code).is_empty());
+    }
+    #[test]
+    fn test_detects_hallucinated_package_manifest_npm() {
+        let json = ["{", "  \"dependencies\": {", "    \"requests-async-retry\": \"^1.0.0\",", "    \"react-state-enhancer\": \"*\"", "  }", "}"].join("\n");
+        let findings = detect_package_hallucinations_in_content("package.json", &json);
+        assert_eq!(findings.len(), 2);
+        assert_eq!(findings[0].rule_id, "no-hallucinated-package-manifest");
+        assert_eq!(findings[0].category, SlopCategory::SupplyChainPoisoning);
+    }
+    #[test]
+    fn test_detects_hallucinated_package_manifest_python() {
+        let reqs = ["fastapi-jwt-guard>=1.0.0", "requests-async-retry==0.2.1"].join("\n");
+        let findings = detect_package_hallucinations_in_content("requirements.txt", &reqs);
+        assert_eq!(findings.len(), 2);
+    }
+    #[test]
+    fn test_detects_hallucinated_package_manifest_cargo() {
+        let toml = ["[dependencies]", "tokio-rate-limiter-pro = \"*\""].join("\n");
+        let findings = detect_package_hallucinations_in_content("Cargo.toml", &toml);
+        assert_eq!(findings.len(), 1);
+        assert_eq!(findings[0].rule_id, "no-hallucinated-package-manifest");
+    }
+    #[test]
+    fn test_hallucinated_package_manifest_safe_deps_pass() {
+        let safe_json = ["{", "  \"dependencies\": {", "    \"react\": \"^18.2.0\",", "    \"@types/node\": \"^20.0.0\",", "    \"@prisma/client\": \"^5.0.0\"", "  }", "}"].join("\n");
+        assert!(detect_package_hallucinations_in_content("package.json", &safe_json).is_empty());
     }
 }
