@@ -24,7 +24,7 @@ pub const CONTRACT: crate::types::AstDetectorContract = crate::types::AstDetecto
 rule_id: "no-unsafe-deserialization",
 severity: SlopSeverity::Error,
 category: SlopCategory::Security,
-target_languages: &["py", "js", "ts", "rb"],
+target_languages: &["py", "js", "ts", "rb", "php", "java", "rs"],
 analyze_diff: detect_unsafe_deserialization_in_diff,
 analyze_content: detect_unsafe_deserialization_in_content,
 };
@@ -50,7 +50,7 @@ fn get_deserialization_patterns(file_path: &str) -> Vec<(Regex, Option<&'static 
     }
     if !specific || is_java(file_path) {
         patterns.push((Regex::new(r#"(?i)\bXMLDecoder\s*\("#).unwrap(), None, "Java XMLDecoder allows arbitrary object instantiation", "Use Jackson or Gson with strict type validation"));
-        patterns.push((Regex::new(r#"(?i)\bObjectInputStream\s*\([^)]*\)\.readObject\s*\("#).unwrap(), None, "Java ObjectInputStream deserialization allows gadget chain execution", "Implement serial filtering (ObjectInputFilter) before calling readObject"));
+        patterns.push((Regex::new(r#"(?i)(?:\bObjectInputStream\s*\([^)]*\)\.readObject|\bObjectInputStream\b.*\.readObject|\.readObject\s*\()"#).unwrap(), None, "Java ObjectInputStream deserialization allows gadget chain execution", "Implement serial filtering (ObjectInputFilter) before calling readObject"));
     }
     patterns
 }

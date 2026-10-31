@@ -24,7 +24,8 @@ pub fn detect_async_race_traps_in_diff(diff_files: &[DiffFile]) -> Vec<SlopFindi
                 let is_js_race_leak = js_race.is_match(line_str) && !line_str.contains(".catch");
                 let is_stream_pipe_leak = node_stream_pipe.is_match(line_str) && !line_str.contains(".on('error'") && !line_str.contains(".on(\"error\"");
                 let is_gather_leak = py_gather.is_match(line_str) && !line_str.contains("return_exceptions");
-                if is_js_race_leak || is_stream_pipe_leak || is_gather_leak {
+                let is_yield_leak = (line_str.starts_with("yield ") || line_str.starts_with("yield\t")) && (line_str.contains("fetch(") || line_str.contains("db.query(") || line_str.contains("axios.") || line_str.contains("client.get(")) && !line_str.contains("await ") && !line_str.contains("yield*");
+                if is_js_race_leak || is_stream_pipe_leak || is_gather_leak || is_yield_leak {
                     findings.push(SlopFinding {
                         file: path.clone(),
                         line: line_num,
@@ -59,7 +60,8 @@ pub fn detect_async_race_traps_in_content(file_path: &str, content: &str) -> Vec
         let is_js_race_leak = js_race.is_match(line_str) && !line_str.contains(".catch") && !next_line.starts_with(".catch");
         let is_stream_pipe_leak = node_stream_pipe.is_match(line_str) && !line_str.contains(".on('error'") && !line_str.contains(".on(\"error\"") && !next_line.contains(".on('error'") && !next_line.contains(".on(\"error\"");
         let is_gather_leak = py_gather.is_match(line_str) && !line_str.contains("return_exceptions");
-        if is_js_race_leak || is_stream_pipe_leak || is_gather_leak {
+        let is_yield_leak = (line_str.starts_with("yield ") || line_str.starts_with("yield\t")) && (line_str.contains("fetch(") || line_str.contains("db.query(") || line_str.contains("axios.") || line_str.contains("client.get(")) && !line_str.contains("await ") && !line_str.contains("yield*");
+        if is_js_race_leak || is_stream_pipe_leak || is_gather_leak || is_yield_leak {
             findings.push(SlopFinding {
                 file: file_path.to_string(),
                 line: line_num,

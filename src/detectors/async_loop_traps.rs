@@ -62,7 +62,37 @@ continue;
 if py && trimmed.starts_with('#') {
 continue;
 }
+if (trimmed.starts_with("yield ") || trimmed.starts_with("yield\t")) && (trimmed.contains("fetch(") || trimmed.contains("fetch (") || trimmed.contains("axios.") || trimmed.contains("db.query(") || trimmed.contains("client.get(")) && !trimmed.contains("await ") && !trimmed.contains("yield*") {
+findings.push(SlopFinding {
+file: file_path.to_string(),
+line: line_num,
+column: 1,
+rule_id: "no-unawaited-async-in-loops".to_string(),
+category: SlopCategory::AsyncIterationHazard,
+severity: SlopSeverity::Error,
+message: "Async generator yielding raw unawaited promise or coroutine without await or yield*".to_string(),
+snippet: trimmed.to_string(),
+fixable: false,
+suggestion: Some("Await the promise before yielding or delegate with 'yield*'".to_string()),
+});
+continue;
+}
 if js && js_loop_re.is_match(trimmed) {
+if (trimmed.contains("fetch(") || trimmed.contains("fetch (") || trimmed.contains("axios.")) && (trimmed.contains("await ") || trimmed.contains("await\t")) && !trimmed.contains("signal:") && !trimmed.contains("signal") {
+findings.push(SlopFinding {
+file: file_path.to_string(),
+line: line_num,
+column: 1,
+rule_id: "no-unawaited-async-in-loops".to_string(),
+category: SlopCategory::AsyncIterationHazard,
+severity: SlopSeverity::Error,
+message: "Loop fetch lacking AbortController cancellation signal risks socket exhaustion during aborted iterations".to_string(),
+snippet: trimmed.to_string(),
+fixable: false,
+suggestion: Some("Pass an AbortSignal ('{ signal: controller.signal }') to cancel pending requests on loop exit".to_string()),
+});
+continue;
+}
 if js_async_re.is_match(trimmed) && !has_js_sync_guard(trimmed) {
 findings.push(SlopFinding {
 file: file_path.to_string(),
@@ -83,6 +113,21 @@ if let Some(body_line) = lines.get(idx + offset) {
 let body_trimmed = body_line.trim();
 if body_trimmed.starts_with("//") || body_trimmed.starts_with("/*") || body_trimmed.starts_with('*') {
 continue;
+}
+if (body_trimmed.contains("fetch(") || body_trimmed.contains("fetch (") || body_trimmed.contains("axios.")) && (body_trimmed.contains("await ") || body_trimmed.contains("await\t")) && !body_trimmed.contains("signal:") && !body_trimmed.contains("signal") {
+findings.push(SlopFinding {
+file: file_path.to_string(),
+line: idx + offset + 1,
+column: 1,
+rule_id: "no-unawaited-async-in-loops".to_string(),
+category: SlopCategory::AsyncIterationHazard,
+severity: SlopSeverity::Error,
+message: "Loop fetch lacking AbortController cancellation signal risks socket exhaustion during aborted iterations".to_string(),
+snippet: body_trimmed.to_string(),
+fixable: false,
+suggestion: Some("Pass an AbortSignal ('{ signal: controller.signal }') to cancel pending requests on loop exit".to_string()),
+});
+break;
 }
 if js_async_re.is_match(body_trimmed) && !has_js_sync_guard(body_trimmed) {
 findings.push(SlopFinding {

@@ -23,7 +23,7 @@ fn get_py_weak_prng_regex() -> Regex {
     Regex::new(r#"\brandom\.(?:random|choice|choices|randint|sample|randrange)\s*\("#).unwrap()
 }
 fn get_rs_weak_prng_regex() -> Regex {
-    Regex::new(r#"\b(?:rand::thread_rng|rand::random)\s*\("#).unwrap()
+    Regex::new(r#"\b(?:rand::thread_rng|rand::random(?:::<[^>]+>)?)\s*(?:\.|\()"#).unwrap()
 }
 fn get_go_weak_prng_regex() -> Regex {
     Regex::new(r#"\brand\.(?:Intn|Float64|Int|Int31|Int63|Uint32|Uint64)\s*\("#).unwrap()

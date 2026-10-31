@@ -1,5 +1,13 @@
 # Changelog
 All notable changes to SlopGuard are documented in this file.
+## [2.1.0] - 2026-11-01
+### Added
+- Hardened SLOP-047 package manifest firewall with Go module speculative signatures and TOML wildcard interception.
+- Hardened SLOP-048 async iteration traps with missing AbortController signals and unhandled generator yield interception.
+- Hardened SLOP-049 insecure deserialization covering gadget chains across Python, Node.js, PHP, Ruby, and Java.
+- Hardened SLOP-050 cryptographic entropy firewall strictly enforcing CSPRNG primitives for salts, nonces, and session tokens.
+- Expanded deterministic test suite from 97 to 105 passing unit/regression tests with zero false-positives.
+- Classic dark editorial web redesign with zero neon artifacts, hairline monospaced data grids, and pure SVG icons.
 ## [2.0.0] - 2026-11-01
 ### Added
 - Scaled firewall matrix to 46 active production AST contracts across 5 operational divisions.

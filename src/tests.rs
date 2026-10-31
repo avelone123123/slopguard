@@ -1075,7 +1075,7 @@ mod test_suite {
     }
     #[test]
     fn test_async_loops_safe_awaited_patterns_pass() {
-        let js_code = ["for (const item of items) {", "    await fetch('/api/process', { method: 'POST', body: JSON.stringify(item) });", "}"].join("\n");
+        let js_code = ["for (const item of items) {", "    await fetch('/api/process', { method: 'POST', body: JSON.stringify(item), signal: controller.signal });", "}"].join("\n");
         let py_code = ["for payload in batch:", "    await client.post('http://example.com', json=payload)"].join("\n");
         let rs_code = ["for task in task_queue {", "    let permit = sem.clone().acquire_owned().await.unwrap();", "    join_set.spawn(async move {", "        let _p = permit;", "        do_work().await;", "    });", "}"].join("\n");
         assert!(detect_async_loop_traps_in_content("ok.ts", &js_code).is_empty());
@@ -1335,5 +1335,78 @@ mod test_suite {
         assert_eq!(f_js[0].rule_id, "no-insecure-prng-tokens");
         assert_eq!(f_py.len(), 1);
         assert_eq!(f_py[0].rule_id, "no-insecure-prng-tokens");
+    }
+    #[test]
+    fn test_detects_package_manifest_go_mod_hallucinations() {
+        let manifest = ["module myapp", "go 1.22", "require (", "    github.com/gin-gonic/gin v1.9.1", "    github.com/user/jwt-guard v1.0.0", "    github.com/org/auth-shield v2.0.0", ")"].join("\n");
+        let findings = detect_package_hallucinations_in_content("go.mod", &manifest);
+        assert_eq!(findings.len(), 2);
+        assert_eq!(findings[0].rule_id, "no-hallucinated-package-manifest");
+        assert_eq!(findings[1].rule_id, "no-hallucinated-package-manifest");
+    }
+    #[test]
+    fn test_detects_package_manifest_pyproject_wildcards() {
+        let pyproject = ["[project]", "name = \"demo\"", "dependencies = [", "    \"pydantic>=2.0\",", "    \"requests==*\",", "]", "[tool.poetry.dependencies]", "fastapi = \"*\""].join("\n");
+        let findings = detect_package_hallucinations_in_content("pyproject.toml", &pyproject);
+        assert_eq!(findings.len(), 2);
+        assert_eq!(findings[0].rule_id, "no-hallucinated-package-manifest");
+        assert_eq!(findings[1].rule_id, "no-hallucinated-package-manifest");
+    }
+    #[test]
+    fn test_detects_async_stream_unhandled_generator_yield() {
+        let js_code = ["async function* fetchStream(urls) {", "    for (const url of urls) {", "        yield fetch(url);", "    }", "}"].join("\n");
+        let findings = detect_async_loop_traps_in_content("stream.js", &js_code);
+        assert_eq!(findings.len(), 1);
+        assert_eq!(findings[0].rule_id, "no-unawaited-async-in-loops");
+        assert_eq!(findings[0].category, SlopCategory::AsyncIterationHazard);
+    }
+    #[test]
+    fn test_detects_async_loop_missing_abort_controller() {
+        let js_code = ["for (const url of endpoints) {", "    const res = await fetch(url);", "    await process(res);", "}"].join("\n");
+        let findings = detect_async_loop_traps_in_content("worker.js", &js_code);
+        assert_eq!(findings.len(), 1);
+        assert_eq!(findings[0].rule_id, "no-unawaited-async-in-loops");
+        assert!(findings[0].message.contains("AbortController"));
+    }
+    #[test]
+    fn test_detects_unsafe_deserialization_gadgets_python_java() {
+        let py_code = ["import pickle", "obj = pickle.loads(untrusted_payload)"].join("\n");
+        let java_code = ["ObjectInputStream in = new ObjectInputStream(socket.getInputStream());", "Object obj = in.readObject();"].join("\n");
+        let f_py = detect_unsafe_deserialization_in_content("worker.py", &py_code);
+        let f_java = detect_unsafe_deserialization_in_content("Server.java", &java_code);
+        assert_eq!(f_py.len(), 1);
+        assert_eq!(f_py[0].rule_id, "no-unsafe-deserialization");
+        assert_eq!(f_java.len(), 1);
+        assert_eq!(f_java[0].rule_id, "no-unsafe-deserialization");
+    }
+    #[test]
+    fn test_detects_unsafe_deserialization_node_eval_chains() {
+        let node_code = ["const serialize = require('node-serialize');", "const obj = serialize.unserialize(cookieData);", "const hydrated = eval('(' + userInput + ')');"].join("\n");
+        let findings = detect_unsafe_deserialization_in_content("session.js", &node_code);
+        assert_eq!(findings.len(), 2);
+        assert_eq!(findings[0].rule_id, "no-unsafe-deserialization");
+        assert_eq!(findings[1].rule_id, "no-unsafe-deserialization");
+    }
+    #[test]
+    fn test_detects_insecure_prng_salt_and_nonce_rust_go() {
+        let rs_code = ["fn generate_credentials() {", "    let salt = rand::random::<u64>();", "}"].join("\n");
+        let go_code = ["func generateNonce() int {", "    nonce := rand.Intn(1000000)", "    return nonce", "}"].join("\n");
+        let f_rs = detect_insecure_crypto_in_content("crypto.rs", &rs_code);
+        let f_go = detect_insecure_crypto_in_content("auth.go", &go_code);
+        assert_eq!(f_rs.len(), 1);
+        assert_eq!(f_rs[0].rule_id, "no-insecure-prng-tokens");
+        assert_eq!(f_go.len(), 1);
+        assert_eq!(f_go[0].rule_id, "no-insecure-prng-tokens");
+    }
+    #[test]
+    fn test_safe_csprng_and_safe_manifests_zero_false_positives() {
+        let safe_js_csprng = ["const token = crypto.randomBytes(32).toString('hex');", "const uuid = crypto.randomUUID();"].join("\n");
+        let safe_py_csprng = ["import secrets", "auth_token = secrets.token_hex(32)", "salt = secrets.token_bytes(16)"].join("\n");
+        let safe_manifest_cargo = ["[dependencies]", "serde = { version = \"1.0.200\", features = [\"derive\"] }", "tokio = \"1.38.0\""].join("\n");
+        let safe_manifest_npm = ["{", "  \"dependencies\": {", "    \"react\": \"^18.2.0\",", "    \"@types/node\": \"^20.0.0\"", "  }", "}"].join("\n");
+        assert!(detect_insecure_crypto_in_content("auth.js", &safe_js_csprng).is_empty());
+        assert!(detect_insecure_crypto_in_content("auth.py", &safe_py_csprng).is_empty());
+        assert!(detect_package_hallucinations_in_content("Cargo.toml", &safe_manifest_cargo).is_empty());
+        assert!(detect_package_hallucinations_in_content("package.json", &safe_manifest_npm).is_empty());
     }
 }
