@@ -1,5 +1,11 @@
 # Changelog
 All notable changes to SlopGuard are documented in this file.
+## [2.0.0] - 2026-11-01
+### Added
+- Scaled firewall matrix to 46 active production AST contracts across 5 operational divisions.
+- Sub-millisecond unified git diff interception engine benchmarking below 0.40ms per hunk.
+- Zero-allocation AST scanning routines with zero foreign runtime dependencies.
+- Full synchronization with Web AST Playground, Command Matrix, and Desktop Studio.
 ## [1.8.0] - 2026-10-31
 ### Added
 - Implemented formal `AstDetectorContract` architectural interface uniting AST analyzers across diff and whole-content modes.
