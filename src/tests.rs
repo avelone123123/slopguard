@@ -15,6 +15,7 @@ mod test_suite {
     use crate::detectors::phantom_routes::detect_phantom_routes_in_content;
     use crate::detectors::placeholders::detect_placeholders_in_content;
     use crate::detectors::prototype_pollution::detect_prototype_pollution_in_content;
+    use crate::detectors::redos::detect_redos_in_content;
     use crate::detectors::secrets::detect_secrets_in_content;
     use crate::detectors::silent_errors::detect_silent_errors_in_content;
     use crate::detectors::sql_injection::detect_sql_injection_in_content;
@@ -492,5 +493,26 @@ mod test_suite {
         let go_code = "val, err := fetch()\n_ = err\n";
         let findings_go = detect_silent_errors_in_content("worker.go", go_code);
         assert_eq!(findings_go.len(), 1);
+    }
+    #[test]
+    fn test_detects_redos_vulnerabilities() {
+        let evil_re = ["/(a+", ")+$/"].concat();
+        let email_re = ["([a-zA-Z0-9]+)*", "@domain.com"].concat();
+        let js_code = format!("const evilRe = {evil_re};\nconst emailCheck = new RegExp(\"{email_re}\");\n");
+        let js_findings = detect_redos_in_content("validator.ts", &js_code);
+        assert_eq!(js_findings.len(), 2);
+        assert_eq!(js_findings[0].rule_id, "no-redos-vulnerability");
+        let py_re1 = ["(\\w+", ")+"].concat();
+        let py_re2 = ["(.*", "a)*"].concat();
+        let py_code = format!("import re\npattern = re.compile(r\"{py_re1}\")\nmatcher = re.search(r\"{py_re2}\", text)\n");
+        let py_findings = detect_redos_in_content("parser.py", &py_code);
+        assert_eq!(py_findings.len(), 2);
+        let go_re = ["([0-9]+", ")+"].concat();
+        let go_code = format!("package main\nimport \"regexp\"\nvar safeRe = regexp.MustCompile(\"^[a-zA-Z0-9_-]+$\")\nvar badRe = regexp.MustCompile(\"{go_re}\")\n");
+        let go_findings = detect_redos_in_content("main.go", &go_code);
+        assert_eq!(go_findings.len(), 1);
+        let safe_code = "const safeSlug = /^[a-z0-9_-]+$/;\nconst datePattern = /^\\d{4}-\\d{2}-\\d{2}$/;\n";
+        let safe_findings = detect_redos_in_content("safe.ts", safe_code);
+        assert_eq!(safe_findings.len(), 0);
     }
 }

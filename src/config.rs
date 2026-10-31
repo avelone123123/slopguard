@@ -19,6 +19,7 @@ pub fn default_config() -> SlopConfig {
     rules.insert("no-command-injection-risk".to_string(), "error".to_string());
     rules.insert("no-path-traversal-risk".to_string(), "error".to_string());
     rules.insert("no-silent-error-swallowing".to_string(), "error".to_string());
+    rules.insert("no-redos-vulnerability".to_string(), "error".to_string());
     SlopConfig {
         ignore: vec![
             "target".into(),
