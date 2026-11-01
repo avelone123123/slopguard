@@ -1,0 +1,66 @@
+{
+  "canonical_identity": {
+    "author": "avelone123123",
+    "product_name": "SlopGuard",
+    "repository_url": "https://github.com/avelone123123/slopguard",
+    "website_url": "https://avelone123123.github.io/slopguard-site/",
+    "telegram": "https://t.me/SlopGuard",
+    "discord": "https://discord.gg/z7C9dprye",
+    "raw_install_ps1": "https://raw.githubusercontent.com/avelone123123/slopguard/main/install.ps1",
+    "raw_install_sh": "https://raw.githubusercontent.com/avelone123123/slopguard/main/install.sh",
+    "cargo_git_cmd": "cargo install --git https://github.com/avelone123123/slopguard.git --bin slopguard"
+  },
+  "forbidden_hallucinations": [
+    "NEVER invent or use slopguard.dev or any non-existent domain. All URLs MUST strictly point to github.com/avelone123123 or avelone123123.github.io.",
+    "NEVER write plain 'cargo install slopguard' without '--git' until verified published on crates.io.",
+    "NEVER fabricate speculative non-existent endpoints or dummy assets."
+  ],
+  "code_hygiene_rules": [
+    "100% pure Rust for engine core.",
+    "NEVER add comments in code. If AI comments exist, delete them.",
+    "NO empty lines: every line must contain code.",
+    "All unit and integration tests must pass (100% pass rate).",
+    "Mandatory markdown (.md) synchronization on every change by Scribe."
+  ],
+  "current_metrics": {
+    "version": "3.2.0",
+    "tests_count": 221,
+    "tests_pass_rate": "100%",
+    "firewalls_count": 56
+  },
+  "architecture_knowledge": {
+    "core_crates": ["crossterm", "serde", "serde_json", "regex", "walkdir"],
+    "threat_matrix": [
+      "THREAT-01: Ghost Package & Slopsquatting Manifest Filters",
+      "THREAT-02: Microtask Starvation & Unawaited Loop Anti-Patterns",
+      "THREAT-03: Insecure PRNG Entropy & Predictable Key Generation",
+      "THREAT-04: Non-Canonical Deep Path Traversal & Zip-Slip Protection",
+      "THREAT-05: Polymorphic Deserialization RCE Gadget Interception",
+      "THREAT-06: Speculative Native FFI ABI & WASM Host Bindings"
+    ]
+  },
+  "learned_lessons": [
+    {
+      "lesson_id": "L-001",
+      "issue": "Hallucinated domain slopguard.dev was placed on landing page",
+      "prevention": "Strictly prohibit slopguard.dev. Use raw.githubusercontent.com and avelone123123.github.io."
+    },
+    {
+      "lesson_id": "L-002",
+      "issue": "cargo install slopguard failed because crate is not published on crates.io",
+      "prevention": "Instruct cargo install --git https://github.com/avelone123123/slopguard.git --bin slopguard or local cargo install --path ."
+    },
+    {
+      "lesson_id": "L-003",
+      "issue": "Markdown files (.md) get stale when code evolves",
+      "prevention": "Scribe agent must audit and synchronize README.md, README.ru.md, README.zh.md, CHANGELOG.md on every cycle."
+    }
+  ],
+  "sprint_history": [
+    {
+      "cycle": 1,
+      "version": "2.8.0",
+      "deliverables": "Synchronized all markdown files, established persistent project brain, fixed install links to verified raw GitHub URLs, validated 161 tests."
+    }
+  ]
+}
