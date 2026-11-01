@@ -182,7 +182,7 @@ slopguard
   - `[1] OVERVIEW`: Real-time moving telemetry wave oscilloscope, live MCP activity stream, hygiene gauge, and latency counters.
   - `[2] ISSUES`: Interactive findings inspector with `↑`/`↓` navigation, code snippets, and AI fix recommendations.
   - `[3] MCP STREAM`: Deep inspection of incoming MCP tool calls (`slopguard_scan_diff`, `slopguard_check_snippet`, `slopguard_sanitize_file`).
-  - `[4] FIREWALLS`: Comprehensive 53-firewall active AST matrix with real-time enforcement status.
+  - `[4] FIREWALLS`: Comprehensive 54-firewall active AST matrix with real-time enforcement status.
   - `[5] REPOSITORY`: Git diagnostic status, active branch, latest commit, and working tree breakdown.
 - **Real-Time Animated Wave Oscilloscope**: Moving multi-level ASCII/ANSI frequency spectrum visualizing MCP agent pulse and latency in real time.
 - **Single-Key Controls**:
