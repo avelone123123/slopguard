@@ -7,7 +7,7 @@ lower.ends_with("package.json") || lower.ends_with("requirements.txt") || lower.
 }
 fn is_target_file(p: &str) -> bool {
 let l = p.to_lowercase();
-is_manifest_file(p) || l.ends_with(".py") || l.ends_with(".js") || l.ends_with(".ts") || l.ends_with(".jsx") || l.ends_with(".tsx") || l.ends_with(".rs")
+is_manifest_file(p) || l.ends_with(".py") || l.ends_with(".js") || l.ends_with(".ts") || l.ends_with(".jsx") || l.ends_with(".tsx") || l.ends_with(".rs") || l.ends_with(".go")
 }
 fn is_safe_line(line: &str) -> bool {
 let trimmed = line.trim();
@@ -237,6 +237,82 @@ snippet: "*".to_string(),
 fixable: false,
 suggestion: None,
 });
+}
+}
+findings
+}
+fn get_compound_slopsquat_patterns() -> Vec<Regex> {
+vec![
+Regex::new(r#"(?i)["']?(?:flask[-_]bcrypt[-_]auth|crypto[-_]util[-_]helpers|torch[-_]vision[-_]models|fastapi[-_]jwt[-_]guard|next[-_]auth[-_]shield|react[-_]smart[-_]toast|tokio[-_]redis[-_]pro|serde[-_]json[-_]fast|actix[-_]rate[-_]limit[-_]plus|golang-jwt/jwt-verifier|gorilla/mux-shield)["']?"#).unwrap(),
+Regex::new(r#"(?i)["']?(?:[a-zA-Z0-9_-]+)[-_](?:bcrypt[-_]auth|util[-_]helpers|vision[-_]models|jwt[-_]guard|auth[-_]shield|smart[-_]toast|redis[-_]pro|json[-_]fast|rate[-_]limit[-_]plus)["']?"#).unwrap(),
+]
+}
+pub fn detect_compound_slopsquat_in_content(file_path: &str, content: &str) -> Vec<SlopFinding> {
+let mut findings = Vec::new();
+if !is_target_file(file_path) {
+return findings;
+}
+let patterns = get_compound_slopsquat_patterns();
+for (idx, line) in content.lines().enumerate() {
+let trimmed = line.trim();
+if trimmed.starts_with("//") || trimmed.starts_with('#') || trimmed.starts_with('*') || trimmed.contains("Regex::new") {
+continue;
+}
+for pat in &patterns {
+if pat.is_match(trimmed) {
+findings.push(SlopFinding {
+file: file_path.to_string(),
+line: idx + 1,
+column: 1,
+rule_id: "no-slopsquat-compound-namespace".to_string(),
+category: SlopCategory::CompoundSlopsquatHazard,
+severity: SlopSeverity::Error,
+message: format!("Compound slopsquatting package namespace detected: {trimmed}"),
+snippet: trimmed.to_string(),
+fixable: false,
+suggestion: Some("Verify canonical package registry existence and pin exact semantic version".to_string()),
+});
+break;
+}
+}
+}
+findings
+}
+pub fn detect_compound_slopsquat_in_diff(diff_files: &[DiffFile]) -> Vec<SlopFinding> {
+let mut findings = Vec::new();
+let patterns = get_compound_slopsquat_patterns();
+for df in diff_files {
+let path = if !df.new_path.is_empty() { &df.new_path } else { &df.old_path };
+if !is_target_file(path) {
+continue;
+}
+for chunk in &df.chunks {
+for dl in &chunk.lines {
+if dl.line_type != DiffLineType::Add {
+continue;
+}
+let trimmed = dl.content.trim();
+if trimmed.starts_with("//") || trimmed.starts_with('#') || trimmed.starts_with('*') || trimmed.contains("Regex::new") {
+continue;
+}
+for pat in &patterns {
+if pat.is_match(trimmed) {
+findings.push(SlopFinding {
+file: path.to_string(),
+line: dl.new_line_number.unwrap_or(chunk.new_start),
+column: 1,
+rule_id: "no-slopsquat-compound-namespace".to_string(),
+category: SlopCategory::CompoundSlopsquatHazard,
+severity: SlopSeverity::Error,
+message: format!("Compound slopsquatting package namespace detected: {trimmed}"),
+snippet: trimmed.to_string(),
+fixable: false,
+suggestion: Some("Verify canonical package registry existence and pin exact semantic version".to_string()),
+});
+break;
+}
+}
+}
 }
 }
 findings

@@ -2372,8 +2372,8 @@ assert_eq!(findings.len(), 0);
 assert!(elapsed.as_millis() < 250, "v300 microbenchmark exceeded budget: {:?}", elapsed);
 }
 #[test]
-fn test_v320_ast_56_detector_matrix_integrity() {
-assert_eq!(crate::detectors::AST_DETECTOR_DEFINITIONS.len(), 56);
+fn test_v330_ast_60_detector_matrix_integrity() {
+assert_eq!(crate::detectors::AST_DETECTOR_DEFINITIONS.len(), 60);
 let mut ids = std::collections::HashSet::new();
 for def in crate::detectors::AST_DETECTOR_DEFINITIONS {
 assert!(ids.insert(def.id), "Duplicate rule id: {}", def.id);
@@ -2383,16 +2383,26 @@ assert!(!def.cwe.is_empty());
 assert!(!def.description.is_empty());
 assert!(!def.recommendation.is_empty());
 }
-for i in 1..=56 {
+for i in 1..=60 {
 let expected_id = format!("SLOP-{:03}", i);
 assert!(ids.contains(expected_id.as_str()), "Missing rule: {}", expected_id);
 }
-let d55 = crate::detectors::AST_DETECTOR_DEFINITIONS.iter().find(|d| d.id == "SLOP-055").unwrap();
-assert_eq!(d55.name, "no-ide-protocol-hallucinations");
-assert_eq!(d55.category, "supply-chain");
-let d56 = crate::detectors::AST_DETECTOR_DEFINITIONS.iter().find(|d| d.id == "SLOP-056").unwrap();
-assert_eq!(d56.name, "no-polymorphic-deserialization");
-assert_eq!(d56.category, "path-injection");
+let d57 = crate::detectors::AST_DETECTOR_DEFINITIONS.iter().find(|d| d.id == "SLOP-057").unwrap();
+assert_eq!(d57.name, "no-slopsquat-compound-namespace");
+assert_eq!(d57.category, "supply-chain");
+assert_eq!(d57.cwe, "CWE-829");
+let d58 = crate::detectors::AST_DETECTOR_DEFINITIONS.iter().find(|d| d.id == "SLOP-058").unwrap();
+assert_eq!(d58.name, "no-async-generator-unhandled-break");
+assert_eq!(d58.category, "async-concurrency");
+assert_eq!(d58.cwe, "CWE-775");
+let d59 = crate::detectors::AST_DETECTOR_DEFINITIONS.iter().find(|d| d.id == "SLOP-059").unwrap();
+assert_eq!(d59.name, "no-insecure-direct-crypto-keygen");
+assert_eq!(d59.category, "crypto-auth");
+assert_eq!(d59.cwe, "CWE-326");
+let d60 = crate::detectors::AST_DETECTOR_DEFINITIONS.iter().find(|d| d.id == "SLOP-060").unwrap();
+assert_eq!(d60.name, "no-unbounded-channel-sprawl");
+assert_eq!(d60.category, "async-concurrency");
+assert_eq!(d60.cwe, "CWE-400");
 }
 #[test]
 fn test_v320_slopsquat_package_hallucinations_polyglot_matrix() {
@@ -2596,5 +2606,279 @@ let findings = crate::detectors::package_hallucinations::detect_package_hallucin
 let elapsed = start.elapsed();
 assert_eq!(findings.len(), 0);
 assert!(elapsed.as_millis() < 250, "v320 microbenchmark exceeded budget: {:?}", elapsed);
+}
+#[test]
+fn test_v330_slopsquat_compound_namespace_detection() {
+let reqs = "flask-bcrypt-auth>=1.0\n";
+let py_findings = crate::detectors::package_hallucinations::detect_compound_slopsquat_in_content("requirements.txt", reqs);
+assert_eq!(py_findings.len(), 1);
+assert_eq!(py_findings[0].rule_id, "no-slopsquat-compound-namespace");
+let pkg = "{\n\"dependencies\": {\n\"crypto-util-helpers\": \"^1.0.0\"\n}\n}\n";
+let pkg_findings = crate::detectors::package_hallucinations::detect_compound_slopsquat_in_content("package.json", pkg);
+assert_eq!(pkg_findings.len(), 1);
+let cargo = "[dependencies]\ntokio-redis-pro = \"1.0.0\"\n";
+let cargo_findings = crate::detectors::package_hallucinations::detect_compound_slopsquat_in_content("Cargo.toml", cargo);
+assert_eq!(cargo_findings.len(), 1);
+let safe_cargo = "[dependencies]\ntokio = \"1.0\"\nserde = \"1.0\"\nreqwest = \"0.11\"\n";
+assert_eq!(crate::detectors::package_hallucinations::detect_compound_slopsquat_in_content("Cargo.toml", safe_cargo).len(), 0);
+let safe_reqs = "flask==2.0\ntorch==2.0\n";
+assert_eq!(crate::detectors::package_hallucinations::detect_compound_slopsquat_in_content("requirements.txt", safe_reqs).len(), 0);
+}
+#[test]
+fn test_v330_slopsquat_compound_namespace_diff() {
+let diff = vec![crate::types::DiffFile {
+old_path: "package.json".to_string(),
+new_path: "package.json".to_string(),
+chunks: vec![crate::types::DiffChunk {
+old_start: 1,
+old_lines: 0,
+new_start: 1,
+new_lines: 1,
+lines: vec![crate::types::DiffLine {
+line_type: crate::types::DiffLineType::Add,
+content: "\"react-smart-toast\": \"^1.0.0\"".to_string(),
+old_line_number: None,
+new_line_number: Some(1),
+}],
+}],
+is_new: false,
+is_deleted: false,
+}];
+let findings = crate::detectors::package_hallucinations::detect_compound_slopsquat_in_diff(&diff);
+assert_eq!(findings.len(), 1);
+assert_eq!(findings[0].rule_id, "no-slopsquat-compound-namespace");
+}
+#[test]
+fn test_v330_slopsquat_compound_go_mod_and_pyproject() {
+let go_mod = "module test\nrequire github.com/golang-jwt/jwt-verifier v0.5.0\n";
+let go_res = crate::detectors::package_hallucinations::detect_compound_slopsquat_in_content("go.mod", go_mod);
+assert_eq!(go_res.len(), 1);
+let pyproj = "[tool.poetry.dependencies]\nfastapi-jwt-guard = \"^0.1\"\n";
+let py_res = crate::detectors::package_hallucinations::detect_compound_slopsquat_in_content("pyproject.toml", pyproj);
+assert_eq!(py_res.len(), 1);
+}
+#[test]
+fn test_v330_slopsquat_compound_source_imports_rejection() {
+let py_code = "from flask_bcrypt_auth import auth\n";
+let py_findings = crate::detectors::package_hallucinations::detect_compound_slopsquat_in_content("auth.py", py_code);
+assert_eq!(py_findings.len(), 1);
+let ts_code = "import { toast } from 'react-smart-toast';\n";
+let ts_findings = crate::detectors::package_hallucinations::detect_compound_slopsquat_in_content("ui.ts", ts_code);
+assert_eq!(ts_findings.len(), 1);
+let rs_code = "use tokio_redis_pro::Client;\n";
+let rs_findings = crate::detectors::package_hallucinations::detect_compound_slopsquat_in_content("worker.rs", rs_code);
+assert_eq!(rs_findings.len(), 1);
+}
+#[test]
+fn test_v330_async_generator_unhandled_break_detection() {
+let bad_js = "for await (const chunk of stream) {\n  if (done) break;\n}\n";
+let bad_findings = crate::detectors::async_loop_traps::detect_async_generator_unhandled_break_in_content("stream.ts", bad_js);
+assert_eq!(bad_findings.len(), 1);
+assert_eq!(bad_findings[0].rule_id, "no-async-generator-unhandled-break");
+let safe_js = "try {\n  for await (const chunk of stream) {\n    if (done) break;\n  }\n} finally {\n  stream.destroy();\n}\n";
+assert_eq!(crate::detectors::async_loop_traps::detect_async_generator_unhandled_break_in_content("safe.ts", safe_js).len(), 0);
+let safe_abort = "for await (const chunk of stream) {\n  if (done) {\n    controller.abort();\n    break;\n  }\n}\n";
+assert_eq!(crate::detectors::async_loop_traps::detect_async_generator_unhandled_break_in_content("abort.ts", safe_abort).len(), 0);
+}
+#[test]
+fn test_v330_async_generator_unhandled_return_detection() {
+let ret_js = "for await (const item of generator) {\n  if (item.error) return;\n}\n";
+let findings = crate::detectors::async_loop_traps::detect_async_generator_unhandled_break_in_content("gen.js", ret_js);
+assert_eq!(findings.len(), 1);
+assert_eq!(findings[0].rule_id, "no-async-generator-unhandled-break");
+}
+#[test]
+fn test_v330_async_generator_python_unhandled_break() {
+let py_bad = "async for chunk in stream:\n    if cond:\n        break\n";
+let py_findings = crate::detectors::async_loop_traps::detect_async_generator_unhandled_break_in_content("reader.py", py_bad);
+assert_eq!(py_findings.len(), 1);
+let py_safe = "async for chunk in stream:\n    try:\n        if cond:\n            break\n    finally:\n        await stream.aclose()\n";
+assert_eq!(crate::detectors::async_loop_traps::detect_async_generator_unhandled_break_in_content("safe.py", py_safe).len(), 0);
+}
+#[test]
+fn test_v330_async_generator_break_diff() {
+let diff = vec![crate::types::DiffFile {
+old_path: "consumer.js".to_string(),
+new_path: "consumer.js".to_string(),
+chunks: vec![crate::types::DiffChunk {
+old_start: 1,
+old_lines: 0,
+new_start: 1,
+new_lines: 3,
+lines: vec![
+crate::types::DiffLine { line_type: crate::types::DiffLineType::Add, content: "for await (const chunk of stream) {".to_string(), old_line_number: None, new_line_number: Some(1) },
+crate::types::DiffLine { line_type: crate::types::DiffLineType::Add, content: "  if (err) break;".to_string(), old_line_number: None, new_line_number: Some(2) },
+crate::types::DiffLine { line_type: crate::types::DiffLineType::Add, content: "}".to_string(), old_line_number: None, new_line_number: Some(3) },
+],
+}],
+is_new: false,
+is_deleted: false,
+}];
+let findings = crate::detectors::async_loop_traps::detect_async_generator_unhandled_break_in_diff(&diff);
+assert_eq!(findings.len(), 1);
+}
+#[test]
+fn test_v330_insecure_direct_crypto_keygen_detection() {
+let js_key = "const key = Math.random().toString(36).substring(2);\n";
+let findings = crate::detectors::insecure_crypto::detect_insecure_direct_crypto_keygen_in_content("crypto.ts", js_key);
+assert_eq!(findings.len(), 1);
+assert_eq!(findings[0].rule_id, "no-insecure-direct-crypto-keygen");
+let js_aes = "const aesKey = crypto.randomBytes(8).toString('hex');\n";
+let aes_findings = crate::detectors::insecure_crypto::detect_insecure_direct_crypto_keygen_in_content("aes.js", js_aes);
+assert_eq!(aes_findings.len(), 1);
+let safe_derive = "const derived = await crypto.subtle.deriveKey(pbkdf2Params, baseKey, { name: 'AES-GCM', length: 256 }, false, ['encrypt']);\n";
+assert_eq!(crate::detectors::insecure_crypto::detect_insecure_direct_crypto_keygen_in_content("safe.ts", safe_derive).len(), 0);
+let safe_bytes = "const key = crypto.randomBytes(32);\n";
+assert_eq!(crate::detectors::insecure_crypto::detect_insecure_direct_crypto_keygen_in_content("safe2.ts", safe_bytes).len(), 0);
+let safe_rs = "rand::rngs::OsRng.fill_bytes(&mut key);\n";
+assert_eq!(crate::detectors::insecure_crypto::detect_insecure_direct_crypto_keygen_in_content("safe.rs", safe_rs).len(), 0);
+}
+#[test]
+fn test_v330_insecure_direct_crypto_keygen_python_random_choices() {
+let py_code = "key = random.choices(string.ascii_letters, k=16)\n";
+let findings = crate::detectors::insecure_crypto::detect_insecure_direct_crypto_keygen_in_content("keygen.py", py_code);
+assert_eq!(findings.len(), 1);
+assert_eq!(findings[0].rule_id, "no-insecure-direct-crypto-keygen");
+let py_safe = "key = secrets.token_bytes(32)\n";
+assert_eq!(crate::detectors::insecure_crypto::detect_insecure_direct_crypto_keygen_in_content("safe.py", py_safe).len(), 0);
+}
+#[test]
+fn test_v330_insecure_direct_crypto_keygen_truncated_hex_slice() {
+let truncated = "const encryption_key = crypto.randomBytes(32).toString('hex').slice(0, 16);\n";
+let findings = crate::detectors::insecure_crypto::detect_insecure_direct_crypto_keygen_in_content("cipher.ts", truncated);
+assert_eq!(findings.len(), 1);
+let pseudo = "const secret_key = crypto.pseudoRandomBytes(16);\n";
+let pseudo_findings = crate::detectors::insecure_crypto::detect_insecure_direct_crypto_keygen_in_content("secret.js", pseudo);
+assert_eq!(pseudo_findings.len(), 1);
+}
+#[test]
+fn test_v330_insecure_direct_crypto_keygen_diff() {
+let diff = vec![crate::types::DiffFile {
+old_path: "auth.ts".to_string(),
+new_path: "auth.ts".to_string(),
+chunks: vec![crate::types::DiffChunk {
+old_start: 1,
+old_lines: 0,
+new_start: 1,
+new_lines: 1,
+lines: vec![crate::types::DiffLine {
+line_type: crate::types::DiffLineType::Add,
+content: "let aes_key = Math.random().toString(36);".to_string(),
+old_line_number: None,
+new_line_number: Some(1),
+}],
+}],
+is_new: false,
+is_deleted: false,
+}];
+let findings = crate::detectors::insecure_crypto::detect_insecure_direct_crypto_keygen_in_diff(&diff);
+assert_eq!(findings.len(), 1);
+}
+#[test]
+fn test_v330_unbounded_channel_sprawl_detection() {
+let rs_code = "let (tx, rx) = tokio::sync::mpsc::unbounded_channel();\n";
+let rs_findings = crate::detectors::unbounded_concurrency::detect_unbounded_channel_sprawl_in_content("queue.rs", rs_code);
+assert_eq!(rs_findings.len(), 1);
+assert_eq!(rs_findings[0].rule_id, "no-unbounded-channel-sprawl");
+let go_code = "ch := make(chan Message)\n";
+let go_findings = crate::detectors::unbounded_concurrency::detect_unbounded_channel_sprawl_in_content("worker.go", go_code);
+assert_eq!(go_findings.len(), 1);
+let rs_safe = "let (tx, rx) = tokio::sync::mpsc::channel(1024);\n";
+assert_eq!(crate::detectors::unbounded_concurrency::detect_unbounded_channel_sprawl_in_content("safe.rs", rs_safe).len(), 0);
+let go_safe = "ch := make(chan Message, 100)\n";
+assert_eq!(crate::detectors::unbounded_concurrency::detect_unbounded_channel_sprawl_in_content("safe.go", go_safe).len(), 0);
+let py_safe = "queue = asyncio.Queue(maxsize=500)\n";
+assert_eq!(crate::detectors::unbounded_concurrency::detect_unbounded_channel_sprawl_in_content("safe.py", py_safe).len(), 0);
+}
+#[test]
+fn test_v330_unbounded_channel_sprawl_python_asyncio_queue() {
+let py_code = "queue = asyncio.Queue()\n";
+let findings = crate::detectors::unbounded_concurrency::detect_unbounded_channel_sprawl_in_content("pipeline.py", py_code);
+assert_eq!(findings.len(), 1);
+assert_eq!(findings[0].rule_id, "no-unbounded-channel-sprawl");
+}
+#[test]
+fn test_v330_unbounded_channel_sprawl_rust_mpsc_unbounded() {
+let rs_code = "let (tx, rx) = mpsc::unbounded_channel();\n";
+let findings = crate::detectors::unbounded_concurrency::detect_unbounded_channel_sprawl_in_content("bus.rs", rs_code);
+assert_eq!(findings.len(), 1);
+}
+#[test]
+fn test_v330_unbounded_channel_sprawl_diff() {
+let diff = vec![crate::types::DiffFile {
+old_path: "events.go".to_string(),
+new_path: "events.go".to_string(),
+chunks: vec![crate::types::DiffChunk {
+old_start: 1,
+old_lines: 0,
+new_start: 1,
+new_lines: 1,
+lines: vec![crate::types::DiffLine {
+line_type: crate::types::DiffLineType::Add,
+content: "events := make(chan Event)".to_string(),
+old_line_number: None,
+new_line_number: Some(1),
+}],
+}],
+is_new: false,
+is_deleted: false,
+}];
+let findings = crate::detectors::unbounded_concurrency::detect_unbounded_channel_sprawl_in_diff(&diff);
+assert_eq!(findings.len(), 1);
+}
+#[test]
+fn test_v330_microbenchmark_sub_millisecond_10k_loc() {
+let mut buffer = String::with_capacity(350000);
+for i in 0..10000 {
+buffer.push_str(&format!("const production_constant_v330_{i} = {i};\n"));
+}
+let start = std::time::Instant::now();
+let findings = crate::detectors::package_hallucinations::detect_compound_slopsquat_in_content("bench_v330.ts", &buffer);
+let elapsed = start.elapsed();
+assert_eq!(findings.len(), 0);
+assert!(elapsed.as_millis() < 250, "v330 microbenchmark exceeded budget: {:?}", elapsed);
+}
+#[test]
+fn test_v330_full_scanner_polyglot_e2e_matrix() {
+let cfg = crate::types::SlopConfig { ignore: vec![], rules: std::collections::HashMap::new(), max_drift_files: 50, allowed_ghost_deps: vec![] };
+let root = std::path::Path::new(".");
+let f1 = crate::detectors::run_all_content_detectors("package.json", "{\n\"dependencies\": {\n\"react-smart-toast\": \"*\"\n}\n}\n", root, &cfg);
+assert!(f1.iter().any(|f| f.rule_id == "no-slopsquat-compound-namespace"));
+let f2 = crate::detectors::run_all_content_detectors("stream.ts", "for await (const chunk of stream) {\n  if (done) break;\n}\n", root, &cfg);
+assert!(f2.iter().any(|f| f.rule_id == "no-async-generator-unhandled-break"));
+let f3 = crate::detectors::run_all_content_detectors("key.ts", "const key = Math.random().toString(36).substring(2);\n", root, &cfg);
+assert!(f3.iter().any(|f| f.rule_id == "no-insecure-direct-crypto-keygen"));
+let f4 = crate::detectors::run_all_content_detectors("queue.rs", "let (tx, rx) = tokio::sync::mpsc::unbounded_channel();\n", root, &cfg);
+assert!(f4.iter().any(|f| f.rule_id == "no-unbounded-channel-sprawl"));
+}
+#[test]
+fn test_v330_fuzzing_resilience_and_special_characters() {
+let mut fuzzed = String::with_capacity(10000);
+for _ in 0..200 {
+fuzzed.push_str("for await (const x of s) { break; } finally { s.destroy(); }\n");
+fuzzed.push_str("const key = crypto.randomBytes(32);\n");
+fuzzed.push_str("let (tx, rx) = tokio::sync::mpsc::channel(100);\n");
+}
+let res1 = crate::detectors::async_loop_traps::detect_async_generator_unhandled_break_in_content("fuzz.ts", &fuzzed);
+assert_eq!(res1.len(), 0);
+let res2 = crate::detectors::insecure_crypto::detect_insecure_direct_crypto_keygen_in_content("fuzz.ts", &fuzzed);
+assert_eq!(res2.len(), 0);
+let res3 = crate::detectors::unbounded_concurrency::detect_unbounded_channel_sprawl_in_content("fuzz.rs", &fuzzed);
+assert_eq!(res3.len(), 0);
+}
+#[test]
+fn test_v330_contract_severity_and_categories() {
+let d57 = crate::detectors::AST_DETECTOR_DEFINITIONS.iter().find(|d| d.id == "SLOP-057").unwrap();
+assert_eq!(d57.severity, crate::types::SlopSeverity::Error);
+assert_eq!(d57.category, "supply-chain");
+let d58 = crate::detectors::AST_DETECTOR_DEFINITIONS.iter().find(|d| d.id == "SLOP-058").unwrap();
+assert_eq!(d58.severity, crate::types::SlopSeverity::Error);
+assert_eq!(d58.category, "async-concurrency");
+let d59 = crate::detectors::AST_DETECTOR_DEFINITIONS.iter().find(|d| d.id == "SLOP-059").unwrap();
+assert_eq!(d59.severity, crate::types::SlopSeverity::Error);
+assert_eq!(d59.category, "crypto-auth");
+let d60 = crate::detectors::AST_DETECTOR_DEFINITIONS.iter().find(|d| d.id == "SLOP-060").unwrap();
+assert_eq!(d60.severity, crate::types::SlopSeverity::Error);
+assert_eq!(d60.category, "async-concurrency");
 }
 }

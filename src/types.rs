@@ -20,6 +20,14 @@ pub const RULE_NO_SPECULATIVE_FFI_WASM: &str = "no-speculative-ffi-wasm";
 pub const RULE_NO_ZIP_SLIP_TRAVERSAL: &str = "no-zip-slip-traversal";
 #[allow(dead_code)]
 pub const RULE_NO_POLYMORPHIC_DESERIALIZATION: &str = "no-polymorphic-deserialization";
+#[allow(dead_code)]
+pub const RULE_NO_ASYNC_GENERATOR_UNHANDLED_BREAK: &str = "no-async-generator-unhandled-break";
+#[allow(dead_code)]
+pub const RULE_NO_INSECURE_DIRECT_CRYPTO_KEYGEN: &str = "no-insecure-direct-crypto-keygen";
+#[allow(dead_code)]
+pub const RULE_NO_SLOPSQUAT_COMPOUND_NAMESPACE: &str = "no-slopsquat-compound-namespace";
+#[allow(dead_code)]
+pub const RULE_NO_UNBOUNDED_CHANNEL_SPRAWL: &str = "no-unbounded-channel-sprawl";
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
 pub enum SlopCategory {
 Placeholder,
@@ -49,6 +57,10 @@ PolymorphicUnsafeDeserialization,
 UnawaitedAsyncLoopTrap,
 InsecureCryptographicEntropy,
 SpeculativeNativeFfi,
+AsyncGeneratorLeak,
+TruncatedCryptoEntropy,
+CompoundSlopsquatHazard,
+UnboundedChannelSprawl,
 }
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
 pub enum SlopSeverity {

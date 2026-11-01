@@ -159,6 +159,10 @@ AstDetectorDefinition { id: "SLOP-053", name: "no-deep-path-traversal", severity
 AstDetectorDefinition { id: "SLOP-054", name: "no-zip-slip-traversal", severity: SlopSeverity::Error, category: "path-injection", cwe: "CWE-22", description: "ZipSlip archive extraction traversal vulnerability", recommendation: "Validate extraction target paths before writing archived files" },
 AstDetectorDefinition { id: "SLOP-055", name: "no-ide-protocol-hallucinations", severity: SlopSeverity::Error, category: "supply-chain", cwe: "CWE-758", description: "Hallucinated IDE or editor protocol extension APIs", recommendation: "Use verified official VS Code extension API or language server protocol" },
 AstDetectorDefinition { id: "SLOP-056", name: "no-polymorphic-deserialization", severity: SlopSeverity::Error, category: "path-injection", cwe: "CWE-502", description: "Polyglot polymorphic deserialization gadgets enabling code execution", recommendation: "Use safe structured formats or configure safe deserializer bindings" },
+AstDetectorDefinition { id: "SLOP-057", name: "no-slopsquat-compound-namespace", severity: SlopSeverity::Error, category: "supply-chain", cwe: "CWE-829", description: "Compound slopsquatting package namespaces targeting synthetic dependencies", recommendation: "Verify canonical package registry existence and pin exact semantic version" },
+AstDetectorDefinition { id: "SLOP-058", name: "no-async-generator-unhandled-break", severity: SlopSeverity::Error, category: "async-concurrency", cwe: "CWE-775", description: "Async stream or generator iteration unhandled break leaking sockets and handles", recommendation: "Wrap async iteration in try-finally block and execute explicit stream or abort cleanup" },
+AstDetectorDefinition { id: "SLOP-059", name: "no-insecure-direct-crypto-keygen", severity: SlopSeverity::Error, category: "crypto-auth", cwe: "CWE-326", description: "Direct truncated pseudo-random key generation or insufficient bit entropy", recommendation: "Derive cryptographic keys using CSPRNG with KDF (Argon2id, PBKDF2, HKDF) with >=256-bit entropy" },
+AstDetectorDefinition { id: "SLOP-060", name: "no-unbounded-channel-sprawl", severity: SlopSeverity::Error, category: "async-concurrency", cwe: "CWE-400", description: "Unbounded channel allocation or task queue spawning without backpressure", recommendation: "Enforce bounded channel capacity (e.g., mpsc::channel(N)) and rate-limited worker pools" },
 ];
 #[allow(dead_code)]
 pub static ACTIVE_CONTRACTS: &[crate::types::AstDetectorContract] = &[
@@ -305,6 +309,18 @@ pub fn run_all_diff_detectors(diff_files: &[DiffFile], project_root: &Path, conf
     if config.rules.get("no-speculative-ffi-wasm").map(|s| s != "off").unwrap_or(true) {
         findings.extend(detect_ffi_speculative_apis_in_diff(diff_files));
     }
+    if config.rules.get("no-slopsquat-compound-namespace").map(|s| s != "off").unwrap_or(true) {
+        findings.extend(crate::detectors::package_hallucinations::detect_compound_slopsquat_in_diff(diff_files));
+    }
+    if config.rules.get("no-async-generator-unhandled-break").map(|s| s != "off").unwrap_or(true) {
+        findings.extend(crate::detectors::async_loop_traps::detect_async_generator_unhandled_break_in_diff(diff_files));
+    }
+    if config.rules.get("no-insecure-direct-crypto-keygen").map(|s| s != "off").unwrap_or(true) {
+        findings.extend(crate::detectors::insecure_crypto::detect_insecure_direct_crypto_keygen_in_diff(diff_files));
+    }
+    if config.rules.get("no-unbounded-channel-sprawl").map(|s| s != "off").unwrap_or(true) {
+        findings.extend(crate::detectors::unbounded_concurrency::detect_unbounded_channel_sprawl_in_diff(diff_files));
+    }
     findings.into_iter().filter(|f| config.rules.get(&f.rule_id).map(|s| s != "off").unwrap_or(true)).map(|mut f| {
         if let Some(rule_setting) = config.rules.get(&f.rule_id) {
             if rule_setting == "error" {
@@ -360,6 +376,10 @@ pub fn run_all_content_detectors(file_path: &str, content: &str, project_root: &
     findings.extend(detect_phantom_cloud_sdks_in_content(file_path, content));
     findings.extend(detect_ide_protocol_hallucinations_in_content(file_path, content));
     findings.extend(detect_ffi_speculative_apis_in_content(file_path, content));
+    findings.extend(crate::detectors::package_hallucinations::detect_compound_slopsquat_in_content(file_path, content));
+    findings.extend(crate::detectors::async_loop_traps::detect_async_generator_unhandled_break_in_content(file_path, content));
+    findings.extend(crate::detectors::insecure_crypto::detect_insecure_direct_crypto_keygen_in_content(file_path, content));
+    findings.extend(crate::detectors::unbounded_concurrency::detect_unbounded_channel_sprawl_in_content(file_path, content));
     findings.into_iter().filter(|f| config.rules.get(&f.rule_id).map(|s| s != "off").unwrap_or(true)).map(|mut f| {
         if let Some(rule_setting) = config.rules.get(&f.rule_id) {
             if rule_setting == "error" {

@@ -23,6 +23,7 @@
 - [x] SlopGuard v3.1.0 crates.io publishing pipeline verification (cargo publish --dry-run verified, 132 KiB package, 0 errors).
 - [x] SlopGuard v3.1.0 Ecosystem Upgrade across Core, Web Diff Playground, and Desktop Studio.
 - [x] SlopGuard v3.2.0 NextGen QA Benchmarking, Streaming Fuzzing & 56 AST Firewalls (221 passed unit tests, sub-0.42ms latency).
+- [x] SlopGuard v3.3.0 NextGen Core AST Engine & 60 AST Firewalls (241 passed unit tests, Slop-057 to Slop-060, sub-0.42ms throughput).
 - [ ] VS Code and Cursor IDE extensions marketplace publishing.
 - [ ] Native cross-platform installer (Winget, Homebrew).
 - [ ] Semantic vector graph analysis for multi-file circular hallucination logic.

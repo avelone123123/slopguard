@@ -23,10 +23,10 @@
     "Mandatory markdown (.md) synchronization on every change by Scribe."
   ],
   "current_metrics": {
-    "version": "3.2.0",
-    "tests_count": 221,
+    "version": "3.3.0",
+    "tests_count": 241,
     "tests_pass_rate": "100%",
-    "firewalls_count": 56
+    "firewalls_count": 60
   },
   "architecture_knowledge": {
     "core_crates": ["crossterm", "serde", "serde_json", "regex", "walkdir"],
@@ -36,7 +36,11 @@
       "THREAT-03: Insecure PRNG Entropy & Predictable Key Generation",
       "THREAT-04: Non-Canonical Deep Path Traversal & Zip-Slip Protection",
       "THREAT-05: Polymorphic Deserialization RCE Gadget Interception",
-      "THREAT-06: Speculative Native FFI ABI & WASM Host Bindings"
+      "THREAT-06: Speculative Native FFI ABI & WASM Host Bindings",
+      "THREAT-07: Compound Slopsquatting Namespaces & Speculative Manifests (SLOP-057)",
+      "THREAT-08: Async Stream & Generator Iteration Unhandled Break Leaks (SLOP-058)",
+      "THREAT-09: Direct Insecure Pseudo-Random Keygen & Truncated Entropy (SLOP-059)",
+      "THREAT-10: Unbounded Channel Sprawl & Backpressure Hazards (SLOP-060)"
     ]
   },
   "learned_lessons": [

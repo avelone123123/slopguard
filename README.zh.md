@@ -9,12 +9,12 @@
   <a href="https://discord.gg/z7C9dprye"><img alt="Discord" src="https://img.shields.io/badge/Discord-Join%20Chat-5865F2?style=flat-square&logo=discord&logoColor=white"></a>
   <a href="https://t.me/SlopGuard"><img alt="Telegram" src="https://img.shields.io/badge/Telegram-@SlopGuard-26A5E4?style=flat-square&logo=telegram&logoColor=white"></a>
   <img alt="100% Rust" src="https://img.shields.io/badge/100%25-Rust-b7410e?style=flat-square&logo=rust">
-  <img alt="版本: v3.2.0" src="https://img.shields.io/badge/release-v3.2.0-10b981?style=flat-square">
-  <img alt="测试: 221 通过" src="https://img.shields.io/badge/tests-221%20passed%20(100%25)-10b981?style=flat-square">
+  <img alt="版本: v3.3.0" src="https://img.shields.io/badge/release-v3.3.0-10b981?style=flat-square">
+  <img alt="测试: 241 通过" src="https://img.shields.io/badge/tests-241%20passed%20(100%25)-10b981?style=flat-square">
   <img alt="开源许可证: MIT" src="https://img.shields.io/badge/license-MIT-263146?style=flat-square">
   <img alt="极低延迟: <0.42ms" src="https://img.shields.io/badge/latency-%3C0.42ms-2f6f4f?style=flat-square">
   <img alt="MCP 协议: 2.0" src="https://img.shields.io/badge/MCP-JSON--RPC%202.0-7c3aed?style=flat-square">
-  <img alt="防御防火墙: 56" src="https://img.shields.io/badge/firewalls-56%20active-blue?style=flat-square">
+  <img alt="防御防火墙: 60" src="https://img.shields.io/badge/firewalls-60%20active-blue?style=flat-square">
   <img alt="跨平台" src="https://img.shields.io/badge/platforms-Windows%20%C2%B7%20macOS%20%C2%B7%20Linux-2f7bf5?style=flat-square">
 
   <br>
@@ -52,7 +52,7 @@
 ## 核心特性
 
 - **100% 纯 Rust**：独立原生二进制文件，启动时间低于 2.5ms。
-- **56 个活跃 AST 防火墙**：全面拦截幻觉包导入、未等待异步循环、弱伪随机数、多态反序列化利用与深层路径穿越。
+- **60 个活跃 AST 防火墙**：全面拦截幻觉包导入、未等待异步循环、生成器泄露、伪随机数生成密钥、无界通道扩散与多态反序列化利用。
 - **Git Diff 极速扫描**：仅针对暂存区或工作区变动行进行 AST Token 流比对。
 - **内置 MCP 协议服务**：直接集成至 Cursor 与 Claude Code，在智能体生成完代码后即刻自检。
 - **一键清理**：`slopguard fix` 自动剥离 AI 冗余对话注释。
@@ -254,6 +254,10 @@ slopguard ui
 | `SLOP-054` | `no-zip-slip-traversal` | `ERROR` | 路径与注入 | [防火墙 54] ZipSlip 压缩包解压路径穿越与边界隔离绕过 |
 | `SLOP-055` | `no-ide-protocol-hallucinations` | `ERROR` | 软件供应链 | [防火墙 55] 虚构的 IDE 与编辑器扩展 API 协议 (`vscode.window.showAIMessage` 等) |
 | `SLOP-056` | `no-polymorphic-deserialization` | `ERROR` | 路径与注入 | [防火墙 56] 跨语言多态反序列化利用链与任意代码执行漏洞 |
+| `SLOP-057` | `no-slopsquat-compound-namespace` | `ERROR` | 软件供应链 | [防火墙 57] 复合型投机命名空间仿冒与虚构依赖劫持 |
+| `SLOP-058` | `no-async-generator-unhandled-break` | `ERROR` | 异步与并发 | [防火墙 58] 异步流或生成器迭代中未处理的提前 break/return 引发句柄泄露 |
+| `SLOP-059` | `no-insecure-direct-crypto-keygen` | `ERROR` | 密码与认证 | [防火墙 59] 直接通过弱 PRNG 或截断伪随机字节派生对称密钥 (<256位熵) |
+| `SLOP-060` | `no-unbounded-channel-sprawl` | `ERROR` | 异步与并发 | [防火墙 60] 无背压控制的无界消息队列与通道泛滥导致内存耗尽 (OOM) |
 
 ---
 
@@ -261,7 +265,7 @@ slopguard ui
 
 | 评估工具 | 冷启动耗时 | 扫描耗时 (10k 行 Diff) | 内存峰值 |
 | :--- | :--- | :--- | :--- |
-| **SlopGuard (Rust v3.2.0)** | **< 2.5ms** | **< 0.42ms / 10k LOC** | **< 5.8 MB** |
+| **SlopGuard (Rust v3.3.0)** | **< 2.5ms** | **< 0.42ms / 10k LOC** | **< 5.8 MB** |
 | Biome | ~45ms | ~30ms | ~28 MB |
 | ESLint | ~620ms | ~480ms | ~140 MB |
 | SonarQube Scanner | ~4,200ms | ~3,100ms | ~600 MB |

@@ -9,12 +9,12 @@
   <a href="https://discord.gg/z7C9dprye"><img alt="Discord" src="https://img.shields.io/badge/Discord-Присоединиться-5865F2?style=flat-square&logo=discord&logoColor=white"></a>
   <a href="https://t.me/SlopGuard"><img alt="Telegram" src="https://img.shields.io/badge/Telegram-@SlopGuard-26A5E4?style=flat-square&logo=telegram&logoColor=white"></a>
   <img alt="100% Rust" src="https://img.shields.io/badge/100%25-Rust-b7410e?style=flat-square&logo=rust">
-  <img alt="Релиз: v3.2.0" src="https://img.shields.io/badge/release-v3.2.0-10b981?style=flat-square">
-  <img alt="Тесты: 221 пройдены" src="https://img.shields.io/badge/tests-221%20passed%20(100%25)-10b981?style=flat-square">
+  <img alt="Релиз: v3.3.0" src="https://img.shields.io/badge/release-v3.3.0-10b981?style=flat-square">
+  <img alt="Тесты: 241 пройдены" src="https://img.shields.io/badge/tests-241%20passed%20(100%25)-10b981?style=flat-square">
   <img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-263146?style=flat-square">
   <img alt="Задержка: <0.42ms" src="https://img.shields.io/badge/latency-%3C0.42ms-2f6f4f?style=flat-square">
   <img alt="MCP Protocol: 2.0" src="https://img.shields.io/badge/MCP-JSON--RPC%202.0-7c3aed?style=flat-square">
-  <img alt="Фаерволы: 56" src="https://img.shields.io/badge/firewalls-56%20active-blue?style=flat-square">
+  <img alt="Фаерволы: 60" src="https://img.shields.io/badge/firewalls-60%20active-blue?style=flat-square">
   <img alt="Platforms" src="https://img.shields.io/badge/platforms-Windows%20%C2%B7%20macOS%20%C2%B7%20Linux-2f7bf5?style=flat-square">
 
   <br>
@@ -57,7 +57,7 @@
 </p>
 
 - **100% Native Rust**: Единый автономный бинарник без лишних рантаймов. Мгновенный запуск (<5мс).
-- **56 Активных AST-Фаерволов**: Комплексная защита от фантомных манифестов, асинхронных ловушек, криптографической энтропии, десериализации и Zip Slip обходов.
+- **60 Активных AST-Фаерволов**: Комплексная защита от фантомных манифестов, асинхронных ловушек, утечек генераторов, нестойкой генерации ключей, бесконтрольных каналов, десериализации и Zip Slip обходов.
 - **Интерактивный TUI-Терминал с Осциллографом**: Визуализация пульса MCP в реальном времени на 60 FPS.
 - **Анализ Git Diff**: Сканирует только измененные строки в рабочей копии или в индексе git.
 - **Встроенный MCP-сервер**: Подключается к Cursor, Claude Code и Windsurf, позволяя агенту проверять свой код перед завершением шага.
@@ -289,6 +289,10 @@ slopguard ui
 | `SLOP-054` | `no-zip-slip-traversal` | `ERROR` | Пути и инъекции | ZipSlip-обход путей при распаковке архивов и нарушение изоляции границ |
 | `SLOP-055` | `no-ide-protocol-hallucinations` | `ERROR` | Цепочка поставок | Галлюцинированные протоколы и API расширений IDE (`vscode.window.showAIMessage` и др.) |
 | `SLOP-056` | `no-polymorphic-deserialization` | `ERROR` | Пути и инъекции | Гаджеты полиморфной десериализации, приводящие к удаленному выполнению кода (RCE) |
+| `SLOP-057` | `no-slopsquat-compound-namespace` | `ERROR` | Цепочка поставок | Составные слопсквоттинг-пакеты, нацеленные на спекулятивные зависимости |
+| `SLOP-058` | `no-async-generator-unhandled-break` | `ERROR` | Асинхронность и конкурентность | Необработанный break/return в асинхронном генераторе, вызывающий утечку сокетов |
+| `SLOP-059` | `no-insecure-direct-crypto-keygen` | `ERROR` | Криптография и аутентификация | Прямая генерация ключей через PRNG или усеченная энтропия (<256 бит) |
+| `SLOP-060` | `no-unbounded-channel-sprawl` | `ERROR` | Асинхронность и конкурентность | Создание неограниченных очередей и каналов без механизмов противодавления (backpressure) |
 
 ---
 
@@ -296,7 +300,7 @@ slopguard ui
 
 | Инструмент | Холодный старт | Время проверки (10k строк diff) | Потребление памяти |
 | :--- | :--- | :--- | :--- |
-| **SlopGuard (Rust v3.2.0)** | **< 2.5ms** | **< 0.42ms / 10k LOC** | **< 5.8 MB** |
+| **SlopGuard (Rust v3.3.0)** | **< 2.5ms** | **< 0.42ms / 10k LOC** | **< 5.8 MB** |
 | Biome | ~45ms | ~30ms | ~28 MB |
 | ESLint | ~620ms | ~480ms | ~140 MB |
 | SonarQube Scanner | ~4,200ms | ~3,100ms | ~600 MB |

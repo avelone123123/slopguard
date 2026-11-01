@@ -391,3 +391,76 @@ suggestion: Some("for (const item of items) { await handler(item); }".to_string(
 }
 findings
 }
+pub fn detect_async_generator_unhandled_break_in_content(file_path: &str, content: &str) -> Vec<SlopFinding> {
+let mut findings = Vec::new();
+let (js, py, _) = check_file_type(file_path);
+if !js && !py {
+return findings;
+}
+let lines: Vec<&str> = content.lines().collect();
+let js_for_await = Regex::new(r#"for\s+await\s*\(\s*(?:const|let|var)\s+[a-zA-Z0-9_$]+\s+of\s+"#).unwrap();
+let py_async_for = Regex::new(r#"async\s+for\s+[a-zA-Z0-9_,\s]+\s+in\s+"#).unwrap();
+for (idx, line) in lines.iter().enumerate() {
+let trimmed = line.trim();
+if trimmed.starts_with("//") || trimmed.starts_with('#') || trimmed.starts_with('*') || trimmed.contains("Regex::new") {
+continue;
+}
+let is_match = (js && js_for_await.is_match(trimmed)) || (py && py_async_for.is_match(trimmed));
+if !is_match {
+continue;
+}
+let start_ctx = idx.saturating_sub(6);
+let end_ctx = (idx + 30).min(lines.len());
+let mut has_early_exit = false;
+let mut has_cleanup = false;
+for (offset, scan_line) in lines[start_ctx..end_ctx].iter().enumerate() {
+let st = scan_line.trim();
+let actual_idx = start_ctx + offset;
+if st.contains("finally") || st.contains(".destroy()") || st.contains(".cancel()") || st.contains(".abort()") || st.contains(".aclose()") || st.contains("stream.destroy") || st.contains("reader.cancel") || st.contains("generator.aclose") || st.contains("controller.abort") {
+has_cleanup = true;
+}
+if actual_idx > idx && (st.contains("break;") || st == "break" || st.starts_with("break ") || st.contains("return;") || st.contains("return ") || st == "return") {
+has_early_exit = true;
+}
+}
+if has_early_exit && !has_cleanup {
+findings.push(SlopFinding {
+file: file_path.to_string(),
+line: idx + 1,
+column: 1,
+rule_id: "no-async-generator-unhandled-break".to_string(),
+category: SlopCategory::AsyncGeneratorLeak,
+severity: SlopSeverity::Error,
+message: "Async stream or generator iteration contains unhandled break/return leaking stream handles and sockets (CWE-775)".to_string(),
+snippet: trimmed.to_string(),
+fixable: false,
+suggestion: Some("Wrap async iteration in try-finally block and execute explicit stream or abort cleanup".to_string()),
+});
+}
+}
+findings
+}
+pub fn detect_async_generator_unhandled_break_in_diff(diff_files: &[DiffFile]) -> Vec<SlopFinding> {
+let mut findings = Vec::new();
+for file in diff_files {
+if file.is_deleted {
+continue;
+}
+let target_path = if !file.new_path.is_empty() { &file.new_path } else { &file.old_path };
+let (js, py, _) = check_file_type(target_path);
+if !js && !py {
+continue;
+}
+let mut added_lines = Vec::new();
+for chunk in &file.chunks {
+for line in &chunk.lines {
+if line.line_type == DiffLineType::Add {
+added_lines.push(line.content.as_str());
+}
+}
+}
+let content = added_lines.join("\n");
+findings.extend(detect_async_generator_unhandled_break_in_content(target_path, &content));
+}
+findings
+}

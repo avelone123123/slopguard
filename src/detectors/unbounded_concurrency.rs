@@ -417,3 +417,74 @@ break;
 }
 findings
 }
+fn get_channel_sprawl_patterns() -> Vec<Regex> {
+vec![
+Regex::new(r#"(?:mpsc::unbounded_channel|tokio::sync::mpsc::unbounded_channel)\s*\("#).unwrap(),
+Regex::new(r#"make\s*\(\s*chan\s+[a-zA-Z0-9_*.]+\s*\)"#).unwrap(),
+Regex::new(r#"asyncio\.Queue\s*\(\s*\)"#).unwrap(),
+]
+}
+pub fn detect_unbounded_channel_sprawl_in_content(file_path: &str, content: &str) -> Vec<SlopFinding> {
+let mut findings = Vec::new();
+let patterns = get_channel_sprawl_patterns();
+for (idx, line) in content.lines().enumerate() {
+let trimmed = line.trim();
+if trimmed.starts_with("//") || trimmed.starts_with('#') || trimmed.starts_with('*') || trimmed.contains("Regex::new") {
+continue;
+}
+for pat in &patterns {
+if pat.is_match(trimmed) {
+findings.push(SlopFinding {
+file: file_path.to_string(),
+line: idx + 1,
+column: 1,
+rule_id: "no-unbounded-channel-sprawl".to_string(),
+category: SlopCategory::UnboundedChannelSprawl,
+severity: SlopSeverity::Error,
+message: "Unbounded channel allocation or task queue spawning without backpressure (CWE-400)".to_string(),
+snippet: trimmed.to_string(),
+fixable: false,
+suggestion: Some("Enforce bounded channel capacity (e.g., mpsc::channel(N), make(chan T, cap), asyncio.Queue(maxsize=N))".to_string()),
+});
+break;
+}
+}
+}
+findings
+}
+pub fn detect_unbounded_channel_sprawl_in_diff(diff_files: &[DiffFile]) -> Vec<SlopFinding> {
+let mut findings = Vec::new();
+let patterns = get_channel_sprawl_patterns();
+for df in diff_files {
+let path = if !df.new_path.is_empty() { &df.new_path } else { &df.old_path };
+for chunk in &df.chunks {
+for dl in &chunk.lines {
+if dl.line_type != DiffLineType::Add {
+continue;
+}
+let trimmed = dl.content.trim();
+if trimmed.starts_with("//") || trimmed.starts_with('#') || trimmed.starts_with('*') || trimmed.contains("Regex::new") {
+continue;
+}
+for pat in &patterns {
+if pat.is_match(trimmed) {
+findings.push(SlopFinding {
+file: path.to_string(),
+line: dl.new_line_number.unwrap_or(chunk.new_start),
+column: 1,
+rule_id: "no-unbounded-channel-sprawl".to_string(),
+category: SlopCategory::UnboundedChannelSprawl,
+severity: SlopSeverity::Error,
+message: "Unbounded channel allocation or task queue spawning without backpressure (CWE-400)".to_string(),
+snippet: trimmed.to_string(),
+fixable: false,
+suggestion: Some("Enforce bounded channel capacity (e.g., mpsc::channel(N), make(chan T, cap), asyncio.Queue(maxsize=N))".to_string()),
+});
+break;
+}
+}
+}
+}
+}
+findings
+}

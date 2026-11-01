@@ -301,3 +301,76 @@ suggestion: Some("crypto.randomBytes(32).toString('hex')".to_string()),
 }
 findings
 }
+fn get_keygen_patterns() -> Vec<Regex> {
+vec![
+Regex::new(r#"(?i)(?:const|let|var|\$|auto|)\s*(?:key|aes_key|secret_key|encryption_key|hmac_key|aesKey|encryptionKey|secretKey|hmacKey)\s*=\s*(?:Math\.random\(\)\.toString\(36\)|crypto\.randomBytes\((?:[1-9]|1[0-5])\)|crypto\.pseudoRandomBytes)"#).unwrap(),
+Regex::new(r#"(?i)(?:key|aes_key|secret_key|encryption_key|aesKey|secretKey|encryptionKey)\s*=\s*random\.(?:choices|sample)\([^)]+\)"#).unwrap(),
+Regex::new(r#"(?i)crypto\.randomBytes\(\d+\)\.toString\(['"]hex['"]\)\.(?:slice|substring)\(\s*0\s*,\s*(?:[1-9]|[12][0-9]|3[01])\s*\)"#).unwrap(),
+Regex::new(r#"(?i)(?:const|let|var|\$|auto|)\s*(?:key|aes_key|secret_key|encryption_key|hmac_key|aesKey|encryptionKey)\s*=\s*Math\.random\(\)\.toString\(36\)(?:\.(?:substring|slice)\(\d+\))?"#).unwrap(),
+Regex::new(r#"(?i)(?:const|let|var|\$|auto|)\s*(?:key|aes_key|secret_key|encryption_key|hmac_key|aesKey|encryptionKey)\s*=\s*crypto\.randomBytes\((?:[1-9]|1[0-5])\)(?:\.toString\([^)]*\))?"#).unwrap(),
+]
+}
+pub fn detect_insecure_direct_crypto_keygen_in_content(file_path: &str, content: &str) -> Vec<SlopFinding> {
+let mut findings = Vec::new();
+let patterns = get_keygen_patterns();
+for (idx, line) in content.lines().enumerate() {
+let trimmed = line.trim();
+if trimmed.starts_with("//") || trimmed.starts_with('#') || trimmed.starts_with('*') || trimmed.contains("Regex::new") {
+continue;
+}
+for pat in &patterns {
+if pat.is_match(trimmed) {
+findings.push(SlopFinding {
+file: file_path.to_string(),
+line: idx + 1,
+column: 1,
+rule_id: "no-insecure-direct-crypto-keygen".to_string(),
+category: SlopCategory::TruncatedCryptoEntropy,
+severity: SlopSeverity::Error,
+message: "Direct truncated pseudo-random key generation or insufficient bit entropy (CWE-326)".to_string(),
+snippet: trimmed.to_string(),
+fixable: false,
+suggestion: Some("Derive cryptographic keys using CSPRNG with KDF (Argon2id, PBKDF2, HKDF) with >=256-bit entropy".to_string()),
+});
+break;
+}
+}
+}
+findings
+}
+pub fn detect_insecure_direct_crypto_keygen_in_diff(diff_files: &[DiffFile]) -> Vec<SlopFinding> {
+let mut findings = Vec::new();
+let patterns = get_keygen_patterns();
+for df in diff_files {
+let path = if !df.new_path.is_empty() { &df.new_path } else { &df.old_path };
+for chunk in &df.chunks {
+for dl in &chunk.lines {
+if dl.line_type != DiffLineType::Add {
+continue;
+}
+let trimmed = dl.content.trim();
+if trimmed.starts_with("//") || trimmed.starts_with('#') || trimmed.starts_with('*') || trimmed.contains("Regex::new") {
+continue;
+}
+for pat in &patterns {
+if pat.is_match(trimmed) {
+findings.push(SlopFinding {
+file: path.to_string(),
+line: dl.new_line_number.unwrap_or(chunk.new_start),
+column: 1,
+rule_id: "no-insecure-direct-crypto-keygen".to_string(),
+category: SlopCategory::TruncatedCryptoEntropy,
+severity: SlopSeverity::Error,
+message: "Direct truncated pseudo-random key generation or insufficient bit entropy (CWE-326)".to_string(),
+snippet: trimmed.to_string(),
+fixable: false,
+suggestion: Some("Derive cryptographic keys using CSPRNG with KDF (Argon2id, PBKDF2, HKDF) with >=256-bit entropy".to_string()),
+});
+break;
+}
+}
+}
+}
+}
+findings
+}
