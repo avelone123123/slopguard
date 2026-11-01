@@ -464,3 +464,87 @@ findings.extend(detect_async_generator_unhandled_break_in_content(target_path, &
 }
 findings
 }
+fn get_event_listener_loop_patterns() -> Vec<Regex> {
+vec![
+Regex::new(r#"(?i)(?:for\s*\([^)]*\)|while\s*\([^)]*\)|\.forEach\s*\()\s*\{[^}]*\.(?:on|addListener|addEventListener)\s*\("#).unwrap(),
+Regex::new(r#"(?i)(?:for|while|\.forEach)\b.*?\.(?:on|addListener|addEventListener)\s*\("#).unwrap(),
+]
+}
+pub fn detect_unbounded_event_listener_loop_in_content(file_path: &str, content: &str) -> Vec<SlopFinding> {
+let mut findings = Vec::new();
+if !file_path.ends_with(".js") && !file_path.ends_with(".ts") && !file_path.ends_with(".jsx") && !file_path.ends_with(".tsx") {
+return findings;
+}
+if content.contains("removeListener") || content.contains("removeEventListener") || content.contains("AbortController") || content.contains(".once(") {
+return findings;
+}
+let patterns = get_event_listener_loop_patterns();
+let lines: Vec<&str> = content.lines().collect();
+for (idx, line) in lines.iter().enumerate() {
+let trimmed = line.trim();
+if trimmed.starts_with("//") || trimmed.starts_with('*') || trimmed.contains("Regex::new") {
+continue;
+}
+for pat in &patterns {
+if pat.is_match(trimmed) {
+findings.push(SlopFinding {
+file: file_path.to_string(),
+line: idx + 1,
+column: 1,
+rule_id: "no-unbounded-event-listener-loop".to_string(),
+category: SlopCategory::UnboundedEventListenerLoop,
+severity: SlopSeverity::Warning,
+message: "Unbounded event listener registration inside loop causing memory leak (CWE-400)".to_string(),
+snippet: trimmed.to_string(),
+fixable: false,
+suggestion: Some("Attach event listeners outside loop iterations or use .once() / AbortSignal cleanup".to_string()),
+});
+break;
+}
+}
+}
+findings
+}
+pub fn detect_unbounded_event_listener_loop_in_diff(diff_files: &[DiffFile]) -> Vec<SlopFinding> {
+let mut findings = Vec::new();
+let patterns = get_event_listener_loop_patterns();
+for df in diff_files {
+let path = if !df.new_path.is_empty() { &df.new_path } else { &df.old_path };
+if !path.ends_with(".js") && !path.ends_with(".ts") && !path.ends_with(".jsx") && !path.ends_with(".tsx") {
+continue;
+}
+for chunk in &df.chunks {
+let chunk_has_cleanup = chunk.lines.iter().any(|l| l.content.contains("removeListener") || l.content.contains("removeEventListener") || l.content.contains("AbortController") || l.content.contains(".once("));
+if chunk_has_cleanup {
+continue;
+}
+for dl in &chunk.lines {
+if dl.line_type != DiffLineType::Add {
+continue;
+}
+let trimmed = dl.content.trim();
+if trimmed.starts_with("//") || trimmed.starts_with('*') || trimmed.contains("Regex::new") {
+continue;
+}
+for pat in &patterns {
+if pat.is_match(trimmed) {
+findings.push(SlopFinding {
+file: path.to_string(),
+line: dl.new_line_number.unwrap_or(chunk.new_start),
+column: 1,
+rule_id: "no-unbounded-event-listener-loop".to_string(),
+category: SlopCategory::UnboundedEventListenerLoop,
+severity: SlopSeverity::Warning,
+message: "Unbounded event listener registration inside loop causing memory leak (CWE-400)".to_string(),
+snippet: trimmed.to_string(),
+fixable: false,
+suggestion: Some("Attach event listeners outside loop iterations or use .once() / AbortSignal cleanup".to_string()),
+});
+break;
+}
+}
+}
+}
+}
+findings
+}

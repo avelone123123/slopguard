@@ -317,3 +317,77 @@ break;
 }
 findings
 }
+fn get_phantom_ai_wrapper_patterns() -> Vec<Regex> {
+vec![
+Regex::new(r#"(?i)['"]?(?:@anthropic/tools-pro|@anthropic-ai/extended|openai-streaming-helper|openai-turbo-client|langchain-turbo-retriever|langchain-agent-pro|llama-index-rust-bindings|llamaindex-fast-embeddings|chroma-client-pro|qdrant-async-wrapper|deepseek-v3-helper|mistral-ai-turbo)['"]?"#).unwrap(),
+]
+}
+pub fn detect_phantom_ai_wrappers_in_content(file_path: &str, content: &str) -> Vec<SlopFinding> {
+let mut findings = Vec::new();
+let is_manifest = file_path.ends_with("package.json") || file_path.ends_with("requirements.txt") || file_path.ends_with("pyproject.toml") || file_path.ends_with("Cargo.toml") || file_path.ends_with("go.mod");
+let is_source = file_path.ends_with(".py") || file_path.ends_with(".js") || file_path.ends_with(".ts") || file_path.ends_with(".jsx") || file_path.ends_with(".tsx") || file_path.ends_with(".rs") || file_path.ends_with(".go");
+if !is_manifest && !is_source {
+return findings;
+}
+let patterns = get_phantom_ai_wrapper_patterns();
+for (idx, line) in content.lines().enumerate() {
+let trimmed = line.trim();
+if trimmed.starts_with("//") || trimmed.starts_with('#') || trimmed.starts_with('*') || trimmed.contains("Regex::new") {
+continue;
+}
+for pat in &patterns {
+if pat.is_match(trimmed) {
+findings.push(SlopFinding {
+file: file_path.to_string(),
+line: idx + 1,
+column: 1,
+rule_id: "no-phantom-ai-wrappers".to_string(),
+category: SlopCategory::PhantomAiWrapper,
+severity: SlopSeverity::Error,
+message: "Hallucinated polyglot AI SDK wrapper package prone to supply chain slopsquatting (CWE-1357)".to_string(),
+snippet: trimmed.to_string(),
+fixable: false,
+suggestion: Some("Use official AI vendor SDK packages (@anthropic-ai/sdk, openai, google-genai) and verify package registries".to_string()),
+});
+break;
+}
+}
+}
+findings
+}
+pub fn detect_phantom_ai_wrappers_in_diff(diff_files: &[DiffFile]) -> Vec<SlopFinding> {
+let mut findings = Vec::new();
+let patterns = get_phantom_ai_wrapper_patterns();
+for df in diff_files {
+let path = if !df.new_path.is_empty() { &df.new_path } else { &df.old_path };
+for chunk in &df.chunks {
+for dl in &chunk.lines {
+if dl.line_type != DiffLineType::Add {
+continue;
+}
+let trimmed = dl.content.trim();
+if trimmed.starts_with("//") || trimmed.starts_with('#') || trimmed.starts_with('*') || trimmed.contains("Regex::new") {
+continue;
+}
+for pat in &patterns {
+if pat.is_match(trimmed) {
+findings.push(SlopFinding {
+file: path.to_string(),
+line: dl.new_line_number.unwrap_or(chunk.new_start),
+column: 1,
+rule_id: "no-phantom-ai-wrappers".to_string(),
+category: SlopCategory::PhantomAiWrapper,
+severity: SlopSeverity::Error,
+message: "Hallucinated polyglot AI SDK wrapper package prone to supply chain slopsquatting (CWE-1357)".to_string(),
+snippet: trimmed.to_string(),
+fixable: false,
+suggestion: Some("Use official AI vendor SDK packages (@anthropic-ai/sdk, openai, google-genai) and verify package registries".to_string()),
+});
+break;
+}
+}
+}
+}
+}
+findings
+}

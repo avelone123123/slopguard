@@ -9,12 +9,12 @@
   <a href="https://discord.gg/z7C9dprye"><img alt="Discord" src="https://img.shields.io/badge/Discord-Join%20Chat-5865F2?style=flat-square&logo=discord&logoColor=white"></a>
   <a href="https://t.me/SlopGuard"><img alt="Telegram" src="https://img.shields.io/badge/Telegram-@SlopGuard-26A5E4?style=flat-square&logo=telegram&logoColor=white"></a>
   <img alt="100% Rust" src="https://img.shields.io/badge/100%25-Rust-b7410e?style=flat-square&logo=rust">
-  <img alt="版本: v3.3.0" src="https://img.shields.io/badge/release-v3.3.0-10b981?style=flat-square">
-  <img alt="测试: 241 通过" src="https://img.shields.io/badge/tests-241%20passed%20(100%25)-10b981?style=flat-square">
+  <img alt="版本: v3.3.0" src="https://img.shields.io/badge/release-v3.4.0-10b981?style=flat-square">
+  <img alt="测试: 241 通过" src="https://img.shields.io/badge/tests-245%20passed%20(100%25)-10b981?style=flat-square">
   <img alt="开源许可证: MIT" src="https://img.shields.io/badge/license-MIT-263146?style=flat-square">
   <img alt="极低延迟: <0.42ms" src="https://img.shields.io/badge/latency-%3C0.42ms-2f6f4f?style=flat-square">
   <img alt="MCP 协议: 2.0" src="https://img.shields.io/badge/MCP-JSON--RPC%202.0-7c3aed?style=flat-square">
-  <img alt="防御防火墙: 60" src="https://img.shields.io/badge/firewalls-60%20active-blue?style=flat-square">
+  <img alt="防御防火墙: 60" src="https://img.shields.io/badge/firewalls-63%20active-blue?style=flat-square">
   <img alt="跨平台" src="https://img.shields.io/badge/platforms-Windows%20%C2%B7%20macOS%20%C2%B7%20Linux-2f7bf5?style=flat-square">
 
   <br>
@@ -284,7 +284,7 @@ SlopGuard 将全部 60 个活跃 AST 防火墙映射到 10 个战略级 AI 代�
 
 | 评估工具 | 冷启动耗时 | 扫描耗时 (10k 行 Diff) | 内存峰值 |
 | :--- | :--- | :--- | :--- |
-| **SlopGuard (Rust v3.3.0)** | **< 2.5ms** | **< 0.42ms / 10k LOC** | **< 5.8 MB** |
+| **SlopGuard (Rust v3.4.0)** | **< 2.5ms** | **< 0.42ms / 10k LOC** | **< 5.8 MB** |
 | Biome | ~45ms | ~30ms | ~28 MB |
 | ESLint | ~620ms | ~480ms | ~140 MB |
 | SonarQube Scanner | ~4,200ms | ~3,100ms | ~600 MB |

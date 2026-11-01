@@ -136,3 +136,77 @@ pub fn detect_command_injection_in_diff(diff_files: &[DiffFile]) -> Vec<SlopFind
     }
     findings
 }
+fn get_speculative_subprocess_patterns() -> Vec<Regex> {
+    vec![
+        Regex::new(r#"(?i)\bsubprocess\.(?:Popen|run|call|check_call|check_output)\s*\((?:[^)]*shell\s*=\s*True[^)]*(?:f["']|format\(|\s*%)|[^)]*(?:f["']|format\(|\s*%)[^)]*shell\s*=\s*True)"#).unwrap(),
+        Regex::new(r#"(?i)\bos\.(?:system|popen)\s*\(\s*(?:f["'][^"']*\{|format\(|["'][^"']*"\s*%\s*)"#).unwrap(),
+        Regex::new(r#"(?i)\b(?:child_process\.)?(?:exec|execSync)\s*\(\s*`[^`]*\$\{[^}]+\}"#).unwrap(),
+        Regex::new(r#"(?i)\b(?:child_process\.)?(?:spawn|spawnSync)\s*\((?:[^)]*shell\s*:\s*true[^)]*[`+]|[^)]*[`+][^)]*shell\s*:\s*true)"#).unwrap(),
+        Regex::new(r#"(?i)\bexec\.Command\s*\(\s*"(?:sh|bash|zsh|cmd|powershell)"\s*,\s*"(?:-c|/C|-Command)"\s*,\s*fmt\.Sprintf"#).unwrap(),
+        Regex::new(r#"(?i)\bCommand::new\s*\(\s*"(?:sh|bash|zsh|cmd|powershell)"\s*\)(?:\s*\.[a-zA-Z0-9_]+\s*\([^)]*\))*\s*\.arg\s*\(\s*format!\s*\("#).unwrap(),
+    ]
+}
+pub fn detect_speculative_subprocess_injection_in_content(file_path: &str, content: &str) -> Vec<SlopFinding> {
+    let mut findings = Vec::new();
+    let patterns = get_speculative_subprocess_patterns();
+    for (idx, line) in content.lines().enumerate() {
+        let trimmed = line.trim();
+        if trimmed.starts_with("//") || trimmed.starts_with('#') || trimmed.starts_with('*') || trimmed.contains("Regex::new") {
+            continue;
+        }
+        for pat in &patterns {
+            if pat.is_match(trimmed) {
+                findings.push(SlopFinding {
+                    file: file_path.to_string(),
+                    line: idx + 1,
+                    column: 1,
+                    rule_id: "no-speculative-subprocess-injection".to_string(),
+                    category: SlopCategory::SpeculativeSubprocessInjection,
+                    severity: SlopSeverity::Error,
+                    message: "Unchecked dynamic subprocess or shell interpolation vulnerability (CWE-78)".to_string(),
+                    snippet: trimmed.to_string(),
+                    fixable: false,
+                    suggestion: Some("Pass command arguments as an array/vector without invoking a shell interpreter".to_string()),
+                });
+                break;
+            }
+        }
+    }
+    findings
+}
+pub fn detect_speculative_subprocess_injection_in_diff(diff_files: &[DiffFile]) -> Vec<SlopFinding> {
+    let mut findings = Vec::new();
+    let patterns = get_speculative_subprocess_patterns();
+    for df in diff_files {
+        let path = if !df.new_path.is_empty() { &df.new_path } else { &df.old_path };
+        for chunk in &df.chunks {
+            for dl in &chunk.lines {
+                if dl.line_type != DiffLineType::Add {
+                    continue;
+                }
+                let trimmed = dl.content.trim();
+                if trimmed.starts_with("//") || trimmed.starts_with('#') || trimmed.starts_with('*') || trimmed.contains("Regex::new") {
+                    continue;
+                }
+                for pat in &patterns {
+                    if pat.is_match(trimmed) {
+                        findings.push(SlopFinding {
+                            file: path.to_string(),
+                            line: dl.new_line_number.unwrap_or(chunk.new_start),
+                            column: 1,
+                            rule_id: "no-speculative-subprocess-injection".to_string(),
+                            category: SlopCategory::SpeculativeSubprocessInjection,
+                            severity: SlopSeverity::Error,
+                            message: "Unchecked dynamic subprocess or shell interpolation vulnerability (CWE-78)".to_string(),
+                            snippet: trimmed.to_string(),
+                            fixable: false,
+                            suggestion: Some("Pass command arguments as an array/vector without invoking a shell interpreter".to_string()),
+                        });
+                        break;
+                    }
+                }
+            }
+        }
+    }
+    findings
+}

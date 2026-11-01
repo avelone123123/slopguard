@@ -23,13 +23,19 @@
     "Mandatory markdown (.md) synchronization on every change by Scribe."
   ],
   "current_metrics": {
-    "version": "3.3.0",
-    "tests_count": 241,
+    "version": "3.4.0",
+    "tests_count": 245,
     "tests_pass_rate": "100%",
-    "firewalls_count": 60
+    "firewalls_count": 63
   },
   "architecture_knowledge": {
-    "core_crates": ["crossterm", "serde", "serde_json", "regex", "walkdir"],
+    "core_crates": [
+      "crossterm",
+      "serde",
+      "serde_json",
+      "regex",
+      "walkdir"
+    ],
     "threat_matrix": [
       "THREAT-01: Ghost Package & Slopsquatting Manifest Filters",
       "THREAT-02: Microtask Starvation & Unawaited Loop Anti-Patterns",
@@ -37,10 +43,13 @@
       "THREAT-04: Non-Canonical Deep Path Traversal & Zip-Slip Protection",
       "THREAT-05: Polymorphic Deserialization RCE Gadget Interception",
       "THREAT-06: Speculative Native FFI ABI & WASM Host Bindings",
-      "THREAT-07: Compound Slopsquatting Namespaces & Speculative Manifests (SLOP-057)",
-      "THREAT-08: Async Stream & Generator Iteration Unhandled Break Leaks (SLOP-058)",
-      "THREAT-09: Direct Insecure Pseudo-Random Keygen & Truncated Entropy (SLOP-059)",
-      "THREAT-10: Unbounded Channel Sprawl & Backpressure Hazards (SLOP-060)"
+      "THREAT-07: Compound Slopsquat Package Namespace Manifest Poisoning (SLOP-057)",
+      "THREAT-08: Async Generator / Stream Unhandled Break & Return Leaks (SLOP-058)",
+      "THREAT-09: Direct Non-CSPRNG Truncated Crypto Key Generation (SLOP-059)",
+      "THREAT-10: Unbounded Channel Sprawl & Queue Memory Exhaustion (SLOP-060)",
+      "THREAT-11: Unchecked Dynamic Subprocess / Deserialized Shell Injection (SLOP-061)",
+      "THREAT-12: Async Promise Pool Leak / Unbounded Event Queue (SLOP-062)",
+      "THREAT-13: Hallucinated Polyglot AI SDK Wrappers (SLOP-063)"
     ]
   },
   "learned_lessons": [
@@ -65,6 +74,11 @@
       "cycle": 1,
       "version": "2.8.0",
       "deliverables": "Synchronized all markdown files, established persistent project brain, fixed install links to verified raw GitHub URLs, validated 161 tests."
+    },
+    {
+      "cycle": 1,
+      "version": "3.3.0",
+      "deliverables": "Sprint 1: Core Rust AST Engine & Deep Hallucination Shields"
     }
   ]
 }

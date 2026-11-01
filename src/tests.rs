@@ -2372,8 +2372,8 @@ assert_eq!(findings.len(), 0);
 assert!(elapsed.as_millis() < 250, "v300 microbenchmark exceeded budget: {:?}", elapsed);
 }
 #[test]
-fn test_v330_ast_60_detector_matrix_integrity() {
-assert_eq!(crate::detectors::AST_DETECTOR_DEFINITIONS.len(), 60);
+fn test_v340_ast_63_detector_matrix_integrity() {
+assert_eq!(crate::detectors::AST_DETECTOR_DEFINITIONS.len(), 63);
 let mut ids = std::collections::HashSet::new();
 for def in crate::detectors::AST_DETECTOR_DEFINITIONS {
 assert!(ids.insert(def.id), "Duplicate rule id: {}", def.id);
@@ -2383,26 +2383,19 @@ assert!(!def.cwe.is_empty());
 assert!(!def.description.is_empty());
 assert!(!def.recommendation.is_empty());
 }
-for i in 1..=60 {
+for i in 1..=63 {
 let expected_id = format!("SLOP-{:03}", i);
 assert!(ids.contains(expected_id.as_str()), "Missing rule: {}", expected_id);
 }
-let d57 = crate::detectors::AST_DETECTOR_DEFINITIONS.iter().find(|d| d.id == "SLOP-057").unwrap();
-assert_eq!(d57.name, "no-slopsquat-compound-namespace");
-assert_eq!(d57.category, "supply-chain");
-assert_eq!(d57.cwe, "CWE-829");
-let d58 = crate::detectors::AST_DETECTOR_DEFINITIONS.iter().find(|d| d.id == "SLOP-058").unwrap();
-assert_eq!(d58.name, "no-async-generator-unhandled-break");
-assert_eq!(d58.category, "async-concurrency");
-assert_eq!(d58.cwe, "CWE-775");
-let d59 = crate::detectors::AST_DETECTOR_DEFINITIONS.iter().find(|d| d.id == "SLOP-059").unwrap();
-assert_eq!(d59.name, "no-insecure-direct-crypto-keygen");
-assert_eq!(d59.category, "crypto-auth");
-assert_eq!(d59.cwe, "CWE-326");
-let d60 = crate::detectors::AST_DETECTOR_DEFINITIONS.iter().find(|d| d.id == "SLOP-060").unwrap();
-assert_eq!(d60.name, "no-unbounded-channel-sprawl");
-assert_eq!(d60.category, "async-concurrency");
-assert_eq!(d60.cwe, "CWE-400");
+let d61 = crate::detectors::AST_DETECTOR_DEFINITIONS.iter().find(|d| d.id == "SLOP-061").unwrap();
+assert_eq!(d61.name, "no-speculative-subprocess-injection");
+assert_eq!(d61.cwe, "CWE-78");
+let d62 = crate::detectors::AST_DETECTOR_DEFINITIONS.iter().find(|d| d.id == "SLOP-062").unwrap();
+assert_eq!(d62.name, "no-unbounded-event-listener-loop");
+assert_eq!(d62.cwe, "CWE-400");
+let d63 = crate::detectors::AST_DETECTOR_DEFINITIONS.iter().find(|d| d.id == "SLOP-063").unwrap();
+assert_eq!(d63.name, "no-phantom-ai-wrappers");
+assert_eq!(d63.cwe, "CWE-1357");
 }
 #[test]
 fn test_v320_slopsquat_package_hallucinations_polyglot_matrix() {
@@ -2880,5 +2873,52 @@ assert_eq!(d59.category, "crypto-auth");
 let d60 = crate::detectors::AST_DETECTOR_DEFINITIONS.iter().find(|d| d.id == "SLOP-060").unwrap();
 assert_eq!(d60.severity, crate::types::SlopSeverity::Error);
 assert_eq!(d60.category, "async-concurrency");
+}
+#[test]
+fn test_v340_speculative_subprocess_injection_detection() {
+let py_code = "subprocess.Popen(f\"cat {filename}\", shell=True)";
+let f = crate::detectors::command_injection::detect_speculative_subprocess_injection_in_content("app.py", py_code);
+assert_eq!(f.len(), 1);
+assert_eq!(f[0].rule_id, "no-speculative-subprocess-injection");
+assert_eq!(f[0].severity, crate::types::SlopSeverity::Error);
+let js_code = "child_process.exec(`ls -la ${folder}`)";
+let f_js = crate::detectors::command_injection::detect_speculative_subprocess_injection_in_content("server.js", js_code);
+assert_eq!(f_js.len(), 1);
+let safe_py = "subprocess.run(['ls', '-la'], check=True)";
+let safe_f = crate::detectors::command_injection::detect_speculative_subprocess_injection_in_content("safe.py", safe_py);
+assert_eq!(safe_f.len(), 0);
+}
+#[test]
+fn test_v340_unbounded_event_listener_loop_detection() {
+let leak_js = "for (const item of items) { emitter.on('data', handler); }";
+let f = crate::detectors::async_loop_traps::detect_unbounded_event_listener_loop_in_content("stream.js", leak_js);
+assert_eq!(f.len(), 1);
+assert_eq!(f[0].rule_id, "no-unbounded-event-listener-loop");
+assert_eq!(f[0].severity, crate::types::SlopSeverity::Warning);
+let safe_js = "for (const item of items) { emitter.once('data', handler); }";
+let safe_f = crate::detectors::async_loop_traps::detect_unbounded_event_listener_loop_in_content("safe.js", safe_js);
+assert_eq!(safe_f.len(), 0);
+}
+#[test]
+fn test_v340_phantom_ai_wrappers_detection() {
+let manifest = "{\n  \"dependencies\": {\n    \"@anthropic/tools-pro\": \"^1.0.0\",\n    \"openai-streaming-helper\": \"^2.1.0\"\n  }\n}";
+let f = crate::detectors::package_hallucinations::detect_phantom_ai_wrappers_in_content("package.json", manifest);
+assert_eq!(f.len(), 2);
+assert_eq!(f[0].rule_id, "no-phantom-ai-wrappers");
+let py_req = "llama-index-rust-bindings==0.1.0\nlangchain-turbo-retriever>=1.0.0";
+let f_py = crate::detectors::package_hallucinations::detect_phantom_ai_wrappers_in_content("requirements.txt", py_req);
+assert_eq!(f_py.len(), 2);
+}
+#[test]
+fn test_v340_contract_severity_and_categories() {
+let d61 = crate::detectors::AST_DETECTOR_DEFINITIONS.iter().find(|d| d.id == "SLOP-061").unwrap();
+assert_eq!(d61.severity, crate::types::SlopSeverity::Error);
+assert_eq!(d61.category, "path-injection");
+let d62 = crate::detectors::AST_DETECTOR_DEFINITIONS.iter().find(|d| d.id == "SLOP-062").unwrap();
+assert_eq!(d62.severity, crate::types::SlopSeverity::Warning);
+assert_eq!(d62.category, "async-concurrency");
+let d63 = crate::detectors::AST_DETECTOR_DEFINITIONS.iter().find(|d| d.id == "SLOP-063").unwrap();
+assert_eq!(d63.severity, crate::types::SlopSeverity::Error);
+assert_eq!(d63.category, "supply-chain");
 }
 }

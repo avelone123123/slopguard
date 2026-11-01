@@ -28,6 +28,12 @@ pub const RULE_NO_INSECURE_DIRECT_CRYPTO_KEYGEN: &str = "no-insecure-direct-cryp
 pub const RULE_NO_SLOPSQUAT_COMPOUND_NAMESPACE: &str = "no-slopsquat-compound-namespace";
 #[allow(dead_code)]
 pub const RULE_NO_UNBOUNDED_CHANNEL_SPRAWL: &str = "no-unbounded-channel-sprawl";
+#[allow(dead_code)]
+pub const RULE_NO_SPECULATIVE_SUBPROCESS_INJECTION: &str = "no-speculative-subprocess-injection";
+#[allow(dead_code)]
+pub const RULE_NO_UNBOUNDED_EVENT_LISTENER_LOOP: &str = "no-unbounded-event-listener-loop";
+#[allow(dead_code)]
+pub const RULE_NO_PHANTOM_AI_WRAPPERS: &str = "no-phantom-ai-wrappers";
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
 pub enum SlopCategory {
 Placeholder,
@@ -61,6 +67,9 @@ AsyncGeneratorLeak,
 TruncatedCryptoEntropy,
 CompoundSlopsquatHazard,
 UnboundedChannelSprawl,
+SpeculativeSubprocessInjection,
+UnboundedEventListenerLoop,
+PhantomAiWrapper,
 }
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
 pub enum SlopSeverity {
