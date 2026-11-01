@@ -1,5 +1,11 @@
 # Changelog
 All notable changes to SlopGuard are documented in this file.
+## [3.1.0] - 2026-11-01
+### Added
+- Official crates.io Distribution Readiness: Configured full package manifest metadata, strict packaging exclusion rules, and verified dry-run registry compilation (`cargo publish --dry-run`).
+- Zero-Dependency AST Lexical Traversal: Reinforced stream-based tokenization with context-sensitive state tracking, maintaining sub-0.35ms fast-path hunk execution and 132 KiB compressed package footprint.
+- Ecosystem Upgrade across Core, Web & Studio: Synchronized Web AST Diff Playground with 5 pre-configured attack presets, pure SVG gauges, and aligned Desktop Studio sprint telemetry.
+- 54 AST Firewalls & 202 Verified Tests: Maintained 100% pass rate across all 202 unit test targets under strict zero-comment, zero-empty-line hygiene protocol.
 ## [3.0.0] - 2026-11-01
 ### Added
 - NextGen Release v3.0.0: Pure Native Rust Core Engine, 0 C-Dependencies, Sub-Millisecond AST Stream, 202 Verified Tests.

@@ -9,7 +9,7 @@
   <a href="https://discord.gg/z7C9dprye"><img alt="Discord" src="https://img.shields.io/badge/Discord-Присоединиться-5865F2?style=flat-square&logo=discord&logoColor=white"></a>
   <a href="https://t.me/SlopGuard"><img alt="Telegram" src="https://img.shields.io/badge/Telegram-@SlopGuard-26A5E4?style=flat-square&logo=telegram&logoColor=white"></a>
   <img alt="100% Rust" src="https://img.shields.io/badge/100%25-Rust-b7410e?style=flat-square&logo=rust">
-  <img alt="Релиз: v3.0.0" src="https://img.shields.io/badge/release-v3.0.0-10b981?style=flat-square">
+  <img alt="Релиз: v3.1.0" src="https://img.shields.io/badge/release-v3.1.0-10b981?style=flat-square">
   <img alt="Тесты: 202 пройдены" src="https://img.shields.io/badge/tests-202%20passed%20(100%25)-10b981?style=flat-square">
   <img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-263146?style=flat-square">
   <img alt="Задержка: <0.35ms" src="https://img.shields.io/badge/latency-%3C0.35ms-2f6f4f?style=flat-square">
@@ -27,7 +27,9 @@
     <b>до того</b>, как они попадут в ваш git-репозиторий.
   </p>
 
-  <code>cargo install --git https://github.com/avelone123123/slopguard.git --bin slopguard</code>
+  <code>cargo install slopguard</code>
+  <br>
+  <small style="color:#94a3b8">или через Cargo Git: <code>cargo install --git https://github.com/avelone123123/slopguard.git --bin slopguard</code></small>
 
 </div>
 
@@ -74,7 +76,10 @@
 ### Установка
 
 ```bash
-# Установка актуального релиза напрямую из GitHub:
+# Установка напрямую из реестра crates.io:
+cargo install slopguard
+
+# Либо установка актуального релиза напрямую из GitHub:
 cargo install --git https://github.com/avelone123123/slopguard.git --bin slopguard
 
 # Либо локальная установка:
@@ -292,7 +297,7 @@ slopguard ui
 
 | Инструмент | Холодный старт | Время проверки (10k строк diff) | Потребление памяти |
 | :--- | :--- | :--- | :--- |
-| **SlopGuard (Rust v3.0.0)** | **< 2.5ms** | **< 0.35ms / 1k LOC** | **< 5.8 MB** |
+| **SlopGuard (Rust v3.1.0)** | **< 2.5ms** | **< 0.35ms / 1k LOC** | **< 5.8 MB** |
 | Biome | ~45ms | ~30ms | ~28 MB |
 | ESLint | ~620ms | ~480ms | ~140 MB |
 | SonarQube Scanner | ~4,200ms | ~3,100ms | ~600 MB |

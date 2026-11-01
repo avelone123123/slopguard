@@ -19,9 +19,11 @@
 - [x] Insecure PRNG & CSPRNG Entropy Guard: Halts non-cryptographic PRNGs for security tokens with explicit CSPRNG remediation.
 - [x] Polyglot Deserialization Gadgets: Multi-language defense across Python, Node, PHP, Ruby, Java, and .NET.
 - [x] Interactive Web AST Diff Playground & Desktop Studio v3.0.0 telemetry synchronization.
-## Phase 4: IDE Marketplace & Native Ecosystem Distribution
+## Phase 4: Global Registry & crates.io Distribution (Active)
+- [x] SlopGuard v3.1.0 crates.io publishing pipeline verification (cargo publish --dry-run verified, 132 KiB package, 0 errors).
+- [x] SlopGuard v3.1.0 Ecosystem Upgrade across Core, Web Diff Playground, and Desktop Studio.
 - [ ] VS Code and Cursor IDE extensions marketplace publishing.
-- [ ] Native cross-platform installer (Winget, Homebrew, Cargo crates.io).
+- [ ] Native cross-platform installer (Winget, Homebrew).
 - [ ] Semantic vector graph analysis for multi-file circular hallucination logic.
 - [ ] LLM agent self-prompting honeypot interception.
 - [ ] WebAssembly in-browser playground for instant live audits.

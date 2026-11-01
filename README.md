@@ -9,7 +9,7 @@
   <a href="https://discord.gg/z7C9dprye"><img alt="Discord" src="https://img.shields.io/badge/Discord-Join%20Chat-5865F2?style=flat-square&logo=discord&logoColor=white"></a>
   <a href="https://t.me/SlopGuard"><img alt="Telegram" src="https://img.shields.io/badge/Telegram-@SlopGuard-26A5E4?style=flat-square&logo=telegram&logoColor=white"></a>
   <img alt="100% Rust" src="https://img.shields.io/badge/100%25-Rust-b7410e?style=flat-square&logo=rust">
-  <img alt="Release: v3.0.0" src="https://img.shields.io/badge/release-v3.0.0-10b981?style=flat-square">
+  <img alt="Release: v3.1.0" src="https://img.shields.io/badge/release-v3.1.0-10b981?style=flat-square">
   <img alt="Tests: 202 Passed" src="https://img.shields.io/badge/tests-202%20passed%20(100%25)-10b981?style=flat-square">
   <img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-263146?style=flat-square">
   <img alt="Latency: <0.35ms" src="https://img.shields.io/badge/latency-%3C0.35ms-2f6f4f?style=flat-square">
@@ -27,7 +27,9 @@
     <b>before</b> they pollute your git history.
   </p>
 
-  <code>cargo install --git https://github.com/avelone123123/slopguard.git --bin slopguard</code>
+  <code>cargo install slopguard</code>
+  <br>
+  <small style="color:#94a3b8">or via Cargo Git: <code>cargo install --git https://github.com/avelone123123/slopguard.git --bin slopguard</code></small>
 
 </div>
 
@@ -69,7 +71,10 @@ When vibe-coding with Cursor, Claude Code, Windsurf, or Antigravity across multi
 ### Installation
 
 ```bash
-# Install latest release binary directly via Cargo Git:
+# Install directly from crates.io:
+cargo install slopguard
+
+# Or install latest release binary directly via Cargo Git:
 cargo install --git https://github.com/avelone123123/slopguard.git --bin slopguard
 
 # Or install from local workspace clone:
@@ -299,7 +304,7 @@ Customize behavior by creating a `.slopguardrc.json` in your repository root:
 
 | Tool | Cold Startup | Scan Time (10k LOC Diff) | Memory Usage |
 | :--- | :--- | :--- | :--- |
-| **SlopGuard (Rust v3.0.0)** | **< 2.5ms** | **< 0.35ms / 1k LOC** | **< 5.8 MB** |
+| **SlopGuard (Rust v3.1.0)** | **< 2.5ms** | **< 0.35ms / 1k LOC** | **< 5.8 MB** |
 | Biome | ~45ms | ~30ms | ~28 MB |
 | ESLint | ~620ms | ~480ms | ~140 MB |
 | SonarQube Scanner | ~4,200ms | ~3,100ms | ~600 MB |

@@ -1,6 +1,6 @@
 [package]
 name = "slopguard"
-version = "3.0.0"
+version = "3.1.0"
 edition = "2021"
 authors = ["avelone123123"]
 description = "Zero-latency native Rust AI slop and hallucination firewall for Cursor, Claude Code, and vibe-coders"
@@ -11,6 +11,7 @@ documentation = "https://github.com/avelone123123/slopguard#readme"
 readme = "README.md"
 keywords = ["security", "linter", "ai", "ast", "cli"]
 categories = ["development-tools", "development-tools::cargo-plugins"]
+exclude = ["target/", ".github/", "benches/*.log", "tests/fixtures/large*"]
 [dependencies]
 crossterm = "0.28"
 serde = { version = "1.0", features = ["derive"] }
