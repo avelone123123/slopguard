@@ -12,7 +12,7 @@
   <img alt="版本: v3.0.0" src="https://img.shields.io/badge/release-v3.0.0-10b981?style=flat-square">
   <img alt="测试: 202 通过" src="https://img.shields.io/badge/tests-202%20passed%20(100%25)-10b981?style=flat-square">
   <img alt="开源许可证: MIT" src="https://img.shields.io/badge/license-MIT-263146?style=flat-square">
-  <img alt="极低延迟: <5ms" src="https://img.shields.io/badge/latency-%3C0.35ms-2f6f4f?style=flat-square">
+  <img alt="极低延迟: <0.35ms" src="https://img.shields.io/badge/latency-%3C0.35ms-2f6f4f?style=flat-square">
   <img alt="MCP 协议: 2.0" src="https://img.shields.io/badge/MCP-JSON--RPC%202.0-7c3aed?style=flat-square">
   <img alt="防御防火墙: 54" src="https://img.shields.io/badge/firewalls-54%20active-blue?style=flat-square">
   <img alt="跨平台" src="https://img.shields.io/badge/platforms-Windows%20%C2%B7%20macOS%20%C2%B7%20Linux-2f7bf5?style=flat-square">
@@ -169,9 +169,7 @@ slopguard ui
 - **MCP 实时活动流**：微秒级精度记录 AI 工具调用与审计结果。
 - **AI 洁净度评分计**：随着代码生成动态评估代码健康度与评级。
 - **拦截垃圾计数器**：实时显示已拦截的未完成占位符、假数据与类型降级。
-- **毫秒级延迟图表**：验证 Rust 极致响应速度（<2ms），零开发卡顿。
-
----
+- **毫秒级延迟图表**：验证 Rust 极致响应速度（<0.35ms），零开发卡顿。
 
 ---
 
@@ -196,57 +194,62 @@ slopguard ui
 
 ## 规则与检测矩阵
 
-| 规则 ID | 严重级别 | 拦截危害说明 |
-| :--- | :--- | :--- |
-| `no-hardcoded-secrets` | `ERROR` | 泄露的 OpenAI/Anthropic 密钥、AWS 凭证、RSA 私钥 |
-| `no-unsafe-dynamic-eval` | `ERROR` | 危险动态求值 `eval()`、`new Function()`、`pickle.loads`、`shell=True` |
-| `no-ai-todo-placeholders` | `ERROR` | 未完成的 TODO 占位桩、`throw new Error("not implemented")` |
-| `no-silent-catch-pass` | `ERROR` | 空 `catch(e) {}` 块以及 Python 静默 `except: pass` |
-| `no-dummy-secrets-mocks` | `ERROR` | 模拟凭证与虚拟令牌 (`sk-proj-dummy...`、`dummy_api_key`) |
-| `no-mock-hallucinations` | `ERROR` | 公共假数据 API (`jsonplaceholder`、假 JWT、测试邮箱) |
-| `no-hallucinated-imports` | `ERROR` | 幻觉生成的虚构库导出 (`useLocalStorage`、`createClient`) |
-| `no-phantom-api-routes` | `ERROR` | 缺少后端对应端点的幽灵客户端路由调用 |
-| `no-circular-dependencies` | `ERROR` | 引发运行时死锁与 TDZ 崩溃的模块循环引用 (`A -> B -> A`) |
-| `no-ai-sycophancy-watermarks` | `WARN` | AI 谄媚与对话水印 (`// As an AI...`、`// Hope this helps`) |
-| `no-ghost-env-vars` | `ERROR` | `.env.example` 或模板中未声明的环境变量引用 |
-| `no-deep-nesting-sprawl` | `WARN` | 超过 5 层的深层嵌套金字塔流程控制 |
-| `no-type-safety-degradation`| `ERROR` | 类型系统绕过：`@ts-ignore`、`@ts-nocheck`、`: any`、`as unknown as any` |
-| `no-ghost-dependencies` | `ERROR` | `package.json` 中未声明就直接导入的第三方依赖 |
-| `no-duplicate-shadow-utilities`| `WARN` | 重新发明项目中已有的重复辅助工具函数 |
-| `no-ai-conversational-bloat`| `WARN` | 代码中的 AI 对话废话注释 (`// Here is the fix:`、`// Step 1:`) |
-| `no-excessive-scope-drift` | `WARN` | 智能体擅自修改超过 12 个文件或触碰敏感配置文件 |
-| `no-sql-injection-risk` | `ERROR` | 原生 SQL 字符串拼接与查询模板注入漏洞 |
-| `no-floating-promises` | `ERROR` | 遗漏 await、catch 或 void 处理的悬空 Promise |
-| `no-async-array-predicates` | `ERROR` | 在 `.filter()`、`.some()`、`.every()`、`.find()` 中误用异步回调的真值陷阱 |
-| `no-prototype-pollution` | `ERROR` | 借助未经校验的 `__proto__` 造成原型污染攻击 |
-| `no-command-injection-risk` | `ERROR` | 未经转义的系统进程执行导致的命令注入 |
-| `no-path-traversal-risk` | `ERROR` | 包含 `../` 的未清洗路径拼接导致的任意文件读写 |
-| `no-silent-error-swallowing` | `ERROR` | 静默吞没 Promise 拒绝与异常 |
-| `no-redos-vulnerability` | `ERROR` | 灾难性回溯正则表达式 (ReDoS) 拒绝服务漏洞 |
-| `no-coverage-theater` | `ERROR` | 假测试剧场：空断言、无意义测试体与虚假成功判定 |
-| `no-disabled-tls` | `ERROR` | 禁用 TLS 证书校验 (`NODE_TLS_REJECT_UNAUTHORIZED='0'`, `verify=False`) |
-| `no-insecure-cors` | `ERROR` | 允许凭证传输时的通配符跨域 (`Access-Control-Allow-Origin: *`) |
-| `no-inlined-secrets` | `ERROR` | 前端代码中内联硬编码的敏感 API 密钥与令牌 |
-| `no-slopsquat-deps` | `ERROR` | 拼写仿冒与虚构恶意的 AI 依赖抢注包 |
-| `no-insecure-crypto` | `ERROR` | 安全路径中使用破损密码学哈希 (`MD5`、`SHA1`、`DES`) |
-| `no-hallucinated-speculative-apis` | `ERROR` | 幻觉捏造的运行时方法与投机标准库函数 |
-| `no-test-sabotage` | `ERROR` | 破坏测试行为：注释掉断言、滥用 `.skip` 或强行通过 |
-| `no-async-in-sync-callbacks` | `ERROR` | 在同步事件循环回调中声明异步闭包引发未捕获拒绝 |
-| `no-hardcoded-jwt-secrets` | `ERROR` | 硬编码 HMAC 密钥、`alg: none` 漏洞与弱校验令牌 |
-| `no-unscoped-idor-queries` | `ERROR` | 缺乏租户/用户边界隔离的未授权 IDOR 数据库查询 |
-| `no-unsafe-xml-or-ssrf` | `ERROR` | XXE 外部实体注入与未校验内部 SSRF 伪造请求 |
-| `no-speculative-orm-methods` | `ERROR` | 幻觉捏造的 ORM/ODM 查询辅助方法 (Prisma, TypeORM, Mongoose) |
-| `no-async-pipeline-races` | `ERROR` | 无防护的 `Promise.race()` 与流管道中止泄漏 |
-| `no-phantom-cloud-sdks` | `ERROR` | 依赖清单中虚构的云厂商 SDK 投机包 |
-| `no-ide-protocol-hallucinations` | `ERROR` | 虚构的 IDE 扩展 API (`vscode.window.showAIMessage`, `cursor.ai.*`) |
-| `no-speculative-ffi-wasm` | `ERROR` | 虚构的 `extern "C"` 原生符号与投机 WebAssembly 宿主导入 |
-| `no-unbounded-concurrency` | `WARN` | 无节制并发 (`Promise.all` 映射、`asyncio.gather`) 导致的套接字与文件句柄耗尽 |
-| `no-hallucinated-package-manifest` | `ERROR` | [防火墙 49] AI 幻觉生成的虚构复合包及通配符版本依赖 (`*`, `==*`, `latest`) |
-| `no-unawaited-async-in-loops` | `ERROR` | [防火墙 50] 同步循环内的 `.forEach(async)`、未保护 `.map(async)`、游离 `tokio::spawn` 与 `asyncio.create_task` |
-| `no-insecure-prng-tokens` | `ERROR` | [防火墙 51] 使用非密码学 PRNG (`Math.random()`, `random.choice()`) 派生安全令牌与密钥 |
-| `no-unsafe-deserialization` | `ERROR` | [防火墙 52] 多态反序列化攻击链 (`pickle`, `yaml`, `node-serialize`, `XMLDecoder`, `Marshal`) |
-| `no-deep-path-traversal` | `ERROR` | [防火墙 53] 多重编码穿越 (`%252e%252e`)、Windows UNC 绕过 (`\\?\`) 与 Zip Slip 归档解压 |
-| `no-zip-slip-traversal` | `ERROR` | [防火墙 54] ZipSlip 压缩包解压路径穿越与边界隔离绕过 |
+| 威胁 ID | 规则名称 | 严重级别 | 分类 | 拦截危害说明 |
+| :--- | :--- | :--- | :--- | :--- |
+| `SLOP-001` | `no-hardcoded-secrets` | `ERROR` | 密码与认证 | 泄露的 OpenAI/Anthropic 密钥、AWS 凭证、RSA 私钥 |
+| `SLOP-002` | `no-inlined-secrets` | `ERROR` | 密码与认证 | 前端代码中内联硬编码的敏感 API 密钥与私有令牌 |
+| `SLOP-003` | `no-ai-todo-placeholders` | `ERROR` | 代码质量 | 未完成的 TODO 占位桩、未实现异常抛出与空桩返回 |
+| `SLOP-004` | `no-insecure-crypto` | `ERROR` | 密码与认证 | 安全路径中使用破损密码学哈希 (`MD5`、`SHA1`、`DES`) |
+| `SLOP-005` | `no-circular-dependencies` | `ERROR` | 异步与并发 | 引发运行时死锁与 TDZ 崩溃的模块循环引用 (`A -> B -> A`) |
+| `SLOP-006` | `no-mock-hallucinations` | `ERROR` | 软件供应链 | 公共假数据 API (`jsonplaceholder`、假 JWT、测试邮箱) |
+| `SLOP-007` | `no-hallucinated-imports` | `ERROR` | 软件供应链 | 幻觉生成的虚构库导出与幽灵子路径 (`useLocalStorage`、`createClient`) |
+| `SLOP-008` | `no-floating-promises` | `ERROR` | 异步与并发 | 遗漏 await、catch 或 void 处理的悬空 Promise |
+| `SLOP-009` | `no-ghost-dependencies` | `ERROR` | 软件供应链 | `package.json` 中未声明就直接导入的第三方依赖 |
+| `SLOP-010` | `no-ai-conversational-bloat` | `WARN` | 代码质量 | 代码中的 AI 对话废话注释 (`// Here is the fix:`、`// Step 1:`) |
+| `SLOP-011` | `no-slopsquat-deps` | `ERROR` | 软件供应链 | 拼写仿冒与虚构恶意的 AI 依赖抢注包 |
+| `SLOP-012` | `no-ai-sycophancy-watermarks` | `WARN` | 代码质量 | AI 谄媚与模型道歉水印 (`// As an AI...`、`// Hope this helps`) |
+| `SLOP-013` | `no-hallucinated-speculative-apis` | `ERROR` | 软件供应链 | 幻觉捏造的运行时方法与投机标准库函数 |
+| `SLOP-014` | `no-async-in-sync-callbacks` | `ERROR` | 异步与并发 | 在同步事件循环回调中声明异步闭包引发未捕获拒绝 |
+| `SLOP-015` | `no-speculative-orm-methods` | `ERROR` | 软件供应链 | 幻觉捏造的 ORM/ODM 查询辅助方法 (Prisma, TypeORM, Mongoose) |
+| `SLOP-016` | `no-phantom-cloud-sdks` | `ERROR` | 软件供应链 | 依赖清单中虚构的云厂商 SDK 投机包 |
+| `SLOP-017` | `no-ide-protocol-hallucinations` | `ERROR` | 软件供应链 | 虚构的 IDE 扩展 API (`vscode.window.showAIMessage`, `cursor.ai.*`) |
+| `SLOP-018` | `no-speculative-ffi-wasm` | `ERROR` | 软件供应链 | 虚构的 `extern "C"` 原生符号与投机 WebAssembly 宿主导入 |
+| `SLOP-019` | `no-unbounded-concurrency` | `WARN` | 异步与并发 | 无节制并发 (`Promise.all` 映射、`asyncio.gather`) 导致的套接字与句柄耗尽 |
+| `SLOP-020` | `no-async-pipeline-races` | `WARN` | 异步与并发 | 无防护的 `Promise.race()` 与流管道中止泄漏 |
+| `SLOP-021` | `no-async-array-predicates` | `ERROR` | 异步与并发 | 在 `.filter()`、`.some()`、`.every()`、`.find()` 中误用异步回调的真值陷阱 |
+| `SLOP-022` | `no-redos-vulnerability` | `ERROR` | 异步与并发 | 灾难性回溯正则表达式 (ReDoS) 拒绝服务漏洞 |
+| `SLOP-023` | `no-deep-nesting-sprawl` | `WARN` | 异步与并发 | 超过 5 层的深层嵌套金字塔流程控制 |
+| `SLOP-024` | `no-hardcoded-jwt-secrets` | `ERROR` | 密码与认证 | 硬编码 HMAC 密钥、`alg: none` 漏洞与弱校验令牌 |
+| `SLOP-025` | `no-disabled-tls` | `ERROR` | 密码与认证 | 禁用 TLS 证书校验 (`NODE_TLS_REJECT_UNAUTHORIZED='0'`, `verify=False`) |
+| `SLOP-026` | `no-insecure-cors` | `ERROR` | 密码与认证 | 允许凭证传输时的通配符跨域 (`Access-Control-Allow-Origin: *`) |
+| `SLOP-027` | `no-unscoped-idor-queries` | `ERROR` | 密码与认证 | 缺乏租户/用户边界隔离的未授权 IDOR 数据库查询 |
+| `SLOP-028` | `no-dummy-secrets-mocks` | `ERROR` | 密码与认证 | 模拟凭证与虚拟令牌 (`sk-proj-dummy...`、`dummy_api_key`) |
+| `SLOP-029` | `no-ghost-env-vars` | `WARN` | 密码与认证 | `.env.example` 或模板中未声明的环境变量引用 |
+| `SLOP-030` | `no-path-traversal-risk` | `ERROR` | 路径与注入 | 包含 `../` 的未清洗路径拼接导致的任意文件读写 |
+| `SLOP-031` | `no-sql-injection-risk` | `ERROR` | 路径与注入 | 原生 SQL 字符串拼接与查询模板注入漏洞 |
+| `SLOP-032` | `no-command-injection-risk` | `ERROR` | 路径与注入 | 未经转义的系统进程执行导致的命令注入 |
+| `SLOP-033` | `no-unsafe-xml-or-ssrf` | `ERROR` | 路径与注入 | XXE 外部实体注入与未校验内部 SSRF 伪造请求 |
+| `SLOP-034` | `no-unsafe-dynamic-eval` | `ERROR` | 路径与注入 | 危险动态求值 `eval()`、`new Function()`、`pickle.loads`、`shell=True` |
+| `SLOP-035` | `no-prototype-pollution` | `ERROR` | 路径与注入 | 借助未经校验的 `__proto__` 造成原型污染攻击 |
+| `SLOP-036` | `no-phantom-api-routes` | `ERROR` | 路径与注入 | 缺少后端对应端点的幽灵客户端路由调用 |
+| `SLOP-037` | `no-silent-catch-pass` | `ERROR` | 路径与注入 | 空 `catch(e) {}` 块以及 Python 静默 `except: pass` |
+| `SLOP-038` | `no-silent-error-swallowing` | `ERROR` | 路径与注入 | 静默吞没 Promise 拒绝与异常 |
+| `SLOP-039` | `no-test-sabotage` | `ERROR` | 代码质量 | 破坏测试行为：注释掉断言、滥用 `.skip` 或强行通过 |
+| `SLOP-040` | `no-coverage-theater` | `ERROR` | 代码质量 | 假测试剧场：空断言、无意义测试体与虚假成功判定 |
+| `SLOP-041` | `no-duplicate-shadow-utilities` | `WARN` | 代码质量 | 重新发明项目中已有的重复辅助工具函数 |
+| `SLOP-042` | `no-type-safety-degradation` | `ERROR` | 代码质量 | 类型系统绕过：`@ts-ignore`、`@ts-nocheck`、`: any`、`as unknown as any` |
+| `SLOP-043` | `no-excessive-scope-drift` | `WARN` | 代码质量 | 智能体擅自修改超过 12 个文件或触碰敏感配置文件 |
+| `SLOP-044` | `no-unsafe-buffer-overflows` | `ERROR` | 代码质量 | 无界缓冲区索引与裸原始内存检查缺失 |
+| `SLOP-045` | `no-dangling-native-pointers` | `ERROR` | 代码质量 | 悬空原生指针与释放后使用 (use-after-free) 风险 |
+| `SLOP-046` | `no-multi-registry-slopsquat` | `ERROR` | 软件供应链 | 跨多注册表投机依赖劫持与仿冒包检测 |
+| `SLOP-047` | `no-async-stream-leaks` | `WARN` | 异步与并发 | 未消费完全的异步生成器与文件描述符泄漏 |
+| `SLOP-048` | `no-static-entropy-seeds` | `ERROR` | 密码与认证 | 伪随机数生成器中的静态常数硬编码种子 |
+| `SLOP-049` | `no-hallucinated-package-manifest` | `ERROR` | 软件供应链 | [防火墙 49] AI 幻觉生成的虚构复合包及通配符版本依赖 (`*`, `==*`, `latest`) |
+| `SLOP-050` | `no-unawaited-async-in-loops` | `ERROR` | 异步与并发 | [防火墙 50] 同步循环内的 `.forEach(async)`、未保护 `.map(async)`、游离 `tokio::spawn` 与 `asyncio.create_task` |
+| `SLOP-051` | `no-insecure-prng-tokens` | `ERROR` | 密码与认证 | [防火墙 51] 使用非密码学 PRNG (`Math.random()`, `random.choice()`) 派生安全令牌与密钥 |
+| `SLOP-052` | `no-unsafe-deserialization` | `ERROR` | 路径与注入 | [防火墙 52] 多态反序列化攻击链 (`pickle`, `yaml`, `node-serialize`, `XMLDecoder`, `Marshal`) |
+| `SLOP-053` | `no-deep-path-traversal` | `ERROR` | 路径与注入 | [防火墙 53] 多重编码穿越 (`%252e%252e`)、Windows UNC 绕过 (`\\?\`) 与 Zip Slip 归档解压 |
+| `SLOP-054` | `no-zip-slip-traversal` | `ERROR` | 路径与注入 | [防火墙 54] ZipSlip 压缩包解压路径穿越与边界隔离绕过 |
 
 ---
 

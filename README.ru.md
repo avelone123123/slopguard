@@ -12,7 +12,7 @@
   <img alt="Релиз: v3.0.0" src="https://img.shields.io/badge/release-v3.0.0-10b981?style=flat-square">
   <img alt="Тесты: 202 пройдены" src="https://img.shields.io/badge/tests-202%20passed%20(100%25)-10b981?style=flat-square">
   <img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-263146?style=flat-square">
-  <img alt="Latency: <3ms" src="https://img.shields.io/badge/latency-%3C0.35ms-2f6f4f?style=flat-square">
+  <img alt="Задержка: <0.35ms" src="https://img.shields.io/badge/latency-%3C0.35ms-2f6f4f?style=flat-square">
   <img alt="MCP Protocol: 2.0" src="https://img.shields.io/badge/MCP-JSON--RPC%202.0-7c3aed?style=flat-square">
   <img alt="Фаерволы: 54" src="https://img.shields.io/badge/firewalls-54%20active-blue?style=flat-square">
   <img alt="Platforms" src="https://img.shields.io/badge/platforms-Windows%20%C2%B7%20macOS%20%C2%B7%20Linux-2f7bf5?style=flat-square">
@@ -204,9 +204,7 @@ slopguard ui
 - **Лента вызовов MCP**: отображение каждого запроса инструмента с микросекундной точностью.
 - **Индикатор чистоты кода**: динамический скоринг и рейтинг по мере генерации кода.
 - **Счетчик заблокированного слопа**: число перехваченных заглушек, фейковых токенов и сбросов типов.
-- **График задержки (Latency)**: доказательство скорости Rust (<2ms) без замедления процесса разработки.
-
----
+- **График задержки (Latency)**: доказательство скорости Rust (<0.35ms) без замедления процесса разработки.
 
 ---
 
@@ -231,57 +229,62 @@ slopguard ui
 
 ## Правила и детекторы
 
-| Идентификатор правила | Важность | Что перехватывает |
-| :--- | :--- | :--- |
-| `no-hardcoded-secrets` | `ERROR` | Утечки ключей OpenAI/Anthropic, учетных данных AWS, приватных RSA ключей |
-| `no-unsafe-dynamic-eval` | `ERROR` | Опасные вызовы `eval()`, `new Function()`, `pickle.loads`, `shell=True` |
-| `no-ai-todo-placeholders` | `ERROR` | Недописанные заглушки TODO, `throw new Error("not implemented")` |
-| `no-silent-catch-pass` | `ERROR` | Пустые блоки `catch(e) {}` и Python `except: pass` |
-| `no-dummy-secrets-mocks` | `ERROR` | Мок-токены (`sk-proj-dummy...`, `dummy_api_key`) |
-| `no-mock-hallucinations` | `ERROR` | Публичные мок-API (`jsonplaceholder`, фейковые JWT, тестовые email) |
-| `no-hallucinated-imports` | `ERROR` | Галлюцинированные экспорты библиотек (`useLocalStorage`, `createClient`) |
-| `no-phantom-api-routes` | `ERROR` | Вызовы клиентских API без соответствующих эндпоинтов на бэкенде |
-| `no-circular-dependencies` | `ERROR` | Циклические зависимости модулей (`A -> B -> A`), ведущие к TDZ-сбоям |
-| `no-ai-sycophancy-watermarks` | `WARN` | Водяные знаки подхалимажа ИИ (`// As an AI...`, `// Hope this helps`) |
-| `no-ghost-env-vars` | `ERROR` | Переменные окружения, отсутствующие в `.env.example` / шаблоне `.env` |
-| `no-deep-nesting-sprawl` | `WARN` | Глубокая вложенность конструкций ветвления (>= 5 уровней) |
-| `no-type-safety-degradation`| `ERROR` | Подавление проверки типов: `@ts-ignore`, `@ts-nocheck`, `: any`, `as unknown as any` |
-| `no-ghost-dependencies` | `ERROR` | Сторонние библиотеки, импортированные без объявления в `package.json` |
-| `no-duplicate-shadow-utilities`| `WARN` | Дубликаты утилит, изобретающие заново существующие функции проекта |
-| `no-ai-conversational-bloat`| `WARN` | Разговорный мусор ИИ в комментариях (`// Here is the fix:`, `// Step 1:`) |
-| `no-excessive-scope-drift` | `WARN` | Агент изменяет более 12 файлов или затрагивает критические `.env` / конфиги |
-| `no-sql-injection-risk` | `ERROR` | Конкатенация сырых SQL-строк и уязвимости интерполяции шаблонов запросов |
-| `no-floating-promises` | `ERROR` | Необработанные промисы без `await`, `.catch()` или маркера `void` |
-| `no-async-array-predicates` | `ERROR` | Асинхронные предикаты в `.filter()`, `.some()`, `.every()`, `.find()` |
-| `no-prototype-pollution` | `ERROR` | Загрязнение прототипа через невалидированные мутации `__proto__` |
-| `no-command-injection-risk` | `ERROR` | Инъекции шелл-команд через неэкранированное выполнение процессов |
-| `no-path-traversal-risk` | `ERROR` | Доступ к файловой системе через неочищенные пути `../` |
-| `no-silent-error-swallowing` | `ERROR` | Тихое подавление отклонений промисов и проглатывание исключений |
-| `no-redos-vulnerability` | `ERROR` | Уязвимости регулярных выражений к катастрофическому возврату (ReDoS) |
-| `no-coverage-theater` | `ERROR` | Пустые утверждения, бессодержательные тесты и фиктивные проверки |
-| `no-disabled-tls` | `ERROR` | Отключение проверки TLS (`NODE_TLS_REJECT_UNAUTHORIZED='0'`, `verify=False`) |
-| `no-insecure-cors` | `ERROR` | Wildcard-источники (`Access-Control-Allow-Origin: *`) с передачей учетных данных |
-| `no-inlined-secrets` | `ERROR` | Захардкоженные клиентские API-ключи и приватные токены во фронтенд-коде |
-| `no-slopsquat-deps` | `ERROR` | Вредоносные зависимости с тайпсквоттингом и слопсквоттингом |
-| `no-insecure-crypto` | `ERROR` | Устаревшие криптографические алгоритмы (`MD5`, `SHA1`, `DES`) в защищенных путях |
-| `no-hallucinated-speculative-apis` | `ERROR` | Вымышленные методы рантайма и спекулятивные функции стандартных библиотек |
-| `no-test-sabotage` | `ERROR` | Закомментированные ассерты, злоупотребление `.skip` или принудительный pass |
-| `no-async-in-sync-callbacks` | `ERROR` | Асинхронные замыкания в синхронных циклах событий с потерей ошибок |
-| `no-hardcoded-jwt-secrets` | `ERROR` | Захардкоженные HMAC-секреты, токены с `alg: none` и слабые ключи |
-| `no-unscoped-idor-queries` | `ERROR` | Запросы к базе данных без проверки границ арендатора/пользователя (IDOR) |
-| `no-unsafe-xml-or-ssrf` | `ERROR` | Инъекции внешних сущностей XXE и невалидированные внутренние запросы SSRF |
-| `no-speculative-orm-methods` | `ERROR` | Вымышленные методы ORM/ODM (Prisma, TypeORM, Mongoose) |
-| `no-async-pipeline-races` | `ERROR` | Незащищенные вызовы `Promise.race()` и утечки прерывания пайплайнов потоков |
-| `no-phantom-cloud-sdks` | `ERROR` | Спекулятивные SDK облачных провайдеров в манифестах зависимостей |
-| `no-ide-protocol-hallucinations` | `ERROR` | Вымышленные API расширений IDE (`vscode.window.showAIMessage`, `cursor.ai.*`) |
-| `no-speculative-ffi-wasm` | `ERROR` | Вымышленные символы `extern "C"` и спекулятивные импорты WebAssembly хоста |
-| `no-unbounded-concurrency` | `WARN` | Неограниченная конкурентность (`Promise.all` по `.map`, `asyncio.gather`) |
-| `no-hallucinated-package-manifest` | `ERROR` | [Фаервол 49] Вымышленные составные пакеты и wildcard-версии (`*`, `==*`, `latest`) |
-| `no-unawaited-async-in-loops` | `ERROR` | [Фаервол 50] Синхронные `.forEach(async)`, `.map(async)`, незакрепленные `tokio::spawn` и `asyncio.create_task` |
-| `no-insecure-prng-tokens` | `ERROR` | [Фаервол 51] Некриптографические PRNG (`Math.random()`, `random.choice()`) для токенов и секретов |
-| `no-unsafe-deserialization` | `ERROR` | [Фаервол 52] Гаджеты полиморфной десериализации (`pickle`, `yaml`, `node-serialize`, `XMLDecoder`, `Marshal`) |
-| `no-deep-path-traversal` | `ERROR` | [Фаервол 53] Мультикодированные обходы (`%252e%252e`), Windows UNC (`\\?\`) и извлечение архивов Zip Slip |
-| `no-zip-slip-traversal` | `ERROR` | [Фаервол 54] ZipSlip-обход путей при распаковке архивов и нарушение изоляции границ |
+| ID угрозы | Правило | Важность | Категория | Что перехватывает |
+| :--- | :--- | :--- | :--- | :--- |
+| `SLOP-001` | `no-hardcoded-secrets` | `ERROR` | Криптография и аутентификация | Утечки ключей OpenAI/Anthropic, учетных данных AWS, приватных RSA ключей |
+| `SLOP-002` | `no-inlined-secrets` | `ERROR` | Криптография и аутентификация | Захардкоженные клиентские API-ключи и приватные токены во фронтенд-коде |
+| `SLOP-003` | `no-ai-todo-placeholders` | `ERROR` | Качество кода | Недописанные заглушки TODO, `throw new Error("not implemented")` |
+| `SLOP-004` | `no-insecure-crypto` | `ERROR` | Криптография и аутентификация | Устаревшие криптографические алгоритмы (`MD5`, `SHA1`, `DES`) в защищенных путях |
+| `SLOP-005` | `no-circular-dependencies` | `ERROR` | Асинхронность и конкурентность | Циклические зависимости модулей (`A -> B -> A`), ведущие к TDZ-сбоям |
+| `SLOP-006` | `no-mock-hallucinations` | `ERROR` | Цепочка поставок | Публичные мок-API (`jsonplaceholder`, фейковые JWT, тестовые email) |
+| `SLOP-007` | `no-hallucinated-imports` | `ERROR` | Цепочка поставок | Галлюцинированные экспорты библиотек (`useLocalStorage`, `createClient`) |
+| `SLOP-008` | `no-floating-promises` | `ERROR` | Асинхронность и конкурентность | Необработанные промисы без `await`, `.catch()` или маркера `void` |
+| `SLOP-009` | `no-ghost-dependencies` | `ERROR` | Цепочка поставок | Сторонние библиотеки, импортированные без объявления в `package.json` |
+| `SLOP-010` | `no-ai-conversational-bloat` | `WARN` | Качество кода | Разговорный мусор ИИ в комментариях (`// Here is the fix:`, `// Step 1:`) |
+| `SLOP-011` | `no-slopsquat-deps` | `ERROR` | Цепочка поставок | Вредоносные зависимости с тайпсквоттингом и слопсквоттингом |
+| `SLOP-012` | `no-ai-sycophancy-watermarks` | `WARN` | Качество кода | Водяные знаки подхалимажа ИИ (`// As an AI...`, `// Hope this helps`) |
+| `SLOP-013` | `no-hallucinated-speculative-apis` | `ERROR` | Цепочка поставок | Вымышленные методы рантайма и спекулятивные функции стандартных библиотек |
+| `SLOP-014` | `no-async-in-sync-callbacks` | `ERROR` | Асинхронность и конкурентность | Асинхронные замыкания в синхронных циклах событий с потерей ошибок |
+| `SLOP-015` | `no-speculative-orm-methods` | `ERROR` | Цепочка поставок | Вымышленные методы ORM/ODM (Prisma, TypeORM, Mongoose) |
+| `SLOP-016` | `no-phantom-cloud-sdks` | `ERROR` | Цепочка поставок | Спекулятивные SDK облачных провайдеров в манифестах зависимостей |
+| `SLOP-017` | `no-ide-protocol-hallucinations` | `ERROR` | Цепочка поставок | Вымышленные API расширений IDE (`vscode.window.showAIMessage`, `cursor.ai.*`) |
+| `SLOP-018` | `no-speculative-ffi-wasm` | `ERROR` | Цепочка поставок | Вымышленные символы `extern "C"` и спекулятивные импорты WebAssembly хоста |
+| `SLOP-019` | `no-unbounded-concurrency` | `WARN` | Асинхронность и конкурентность | Неограниченная конкурентность (`Promise.all` по `.map`, `asyncio.gather`) |
+| `SLOP-020` | `no-async-pipeline-races` | `WARN` | Асинхронность и конкурентность | Незащищенные вызовы `Promise.race()` и утечки прерывания пайплайнов потоков |
+| `SLOP-021` | `no-async-array-predicates` | `ERROR` | Асинхронность и конкурентность | Асинхронные предикаты в `.filter()`, `.some()`, `.every()`, `.find()` |
+| `SLOP-022` | `no-redos-vulnerability` | `ERROR` | Асинхронность и конкурентность | Уязвимости регулярных выражений к катастрофическому возврату (ReDoS) |
+| `SLOP-023` | `no-deep-nesting-sprawl` | `WARN` | Асинхронность и конкурентность | Глубокая вложенность конструкций ветвления (>= 5 уровней) |
+| `SLOP-024` | `no-hardcoded-jwt-secrets` | `ERROR` | Криптография и аутентификация | Захардкоженные HMAC-секреты, токены с `alg: none` и слабые ключи |
+| `SLOP-025` | `no-disabled-tls` | `ERROR` | Криптография и аутентификация | Отключение проверки TLS (`NODE_TLS_REJECT_UNAUTHORIZED='0'`, `verify=False`) |
+| `SLOP-026` | `no-insecure-cors` | `ERROR` | Криптография и аутентификация | Wildcard-источники (`Access-Control-Allow-Origin: *`) с передачей учетных данных |
+| `SLOP-027` | `no-unscoped-idor-queries` | `ERROR` | Криптография и аутентификация | Запросы к базе данных без проверки границ арендатора/пользователя (IDOR) |
+| `SLOP-028` | `no-dummy-secrets-mocks` | `ERROR` | Криптография и аутентификация | Мок-токены (`sk-proj-dummy...`, `dummy_api_key`) |
+| `SLOP-029` | `no-ghost-env-vars` | `WARN` | Криптография и аутентификация | Переменные окружения, отсутствующие в `.env.example` / шаблоне `.env` |
+| `SLOP-030` | `no-path-traversal-risk` | `ERROR` | Пути и инъекции | Доступ к файловой системе через неочищенные пути `../` |
+| `SLOP-031` | `no-sql-injection-risk` | `ERROR` | Пути и инъекции | Конкатенация сырых SQL-строк и уязвимости интерполяции шаблонов запросов |
+| `SLOP-032` | `no-command-injection-risk` | `ERROR` | Пути и инъекции | Инъекции шелл-команд через неэкранированное выполнение процессов |
+| `SLOP-033` | `no-unsafe-xml-or-ssrf` | `ERROR` | Пути и инъекции | Инъекции внешних сущностей XXE и невалидированные внутренние запросы SSRF |
+| `SLOP-034` | `no-unsafe-dynamic-eval` | `ERROR` | Пути и инъекции | Опасные вызовы `eval()`, `new Function()`, `pickle.loads`, `shell=True` |
+| `SLOP-035` | `no-prototype-pollution` | `ERROR` | Пути и инъекции | Загрязнение прототипа через невалидированные мутации `__proto__` |
+| `SLOP-036` | `no-phantom-api-routes` | `ERROR` | Пути и инъекции | Вызовы клиентских API без соответствующих эндпоинтов на бэкенде |
+| `SLOP-037` | `no-silent-catch-pass` | `ERROR` | Пути и инъекции | Пустые блоки `catch(e) {}` и Python `except: pass` |
+| `SLOP-038` | `no-silent-error-swallowing` | `ERROR` | Пути и инъекции | Тихое подавление отклонений промисов и проглатывание исключений |
+| `SLOP-039` | `no-test-sabotage` | `ERROR` | Качество кода | Закомментированные ассерты, злоупотребление `.skip` или принудительный pass |
+| `SLOP-040` | `no-coverage-theater` | `ERROR` | Качество кода | Пустые утверждения, бессодержательные тесты и фиктивные проверки |
+| `SLOP-041` | `no-duplicate-shadow-utilities` | `WARN` | Качество кода | Дубликаты утилит, изобретающие заново существующие функции проекта |
+| `SLOP-042` | `no-type-safety-degradation` | `ERROR` | Качество кода | Подавление проверки типов: `@ts-ignore`, `@ts-nocheck`, `: any`, `as unknown as any` |
+| `SLOP-043` | `no-excessive-scope-drift` | `WARN` | Качество кода | Агент изменяет более 12 файлов или затрагивает критические `.env` / конфиги |
+| `SLOP-044` | `no-unsafe-buffer-overflows` | `ERROR` | Качество кода | Неограниченная индексация буферов и сырой непроверенный доступ к памяти |
+| `SLOP-045` | `no-dangling-native-pointers` | `ERROR` | Качество кода | Висячие нативные указатели и риски use-after-free |
+| `SLOP-046` | `no-multi-registry-slopsquat` | `ERROR` | Цепочка поставок | Мульти-реестровый слопсквоттинг со спекулятивными пакетами |
+| `SLOP-047` | `no-async-stream-leaks` | `WARN` | Асинхронность и конкурентность | Непотребленные асинхронные генераторы потоков, вызывающие утечку дескрипторов |
+| `SLOP-048` | `no-static-entropy-seeds` | `ERROR` | Криптография и аутентификация | Статические константные сиды для псевдослучайных генераторов |
+| `SLOP-049` | `no-hallucinated-package-manifest` | `ERROR` | Цепочка поставок | Спекулятивные пакеты и wildcard-версии (`*`, `==*`, `latest`) в манифестах |
+| `SLOP-050` | `no-unawaited-async-in-loops` | `ERROR` | Асинхронность и конкурентность | Неожидаемые асинхронные колбэки в итераторах, вызывающие микротасковое голодание |
+| `SLOP-051` | `no-insecure-prng-tokens` | `ERROR` | Криптография и аутентификация | Небезопасный PRNG (`Math.random()`, `random.choice()`) в контексте токенов и секретов |
+| `SLOP-052` | `no-unsafe-deserialization` | `ERROR` | Пути и инъекции | Гаджеты полиморфной десериализации (`pickle`, `yaml`, `node-serialize`, `XMLDecoder`) |
+| `SLOP-053` | `no-deep-path-traversal` | `ERROR` | Пути и инъекции | Мультикодированные обходы (`%252e%252e`), Windows UNC (`\\?\`) и Zip Slip |
+| `SLOP-054` | `no-zip-slip-traversal` | `ERROR` | Пути и инъекции | ZipSlip-обход путей при распаковке архивов и нарушение изоляции границ |
 
 ---
 

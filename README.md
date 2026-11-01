@@ -217,57 +217,62 @@ Opens a fast, embedded local web interface at `http://127.0.0.1:4545`:
 
 ## Rules and Detections
 
-| Rule ID | Severity | What It Catches |
-| :--- | :--- | :--- |
-| `no-hardcoded-secrets` | `ERROR` | Leaked OpenAI/Anthropic keys, AWS credentials, RSA private keys |
-| `no-unsafe-dynamic-eval` | `ERROR` | Dangerous `eval()`, `new Function()`, `pickle.loads`, `shell=True` |
-| `no-ai-todo-placeholders` | `ERROR` | Unfinished TODO stubs, `throw new Error("not implemented")` |
-| `no-silent-catch-pass` | `ERROR` | Empty `catch(e) {}` blocks and Python `except: pass` |
-| `no-dummy-secrets-mocks` | `ERROR` | Mock tokens (`sk-proj-dummy...`, `dummy_api_key`) |
-| `no-mock-hallucinations` | `ERROR` | Public placeholder APIs (`jsonplaceholder`, mock JWTs, test emails) |
-| `no-hallucinated-imports` | `ERROR` | Hallucinated package exports (`useLocalStorage`, `createClient`, etc.) |
-| `no-phantom-api-routes` | `ERROR` | Client API calls with no matching backend endpoint |
-| `no-circular-dependencies` | `ERROR` | Circular module import cycles (`A -> B -> A`) causing TDZ crashes |
-| `no-ai-sycophancy-watermarks` | `WARN` | AI sycophancy or chat watermarks (`// As an AI...`, `// Hope this helps`) |
-| `no-ghost-env-vars` | `ERROR` | Environment variables missing from `.env.example` / `.env` template |
-| `no-deep-nesting-sprawl` | `WARN` | Deep pyramid-of-doom control flow nesting (>= 5 levels) |
-| `no-type-safety-degradation`| `ERROR` | `@ts-ignore`, `@ts-nocheck`, `: any`, `as unknown as any` |
-| `no-ghost-dependencies` | `ERROR` | Third-party packages imported but missing in `package.json` |
-| `no-duplicate-shadow-utilities`| `WARN` | Re-invented helper functions that duplicate existing utilities |
-| `no-ai-conversational-bloat`| `WARN` | Conversational comments (`// Here is the fix:`, `// Step 1:`) |
-| `no-excessive-scope-drift` | `WARN` | Agent touching >12 files or sensitive `.env` / config files |
-| `no-sql-injection-risk` | `ERROR` | Raw SQL concatenation and template interpolation vulnerabilities |
-| `no-floating-promises` | `ERROR` | Unhandled floating promises missing await, catch, or void markers |
-| `no-async-array-predicates` | `ERROR` | Async callback truthy trap in `.filter()`, `.some()`, `.every()`, `.find()` |
-| `no-prototype-pollution` | `ERROR` | Prototype pollution via unvalidated `__proto__` or prototype mutations |
-| `no-command-injection-risk` | `ERROR` | Command injection via unescaped shell process execution |
-| `no-path-traversal-risk` | `ERROR` | Arbitrary file access via unsanitized `../` path joining |
-| `no-silent-error-swallowing` | `ERROR` | Silently suppressed promise rejections and swallowed runtime errors |
-| `no-redos-vulnerability` | `ERROR` | Catastrophic regular expression backtracking vulnerabilities |
-| `no-coverage-theater` | `ERROR` | Empty assertions, vacuous test bodies, and synthetic pass assertions |
-| `no-disabled-tls` | `ERROR` | Insecure transport flags (`NODE_TLS_REJECT_UNAUTHORIZED='0'`, `verify=False`) |
-| `no-insecure-cors` | `ERROR` | Wildcard origins (`Access-Control-Allow-Origin: *`) with credentials allowed |
-| `no-inlined-secrets` | `ERROR` | Hardcoded client-side API secrets and private tokens in frontend bundles |
-| `no-slopsquat-deps` | `ERROR` | Typosquatted and slopsquatted malicious package dependencies |
-| `no-insecure-crypto` | `ERROR` | Broken cryptographic hashes (`MD5`, `SHA1`, `DES`) in security paths |
-| `no-hallucinated-speculative-apis` | `ERROR` | Fictional runtime methods and speculative standard library functions |
-| `no-test-sabotage` | `ERROR` | Commented-out assertions, `.skip` abuse, or forced unconditional test passes |
-| `no-async-in-sync-callbacks` | `ERROR` | Async closures in synchronous event loops dropping errors or unhandled rejections |
-| `no-hardcoded-jwt-secrets` | `ERROR` | Hardcoded HMAC secrets, `alg: none` JWTs, and weak verification keys |
-| `no-unscoped-idor-queries` | `ERROR` | Unscoped database lookups missing tenant/user boundary isolation |
-| `no-unsafe-xml-or-ssrf` | `ERROR` | XXE external entity injection and unvalidated internal SSRF requests |
-| `no-speculative-orm-methods` | `ERROR` | Hallucinated ORM/ODM query helper methods (Prisma, TypeORM, Mongoose) |
-| `no-async-pipeline-races` | `ERROR` | Unshielded `Promise.race()` and unhandled stream pipeline abort leaks |
-| `no-phantom-cloud-sdks` | `ERROR` | Speculative cloud SDK packages and synthetic provider bindings in manifests |
-| `no-ide-protocol-hallucinations` | `ERROR` | Synthetic IDE extension APIs (`vscode.window.showAIMessage`, `cursor.ai.*`) |
-| `no-speculative-ffi-wasm` | `ERROR` | Synthetic extern "C" symbols and speculative WebAssembly host imports |
-| `no-unbounded-concurrency` | `WARN` | Unthrottled concurrent iterations (`Promise.all` over `.map`, `asyncio.gather`) risking socket exhaustion |
-| `no-hallucinated-package-manifest` | `ERROR` | [Firewall 49] AI-hallucinated composite packages and wildcard versions (`*`, `==*`, `latest`) across npm, PyPI, Cargo, Go |
-| `no-unawaited-async-in-loops` | `ERROR` | [Firewall 50] Synchronous `.forEach(async)`, unshielded `.map(async)`, uncollected `tokio::spawn` and `asyncio.create_task` |
-| `no-insecure-prng-tokens` | `ERROR` | [Firewall 51] Non-cryptographic PRNGs (`Math.random()`, `random.choice()`, `rand::random()`) for security tokens & secrets |
-| `no-unsafe-deserialization` | `ERROR` | [Firewall 52] Polymorphic deserialization gadgets (`pickle.loads`, `yaml.load`, `node-serialize`, `XMLDecoder`, `Marshal.load`) |
-| `no-deep-path-traversal` | `ERROR` | [Firewall 53] Multi-encoded traversal (`%252e%252e`, `\u002e\u002e`), Windows UNC bypass (`\\?\`), and Zip Slip extraction |
-| `no-zip-slip-traversal` | `ERROR` | [Firewall 54] ZipSlip archive extraction path traversal and boundary containment bypass |
+| Threat ID | Rule Name | Severity | Category | What It Catches |
+| :--- | :--- | :--- | :--- | :--- |
+| `SLOP-001` | `no-hardcoded-secrets` | `ERROR` | Crypto & Auth | Leaked OpenAI/Anthropic keys, AWS credentials, RSA private keys |
+| `SLOP-002` | `no-inlined-secrets` | `ERROR` | Crypto & Auth | Hardcoded client-side API secrets and private tokens in frontend bundles |
+| `SLOP-003` | `no-ai-todo-placeholders` | `ERROR` | Code Quality | Unfinished TODO placeholders, stub returns, and throw not implemented |
+| `SLOP-004` | `no-insecure-crypto` | `ERROR` | Crypto & Auth | Broken cryptographic hash functions MD5 or SHA1 in security paths |
+| `SLOP-005` | `no-circular-dependencies` | `ERROR` | Async & Concurrency | Circular module import cycles (`A -> B -> A`) causing TDZ crashes |
+| `SLOP-006` | `no-mock-hallucinations` | `ERROR` | Supply Chain | Public placeholder APIs (`jsonplaceholder`, mock JWTs, test emails) |
+| `SLOP-007` | `no-hallucinated-imports` | `ERROR` | Supply Chain | Hallucinated subpath imports and package exports (`useLocalStorage`, etc.) |
+| `SLOP-008` | `no-floating-promises` | `ERROR` | Async & Concurrency | Floating unhandled asynchronous promises leaking exceptions |
+| `SLOP-009` | `no-ghost-dependencies` | `ERROR` | Supply Chain | Third-party dependencies imported without declaration in manifest |
+| `SLOP-010` | `no-ai-conversational-bloat` | `WARN` | Code Quality | AI conversational commentary and prompt echoes in code |
+| `SLOP-011` | `no-slopsquat-deps` | `ERROR` | Supply Chain | Slopsquatted package names mimicking canonical packages |
+| `SLOP-012` | `no-ai-sycophancy-watermarks` | `WARN` | Code Quality | AI sycophancy watermarks and model apology comments |
+| `SLOP-013` | `no-hallucinated-speculative-apis` | `ERROR` | Supply Chain | Speculative standard library methods hallucinated by AI |
+| `SLOP-014` | `no-async-in-sync-callbacks` | `ERROR` | Async & Concurrency | Async closures passed into synchronous array iterator callbacks |
+| `SLOP-015` | `no-speculative-orm-methods` | `ERROR` | Supply Chain | Hallucinated speculative ORM query helper methods |
+| `SLOP-016` | `no-phantom-cloud-sdks` | `ERROR` | Supply Chain | Fabricated cloud provider wrapper SDK packages in manifests |
+| `SLOP-017` | `no-ide-protocol-hallucinations` | `ERROR` | Supply Chain | Hallucinated IDE or editor extension APIs (`vscode.window.showAIMessage`, etc.) |
+| `SLOP-018` | `no-speculative-ffi-wasm` | `ERROR` | Supply Chain | Speculative extern C symbols and fictional WASM imports |
+| `SLOP-019` | `no-unbounded-concurrency` | `WARN` | Async & Concurrency | Unbounded concurrent operations without semaphore throttling |
+| `SLOP-020` | `no-async-pipeline-races` | `WARN` | Async & Concurrency | Unshielded `Promise.race()` and unmonitored stream pipelines |
+| `SLOP-021` | `no-async-array-predicates` | `ERROR` | Async & Concurrency | Async callback truthy trap in `.filter()`, `.some()`, `.every()`, `.find()` |
+| `SLOP-022` | `no-redos-vulnerability` | `ERROR` | Async & Concurrency | Regular expressions vulnerable to catastrophic backtracking |
+| `SLOP-023` | `no-deep-nesting-sprawl` | `WARN` | Async & Concurrency | Excessive block nesting sprawl exceeding cognitive thresholds (>= 5 levels) |
+| `SLOP-024` | `no-hardcoded-jwt-secrets` | `ERROR` | Crypto & Auth | Hardcoded JWT secret keys or `alg: none` verification bypass |
+| `SLOP-025` | `no-disabled-tls` | `ERROR` | Crypto & Auth | Disabled TLS certificate verification (`NODE_TLS_REJECT_UNAUTHORIZED='0'`) |
+| `SLOP-026` | `no-insecure-cors` | `ERROR` | Crypto & Auth | Wildcard CORS origin (`*`) paired with credentials enabled |
+| `SLOP-027` | `no-unscoped-idor-queries` | `ERROR` | Crypto & Auth | Unscoped database queries vulnerable to IDOR |
+| `SLOP-028` | `no-dummy-secrets-mocks` | `ERROR` | Crypto & Auth | Dummy authentication tokens or mock credentials committed |
+| `SLOP-029` | `no-ghost-env-vars` | `WARN` | Crypto & Auth | Environment variables referenced without documentation in template |
+| `SLOP-030` | `no-path-traversal-risk` | `ERROR` | Path & Injection | Direct path traversal risk via unvalidated path joining |
+| `SLOP-031` | `no-sql-injection-risk` | `ERROR` | Path & Injection | Raw SQL concatenation and template interpolation vulnerabilities |
+| `SLOP-032` | `no-command-injection-risk` | `ERROR` | Path & Injection | Command injection via unescaped shell process execution |
+| `SLOP-033` | `no-unsafe-xml-or-ssrf` | `ERROR` | Path & Injection | XXE entity injection or unvalidated internal SSRF access |
+| `SLOP-034` | `no-unsafe-dynamic-eval` | `ERROR` | Path & Injection | Unsafe dynamic eval or code execution constructs (`eval`, `new Function`) |
+| `SLOP-035` | `no-prototype-pollution` | `ERROR` | Path & Injection | Prototype pollution through recursive object merging (`__proto__`) |
+| `SLOP-036` | `no-phantom-api-routes` | `ERROR` | Path & Injection | Frontend API calls invoking non-existent backend endpoints |
+| `SLOP-037` | `no-silent-catch-pass` | `ERROR` | Path & Injection | Empty catch or except pass blocks suppressing failures |
+| `SLOP-038` | `no-silent-error-swallowing` | `ERROR` | Path & Injection | Swallowed promise rejections without error logging |
+| `SLOP-039` | `no-test-sabotage` | `ERROR` | Code Quality | Commented assertions, `.skip` abuse, or forced unconditional test passes |
+| `SLOP-040` | `no-coverage-theater` | `ERROR` | Code Quality | Vacuous unit test assertions and coverage theater stubs |
+| `SLOP-041` | `no-duplicate-shadow-utilities` | `WARN` | Code Quality | Reinvented shadow utilities duplicating existing helpers |
+| `SLOP-042` | `no-type-safety-degradation` | `ERROR` | Code Quality | Mass downgrades to `any`, `@ts-ignore`, `as unknown as any` |
+| `SLOP-043` | `no-excessive-scope-drift` | `WARN` | Code Quality | Autonomous agent edits touching files outside task scope (>12 files or `.env`) |
+| `SLOP-044` | `no-unsafe-buffer-overflows` | `ERROR` | Code Quality | Unbounded buffer indexing and raw unchecked memory access |
+| `SLOP-045` | `no-dangling-native-pointers` | `ERROR` | Code Quality | Dangling native raw pointers and use-after-free hazards |
+| `SLOP-046` | `no-multi-registry-slopsquat` | `ERROR` | Supply Chain | Multi-registry slopsquatting targeting speculative packages |
+| `SLOP-047` | `no-async-stream-leaks` | `WARN` | Async & Concurrency | Unconsumed asynchronous stream generators leaking file handles |
+| `SLOP-048` | `no-static-entropy-seeds` | `ERROR` | Crypto & Auth | Static constant seeds passed to pseudo-random generators |
+| `SLOP-049` | `no-hallucinated-package-manifest` | `ERROR` | Supply Chain | Autonomous slopsquatting hazard and unpinned manifest wildcards (`*`, `latest`) |
+| `SLOP-050` | `no-unawaited-async-in-loops` | `ERROR` | Async & Concurrency | Unawaited async callback inside iterator causing event-loop starvation |
+| `SLOP-051` | `no-insecure-prng-tokens` | `ERROR` | Crypto & Auth | Insecure PRNG (`Math.random()`, `random.choice()`) for security tokens & secrets |
+| `SLOP-052` | `no-unsafe-deserialization` | `ERROR` | Path & Injection | Polyglot deserialization gadgets (`pickle.loads`, `yaml.load`, `XMLDecoder`) |
+| `SLOP-053` | `no-deep-path-traversal` | `ERROR` | Path & Injection | Deep path traversal, multi-encoded sequences, and Windows UNC bypass |
+| `SLOP-054` | `no-zip-slip-traversal` | `ERROR` | Path & Injection | ZipSlip archive extraction path traversal and boundary containment bypass |
 
 ---
 
