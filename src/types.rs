@@ -34,6 +34,12 @@ pub const RULE_NO_SPECULATIVE_SUBPROCESS_INJECTION: &str = "no-speculative-subpr
 pub const RULE_NO_UNBOUNDED_EVENT_LISTENER_LOOP: &str = "no-unbounded-event-listener-loop";
 #[allow(dead_code)]
 pub const RULE_NO_PHANTOM_AI_WRAPPERS: &str = "no-phantom-ai-wrappers";
+#[allow(dead_code)]
+pub const RULE_NO_SPECULATIVE_FILE_RACE_TOCTOU: &str = "no-speculative-file-race-toctou";
+#[allow(dead_code)]
+pub const RULE_NO_HALLUCINATED_CRYPTO_ALGORITHM: &str = "no-hallucinated-crypto-algorithm";
+#[allow(dead_code)]
+pub const RULE_NO_SPECULATIVE_SSRF_INTERPOLATION: &str = "no-speculative-ssrf-interpolation";
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
 pub enum SlopCategory {
 Placeholder,
@@ -70,6 +76,9 @@ UnboundedChannelSprawl,
 SpeculativeSubprocessInjection,
 UnboundedEventListenerLoop,
 PhantomAiWrapper,
+FileRaceToctou,
+HallucinatedCryptoAlgorithm,
+SpeculativeSsrfInterpolation,
 }
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
 pub enum SlopSeverity {

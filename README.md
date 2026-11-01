@@ -9,12 +9,12 @@
   <a href="https://discord.gg/z7C9dprye"><img alt="Discord" src="https://img.shields.io/badge/Discord-Join%20Chat-5865F2?style=flat-square&logo=discord&logoColor=white"></a>
   <a href="https://t.me/SlopGuard"><img alt="Telegram" src="https://img.shields.io/badge/Telegram-@SlopGuard-26A5E4?style=flat-square&logo=telegram&logoColor=white"></a>
   <img alt="100% Rust" src="https://img.shields.io/badge/100%25-Rust-b7410e?style=flat-square&logo=rust">
-  <img alt="Release: v3.4.0" src="https://img.shields.io/badge/release-v3.4.0-10b981?style=flat-square">
-  <img alt="Tests: 245 Passed" src="https://img.shields.io/badge/tests-245%20passed%20(100%25)-10b981?style=flat-square">
+  <a href="https://github.com/avelone123123/slopguard/releases/tag/v3.5.0"><img alt="Release: v3.5.0" src="https://img.shields.io/badge/release-v3.5.0-10b981?style=flat-square"></a>
+  <img alt="Tests: 252 Passed" src="https://img.shields.io/badge/tests-252%20passed%20(100%25)-10b981?style=flat-square">
   <img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-263146?style=flat-square">
   <img alt="Latency: <0.35ms" src="https://img.shields.io/badge/latency-%3C0.35ms-2f6f4f?style=flat-square">
   <img alt="MCP Protocol: 2.0" src="https://img.shields.io/badge/MCP-JSON--RPC%202.0-7c3aed?style=flat-square">
-  <img alt="Firewalls: 63 Active" src="https://img.shields.io/badge/firewalls-63%20active-blue?style=flat-square">
+  <img alt="Firewalls: 66 Active" src="https://img.shields.io/badge/firewalls-66%20active-blue?style=flat-square">
   <img alt="Platforms" src="https://img.shields.io/badge/platforms-Windows%20%C2%B7%20macOS%20%C2%B7%20Linux-2f7bf5?style=flat-square">
 
   <br>
@@ -57,7 +57,7 @@ When vibe-coding with Cursor, Claude Code, Windsurf, or Antigravity across multi
 </p>
 
 - **100% Native Rust**: Single standalone binary without runtime bloat. Instant startup (<5ms).
-- **63 Active AST Firewalls**: Blocks phantom imports, unawaited async loops, weak PRNGs, unsafe deserialization, leaked secrets, compound slopsquatting, async generator leaks, insecure direct keygen, and unbounded channel sprawl.
+- **66 Active AST Firewalls**: Blocks phantom imports, unawaited async loops, weak PRNGs, unsafe deserialization, leaked secrets, compound slopsquatting, async generator leaks, insecure direct keygen, unbounded channel sprawl, speculative TOCTOU file races, hallucinated crypto algorithms, and dynamic SSRF interpolation.
 - **Git Diff & AST-Token Stream Analysis**: Scans only changed lines in working tree or staged commits using Jaccard token similarity.
 - **Built-in Model Context Protocol (MCP)**: Plugs directly into Cursor, Claude Code, and Windsurf so the agent inspects and validates its own diffs before completing prompts.
 - **One-Command Auto-Sanitizer**: `slopguard fix` automatically cleans conversational AI bloat.
@@ -77,6 +77,12 @@ cargo install --git https://github.com/avelone123123/slopguard.git --bin slopgua
 # Or install from local workspace clone:
 cargo install --path .
 ```
+
+### Precompiled Release Binaries
+
+| Target Binary | Platform | Format | SHA-256 Verification Hash |
+| :--- | :--- | :--- | :--- |
+| `slopguard-v3.5.0-windows-x64.exe` | Windows x86_64 | Native PE Standalone | `A6F0345EF99300C19653F6232BA134A2B71118D5B85265FA1B9A69E9F5101B06` |
 
 Or build from source:
 
@@ -184,7 +190,7 @@ slopguard
   - `[1] OVERVIEW`: Real-time moving telemetry wave oscilloscope, live MCP activity stream, hygiene gauge, and latency counters.
   - `[2] ISSUES`: Interactive findings inspector with `↑`/`↓` navigation, code snippets, and AI fix recommendations.
   - `[3] MCP STREAM`: Deep inspection of incoming MCP tool calls (`slopguard_scan_diff`, `slopguard_check_snippet`, `slopguard_sanitize_file`).
-  - `[4] FIREWALLS`: Comprehensive 63-firewall active AST matrix with real-time enforcement status.
+  - `[4] FIREWALLS`: Comprehensive 66-firewall active AST matrix with real-time enforcement status.
   - `[5] REPOSITORY`: Git diagnostic status, active branch, latest commit, and working tree breakdown.
 - **Real-Time Animated Wave Oscilloscope**: Moving multi-level ASCII/ANSI frequency spectrum visualizing MCP agent pulse and latency in real time.
 - **Single-Key Controls**:
@@ -217,9 +223,9 @@ Opens a fast, embedded local web interface at `http://127.0.0.1:4545`:
 
 ---
 
-## Threat Matrix (THREAT-01 – THREAT-13)
+## Threat Matrix (THREAT-01 – THREAT-16)
 
-SlopGuard maps all 63 AST firewalls across 13 strategic AI code rot and supply-chain threat vectors:
+SlopGuard maps all 66 AST firewalls across 16 strategic AI code rot and supply-chain threat vectors:
 
 | Strategic Threat ID | Description | Primary Active Shields |
 | :--- | :--- | :--- |
@@ -236,6 +242,9 @@ SlopGuard maps all 63 AST firewalls across 13 strategic AI code rot and supply-c
 | `THREAT-11` | Dynamic Subprocess Shell Interpolation Injections | `SLOP-061` |
 | `THREAT-12` | Unbounded Event Listener Loops & Memory Leaks | `SLOP-062` |
 | `THREAT-13` | Hallucinated Polyglot AI SDK Wrappers & Slopsquatting | `SLOP-063` |
+| `THREAT-14` | Speculative TOCTOU File Race & Concurrency Invalidation | `SLOP-064` |
+| `THREAT-15` | Hallucinated & Non-Standard Cryptographic Algorithms | `SLOP-065` |
+| `THREAT-16` | Speculative Dynamic Host SSRF Template Interpolation | `SLOP-066` |
 
 ---
 
@@ -306,6 +315,9 @@ SlopGuard maps all 63 AST firewalls across 13 strategic AI code rot and supply-c
 | `SLOP-061` | `no-speculative-subprocess-injection` | `ERROR` | Command & Injection | Unchecked dynamic subprocess or shell interpolation vulnerability (CWE-78) |
 | `SLOP-062` | `no-unbounded-event-listener-loop` | `WARN` | Async & Concurrency | Unbounded event listener registration inside loop causing memory leak (CWE-400) |
 | `SLOP-063` | `no-phantom-ai-wrappers` | `ERROR` | Supply Chain | Hallucinated polyglot AI SDK wrapper package prone to supply chain slopsquatting (CWE-1357) |
+| `SLOP-064` | `no-speculative-file-race-toctou` | `ERROR` | Path & Injection | Check-then-write TOCTOU race condition vulnerability (CWE-367) |
+| `SLOP-065` | `no-hallucinated-crypto-algorithm` | `ERROR` | Crypto & Auth | Fictional algorithm strings (`aes-256-turbo`, `sha256-fast`) (CWE-327) |
+| `SLOP-066` | `no-speculative-ssrf-interpolation` | `ERROR` | Path & Injection | Unvalidated dynamic host template interpolations (CWE-918) |
 
 ---
 
@@ -332,7 +344,7 @@ Customize behavior by creating a `.slopguardrc.json` in your repository root:
 
 | Tool | Cold Startup | Scan Time (10k LOC Diff) | Memory Usage |
 | :--- | :--- | :--- | :--- |
-| **SlopGuard (Rust v3.4.0)** | **< 2.5ms** | **< 0.35ms / 10k LOC** | **< 5.8 MB** |
+| **SlopGuard (Rust v3.5.0)** | **< 2.5ms** | **< 0.35ms / 10k LOC** | **< 5.8 MB** |
 | Biome | ~45ms | ~30ms | ~28 MB |
 | ESLint | ~620ms | ~480ms | ~140 MB |
 | SonarQube Scanner | ~4,200ms | ~3,100ms | ~600 MB |

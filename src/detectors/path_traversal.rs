@@ -129,3 +129,128 @@ pub fn detect_path_traversal_in_diff(diff_files: &[DiffFile]) -> Vec<SlopFinding
     }
     findings
 }
+fn get_toctou_patterns() -> Vec<(Regex, &'static str)> {
+    vec![
+        (Regex::new(r#"(?i)fs\.existsSync\s*\([^)]*\)\s*(?:\)?\s*(?:&&|;|\n|\{))[^}]*fs\.(?:writeFileSync|writeFile|appendFileSync|createWriteStream)"#).unwrap(), "Node.js check-then-write TOCTOU race condition (use 'wx' atomic exclusive flag)"),
+        (Regex::new(r#"(?i)if\s+os\.path\.exists\s*\([^)]*\)\s*:[^:]*(?:open\s*\([^)]*['\"][wa][+]?['\"]|\.write\s*\()"#).unwrap(), "Python check-then-write TOCTOU race condition (use mode='x' atomic exclusive creation)"),
+        (Regex::new(r#"(?i)if\s+[a-zA-Z0-9_.]+\.exists\(\)\s*:[^:]*open\s*\([^)]*['\"][wa][+]?['\"]"#).unwrap(), "Python Path.exists check-then-write TOCTOU race condition"),
+        (Regex::new(r#"(?i)if\s+_,?\s*err\s*:=\s*os\.Stat\s*\([^)]*\);\s*os\.IsNotExist\(err\)\s*\{[^}]*os\.(?:Create|OpenFile\([^)]*O_CREATE)"#).unwrap(), "Go os.Stat check-then-create TOCTOU race condition (use os.O_EXCL flag)"),
+        (Regex::new(r#"(?i)if\s+!?[a-zA-Z0-9_.]+\.exists\(\)\s*\{[^}]*(?:File::create|OpenOptions::new\(\)\.write)"#).unwrap(), "Rust path.exists() check-then-write TOCTOU race condition (use OpenOptions::new().create_new(true))"),
+    ]
+}
+pub fn detect_speculative_file_race_toctou_in_content(file_path: &str, content: &str) -> Vec<SlopFinding> {
+    let mut findings = Vec::new();
+    let patterns = get_toctou_patterns();
+    let lines: Vec<&str> = content.lines().collect();
+    for (i, line) in lines.iter().enumerate() {
+        let trimmed = line.trim();
+        if trimmed.starts_with("//") || trimmed.starts_with('#') || trimmed.starts_with('*') || trimmed.contains("Regex::new") {
+            continue;
+        }
+        if !trimmed.contains("existsSync") && !trimmed.contains("exists") && !trimmed.contains("Stat") && !trimmed.contains("IsNotExist") {
+            continue;
+        }
+        for (re, desc) in &patterns {
+            if re.is_match(trimmed) {
+                findings.push(SlopFinding {
+                    file: file_path.to_string(),
+                    line: i + 1,
+                    column: 1,
+                    rule_id: "no-speculative-file-race-toctou".to_string(),
+                    category: SlopCategory::FileRaceToctou,
+                    severity: SlopSeverity::Error,
+                    message: format!("Speculative file race condition and TOCTOU vulnerability: {desc}"),
+                    snippet: trimmed.to_string(),
+                    fixable: false,
+                    suggestion: Some("Use atomic exclusive creation flags (O_CREAT | O_EXCL, mode='x', 'wx' flag)".to_string()),
+                });
+                break;
+            }
+        }
+    }
+    if findings.is_empty() {
+        for (i, _) in lines.iter().enumerate() {
+            let start = i.saturating_sub(4);
+            let window = lines[start..=i].join("\n");
+            for (re, desc) in &patterns {
+                if re.is_match(&window) {
+                    findings.push(SlopFinding {
+                        file: file_path.to_string(),
+                        line: start + 1,
+                        column: 1,
+                        rule_id: "no-speculative-file-race-toctou".to_string(),
+                        category: SlopCategory::FileRaceToctou,
+                        severity: SlopSeverity::Error,
+                        message: format!("Speculative file race condition and TOCTOU vulnerability: {desc}"),
+                        snippet: lines[start].trim().to_string(),
+                        fixable: false,
+                        suggestion: Some("Use atomic exclusive creation flags (O_CREAT | O_EXCL, mode='x', 'wx' flag)".to_string()),
+                    });
+                    return findings;
+                }
+            }
+        }
+    }
+    findings
+}
+pub fn detect_speculative_file_race_toctou_in_diff(diff_files: &[DiffFile]) -> Vec<SlopFinding> {
+    let mut findings = Vec::new();
+    let patterns = get_toctou_patterns();
+    for df in diff_files {
+        let path = if !df.new_path.is_empty() { &df.new_path } else { &df.old_path };
+        for chunk in &df.chunks {
+            let mut chunk_matched = false;
+            for dl in &chunk.lines {
+                if dl.line_type != DiffLineType::Add {
+                    continue;
+                }
+                let trimmed = dl.content.trim();
+                if trimmed.starts_with("//") || trimmed.starts_with('#') || trimmed.starts_with('*') || trimmed.contains("Regex::new") {
+                    continue;
+                }
+                if !trimmed.contains("existsSync") && !trimmed.contains("exists") && !trimmed.contains("Stat") && !trimmed.contains("IsNotExist") {
+                    continue;
+                }
+                for (pat, desc) in &patterns {
+                    if pat.is_match(trimmed) {
+                        findings.push(SlopFinding {
+                            file: path.to_string(),
+                            line: dl.new_line_number.unwrap_or(chunk.new_start),
+                            column: 1,
+                            rule_id: "no-speculative-file-race-toctou".to_string(),
+                            category: SlopCategory::FileRaceToctou,
+                            severity: SlopSeverity::Error,
+                            message: format!("Speculative file race condition and TOCTOU vulnerability: {desc}"),
+                            snippet: trimmed.to_string(),
+                            fixable: false,
+                            suggestion: Some("Use atomic exclusive creation flags (O_CREAT | O_EXCL, mode='x', 'wx' flag)".to_string()),
+                        });
+                        chunk_matched = true;
+                        break;
+                    }
+                }
+            }
+            if !chunk_matched {
+                let chunk_text = chunk.lines.iter().filter(|l| l.line_type == DiffLineType::Add).map(|l| l.content.as_str()).collect::<Vec<_>>().join("\n");
+                for (pat, desc) in &patterns {
+                    if pat.is_match(&chunk_text) {
+                        findings.push(SlopFinding {
+                            file: path.to_string(),
+                            line: chunk.new_start,
+                            column: 1,
+                            rule_id: "no-speculative-file-race-toctou".to_string(),
+                            category: SlopCategory::FileRaceToctou,
+                            severity: SlopSeverity::Error,
+                            message: format!("Speculative file race condition and TOCTOU vulnerability: {desc}"),
+                            snippet: chunk_text.lines().next().unwrap_or("").to_string(),
+                            fixable: false,
+                            suggestion: Some("Use atomic exclusive creation flags (O_CREAT | O_EXCL, mode='x', 'wx' flag)".to_string()),
+                        });
+                        break;
+                    }
+                }
+            }
+        }
+    }
+    findings
+}

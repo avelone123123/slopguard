@@ -23,10 +23,10 @@
     "Mandatory markdown (.md) synchronization on every change by Scribe."
   ],
   "current_metrics": {
-    "version": "3.4.0",
-    "tests_count": 245,
+    "version": "3.5.0",
+    "tests_count": 252,
     "tests_pass_rate": "100%",
-    "firewalls_count": 63
+    "firewalls_count": 66
   },
   "architecture_knowledge": {
     "core_crates": [
@@ -49,7 +49,10 @@
       "THREAT-10: Unbounded Channel Sprawl & Queue Memory Exhaustion (SLOP-060)",
       "THREAT-11: Unchecked Dynamic Subprocess / Deserialized Shell Injection (SLOP-061)",
       "THREAT-12: Async Promise Pool Leak / Unbounded Event Queue (SLOP-062)",
-      "THREAT-13: Hallucinated Polyglot AI SDK Wrappers (SLOP-063)"
+      "THREAT-13: Hallucinated Polyglot AI SDK Wrappers (SLOP-063)",
+      "THREAT-14: Speculative TOCTOU File Race & Concurrency Invalidation (SLOP-064)",
+      "THREAT-15: Hallucinated & Non-Standard Cryptographic Algorithms (SLOP-065)",
+      "THREAT-16: Speculative Dynamic Host SSRF Template Interpolation (SLOP-066)"
     ]
   },
   "learned_lessons": [
@@ -79,6 +82,21 @@
       "cycle": 1,
       "version": "3.3.0",
       "deliverables": "Sprint 1: Core Rust AST Engine & Deep Hallucination Shields"
+    },
+    {
+      "cycle": 2,
+      "version": "3.4.0",
+      "deliverables": "Sprint 2: 63 Active AST Firewalls, 245 verified tests, sub-0.35ms latency, SLOP-061 Subprocess Injection, SLOP-062 Unbounded Event Listener Loops, SLOP-063 Phantom AI SDK Wrappers, synchronized across Core, Web & Studio."
+    },
+    {
+      "cycle": 2,
+      "version": "3.4.0",
+      "deliverables": "Sprint 2: Web Playground, Live Audits & Interactive UX"
+    },
+    {
+      "cycle": 3,
+      "version": "3.5.0",
+      "deliverables": "Sprint 3: SlopGuard v3.5.0 Enterprise Release with 66 Active AST Firewalls, 252 Passing Tests, SLOP-064 TOCTOU File Race, SLOP-065 Hallucinated Crypto, SLOP-066 SSRF Interpolation, Full Parity Across EN/RU/ZH Documentation, Web Playground v3.5.0 with Presets 13-15 and Rules Drawer."
     }
   ]
 }

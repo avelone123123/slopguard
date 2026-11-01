@@ -9,12 +9,12 @@
   <a href="https://discord.gg/z7C9dprye"><img alt="Discord" src="https://img.shields.io/badge/Discord-Join%20Chat-5865F2?style=flat-square&logo=discord&logoColor=white"></a>
   <a href="https://t.me/SlopGuard"><img alt="Telegram" src="https://img.shields.io/badge/Telegram-@SlopGuard-26A5E4?style=flat-square&logo=telegram&logoColor=white"></a>
   <img alt="100% Rust" src="https://img.shields.io/badge/100%25-Rust-b7410e?style=flat-square&logo=rust">
-  <img alt="版本: v3.4.0" src="https://img.shields.io/badge/release-v3.4.0-10b981?style=flat-square">
-  <img alt="测试: 245 通过" src="https://img.shields.io/badge/tests-245%20passed%20(100%25)-10b981?style=flat-square">
+  <a href="https://github.com/avelone123123/slopguard/releases/tag/v3.5.0"><img alt="版本: v3.5.0" src="https://img.shields.io/badge/release-v3.5.0-10b981?style=flat-square"></a>
+  <img alt="测试: 252 通过" src="https://img.shields.io/badge/tests-252%20passed%20(100%25)-10b981?style=flat-square">
   <img alt="开源许可证: MIT" src="https://img.shields.io/badge/license-MIT-263146?style=flat-square">
   <img alt="极低延迟: <0.35ms" src="https://img.shields.io/badge/latency-%3C0.35ms-2f6f4f?style=flat-square">
   <img alt="MCP 协议: 2.0" src="https://img.shields.io/badge/MCP-JSON--RPC%202.0-7c3aed?style=flat-square">
-  <img alt="防御防火墙: 63" src="https://img.shields.io/badge/firewalls-63%20active-blue?style=flat-square">
+  <img alt="防御防火墙: 66" src="https://img.shields.io/badge/firewalls-66%20active-blue?style=flat-square">
   <img alt="跨平台" src="https://img.shields.io/badge/platforms-Windows%20%C2%B7%20macOS%20%C2%B7%20Linux-2f7bf5?style=flat-square">
 
   <br>
@@ -52,7 +52,7 @@
 ## 核心特性
 
 - **100% 纯 Rust**：独立原生二进制文件，启动时间低于 2.5ms。
-- **63 个活跃 AST 防火墙**：全面拦截幻觉包导入、未等待异步循环、生成器泄露、伪随机数生成密钥、无界通道扩散与多态反序列化利用。
+- **66 个活跃 AST 防火墙**：全面拦截幻觉包导入、未等待异步循环、生成器泄露、伪随机数生成密钥、无界通道扩散、多态反序列化利用、TOCTOU 文件竞争、幻觉加密算法与动态 SSRF 模板插值。
 - **Git Diff 极速扫描**：仅针对暂存区或工作区变动行进行 AST Token 流比对。
 - **内置 MCP 协议服务**：直接集成至 Cursor 与 Claude Code，在智能体生成完代码后即刻自检。
 - **一键清理**：`slopguard fix` 自动剥离 AI 冗余对话注释。
@@ -72,6 +72,12 @@ cargo install --git https://github.com/avelone123123/slopguard.git --bin slopgua
 # 或从本地工作区安装:
 cargo install --path .
 ```
+
+### 预编译发布二进制文件 (Precompiled Release Binaries)
+
+| 目标文件 | 平台 | 格式 | SHA-256 校验哈希 |
+| :--- | :--- | :--- | :--- |
+| `slopguard-v3.5.0-windows-x64.exe` | Windows x86_64 | Native PE Standalone | `A6F0345EF99300C19653F6232BA134A2B71118D5B85265FA1B9A69E9F5101B06` |
 
 或从源码构建：
 
@@ -142,7 +148,7 @@ slopguard
   - `[1] 总览 (OVERVIEW)`：实时动态遥测波形示波器、MCP 活动流、代码健康仪表与微秒级延迟计数器。
   - `[2] 问题 (ISSUES)`：交互式问题检查器，支持 `↑`/`↓` 快速导航、代码片段高亮与 AI 修复建议。
   - `[3] MCP 流 (MCP STREAM)`：深度审计捕获的 MCP 工具调用 (`slopguard_scan_diff`, `slopguard_check_snippet`, `slopguard_sanitize_file`)。
-  - `[4] 防火墙 (FIREWALLS)`：完整的 56 个活跃 AST 防火墙矩阵与实时拦截状态。
+  - `[4] 防火墙 (FIREWALLS)`：完整的 66 个活跃 AST 防火墙矩阵与实时拦截状态。
   - `[5] 仓库 (REPOSITORY)`：Git 诊断状态、当前分支、最新提交及工作区文件变动分析。
 - **实时动态波形示波器**：多级 ASCII/ANSI 频谱波形，以 60 FPS 实时呈现 AI 智能体脉冲与响应延迟。
 - **控制台单键控制**：
@@ -194,9 +200,9 @@ slopguard ui
 
 ---
 
-## 战略威胁矩阵 (THREAT-01 – THREAT-13)
+## 战略威胁矩阵 (THREAT-01 – THREAT-16)
 
-SlopGuard 将全部 63 个活跃 AST 防火墙映射到 13 个战略级 AI 代码退化与供应链威胁向量：
+SlopGuard 将全部 66 个活跃 AST 防火墙映射到 16 个战略级 AI 代码退化与供应链威胁向量：
 
 | 战略威胁 ID | 威胁描述 | 核心活跃防火墙 |
 | :--- | :--- | :--- |
@@ -213,6 +219,9 @@ SlopGuard 将全部 63 个活跃 AST 防火墙映射到 13 个战略级 AI 代�
 | `THREAT-11` | 动态子进程与 Shell 字符串插值命令注入防御 | `SLOP-061` |
 | `THREAT-12` | 循环内未管理事件监听器无界积累与内存泄露 | `SLOP-062` |
 | `THREAT-13` | 虚构跨语言 AI SDK 封装包与供应链抢注防御 | `SLOP-063` |
+| `THREAT-14` | 投机性 TOCTOU 文件竞争与并发失效风险 | `SLOP-064` |
+| `THREAT-15` | 幻觉生成的虚构非标密码学算法名称拦截 | `SLOP-065` |
+| `THREAT-16` | 投机性动态主机与协议模板插值 SSRF 漏洞 | `SLOP-066` |
 
 ---
 
@@ -283,6 +292,9 @@ SlopGuard 将全部 63 个活跃 AST 防火墙映射到 13 个战略级 AI 代�
 | `SLOP-061` | `no-speculative-subprocess-injection` | `ERROR` | 命令与注入 | [防火墙 61] 检查动态 shell 命令插值与子进程注入风险 (CWE-78) |
 | `SLOP-062` | `no-unbounded-event-listener-loop` | `WARN` | 异步与并发 | [防火墙 62] 循环内未管理事件监听器注册引发无界内存泄露 (CWE-400) |
 | `SLOP-063` | `no-phantom-ai-wrappers` | `ERROR` | 软件供应链 | [防火墙 63] 幻觉生成的虚构跨语言 AI SDK 封装包仿冒 (CWE-1357) |
+| `SLOP-064` | `no-speculative-file-race-toctou` | `ERROR` | 路径与注入 | [防火墙 64] 投机性 TOCTOU 文件竞争与并发条件检查-写入缺陷 (CWE-367) |
+| `SLOP-065` | `no-hallucinated-crypto-algorithm` | `ERROR` | 密码与认证 | [防火墙 65] 幻觉生成的虚构加密与哈希算法名称 (`aes-256-turbo`, `sha256-fast`) (CWE-327) |
+| `SLOP-066` | `no-speculative-ssrf-interpolation` | `ERROR` | 路径与注入 | [防火墙 66] 未校验的目标协议与主机动态模板插值 SSRF 漏洞 (CWE-918) |
 
 ---
 
@@ -290,7 +302,7 @@ SlopGuard 将全部 63 个活跃 AST 防火墙映射到 13 个战略级 AI 代�
 
 | 评估工具 | 冷启动耗时 | 扫描耗时 (10k 行 Diff) | 内存峰值 |
 | :--- | :--- | :--- | :--- |
-| **SlopGuard (Rust v3.4.0)** | **< 2.5ms** | **< 0.35ms / 10k LOC** | **< 5.8 MB** |
+| **SlopGuard (Rust v3.5.0)** | **< 2.5ms** | **< 0.35ms / 10k LOC** | **< 5.8 MB** |
 | Biome | ~45ms | ~30ms | ~28 MB |
 | ESLint | ~620ms | ~480ms | ~140 MB |
 | SonarQube Scanner | ~4,200ms | ~3,100ms | ~600 MB |

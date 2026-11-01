@@ -210,3 +210,82 @@ pub fn detect_speculative_subprocess_injection_in_diff(diff_files: &[DiffFile]) 
     }
     findings
 }
+fn get_speculative_ssrf_patterns() -> Vec<(Regex, &'static str)> {
+    vec![
+        (Regex::new(r#"(?i)(?:axios\.(?:get|post|put|delete|patch)|fetch)\s*\(\s*`https?://\$\{.+?\}"#).unwrap(), "Node.js dynamic protocol or host interpolation in HTTP client request without URL whitelist"),
+        (Regex::new(r#"(?i)requests\.(?:get|post|put|delete|patch)\s*\(\s*f[\"']https?://\{.+?\}"#).unwrap(), "Python requests dynamic host interpolation vulnerable to SSRF"),
+        (Regex::new(r#"(?i)httpx\.(?:get|post|put|delete|patch)\s*\(\s*f[\"']https?://\{.+?\}"#).unwrap(), "Python httpx dynamic host interpolation vulnerable to SSRF"),
+        (Regex::new(r#"(?i)http\.Get\s*\(\s*fmt\.Sprintf\s*\(\s*[\"']https?://%s"#).unwrap(), "Go http.Get dynamic host string format vulnerable to SSRF"),
+        (Regex::new(r#"(?i)reqwest::(?:get|Client::new\(\)\.(?:get|post))\s*\(\s*(?:format!\s*\(\s*[\"']https?://\{|\&?format!\s*\(\s*[\"']https?://\{)"#).unwrap(), "Rust reqwest dynamic host format interpolation vulnerable to SSRF"),
+    ]
+}
+pub fn detect_speculative_ssrf_interpolation_in_content(file_path: &str, content: &str) -> Vec<SlopFinding> {
+    let mut findings = Vec::new();
+    let patterns = get_speculative_ssrf_patterns();
+    for (idx, line) in content.lines().enumerate() {
+        let trimmed = line.trim();
+        if trimmed.starts_with("//") || trimmed.starts_with('#') || trimmed.starts_with('*') || trimmed.contains("Regex::new") {
+            continue;
+        }
+        if !trimmed.contains("axios") && !trimmed.contains("fetch") && !trimmed.contains("requests") && !trimmed.contains("httpx") && !trimmed.contains("http.Get") && !trimmed.contains("reqwest") {
+            continue;
+        }
+        for (pat, desc) in &patterns {
+            if pat.is_match(trimmed) {
+                findings.push(SlopFinding {
+                    file: file_path.to_string(),
+                    line: idx + 1,
+                    column: 1,
+                    rule_id: "no-speculative-ssrf-interpolation".to_string(),
+                    category: SlopCategory::SpeculativeSsrfInterpolation,
+                    severity: SlopSeverity::Error,
+                    message: format!("Speculative SSRF dynamic host interpolation: {desc}"),
+                    snippet: trimmed.to_string(),
+                    fixable: false,
+                    suggestion: Some("Validate and allowlist destination hostnames before dispatching outbound requests".to_string()),
+                });
+                break;
+            }
+        }
+    }
+    findings
+}
+pub fn detect_speculative_ssrf_interpolation_in_diff(diff_files: &[DiffFile]) -> Vec<SlopFinding> {
+    let mut findings = Vec::new();
+    let patterns = get_speculative_ssrf_patterns();
+    for df in diff_files {
+        let path = if !df.new_path.is_empty() { &df.new_path } else { &df.old_path };
+        for chunk in &df.chunks {
+            for dl in &chunk.lines {
+                if dl.line_type != DiffLineType::Add {
+                    continue;
+                }
+                let trimmed = dl.content.trim();
+                if trimmed.starts_with("//") || trimmed.starts_with('#') || trimmed.starts_with('*') || trimmed.contains("Regex::new") {
+                    continue;
+                }
+                if !trimmed.contains("axios") && !trimmed.contains("fetch") && !trimmed.contains("requests") && !trimmed.contains("httpx") && !trimmed.contains("http.Get") && !trimmed.contains("reqwest") {
+                    continue;
+                }
+                for (pat, desc) in &patterns {
+                    if pat.is_match(trimmed) {
+                        findings.push(SlopFinding {
+                            file: path.to_string(),
+                            line: dl.new_line_number.unwrap_or(chunk.new_start),
+                            column: 1,
+                            rule_id: "no-speculative-ssrf-interpolation".to_string(),
+                            category: SlopCategory::SpeculativeSsrfInterpolation,
+                            severity: SlopSeverity::Error,
+                            message: format!("Speculative SSRF dynamic host interpolation: {desc}"),
+                            snippet: trimmed.to_string(),
+                            fixable: false,
+                            suggestion: Some("Validate and allowlist destination hostnames before dispatching outbound requests".to_string()),
+                        });
+                        break;
+                    }
+                }
+            }
+        }
+    }
+    findings
+}

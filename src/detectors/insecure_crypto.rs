@@ -374,3 +374,76 @@ break;
 }
 findings
 }
+fn get_hallucinated_crypto_patterns() -> Vec<(Regex, &'static str)> {
+vec![
+(Regex::new(r#"(?i)[\"'](?:aes-256-turbo|aes256_turbo|aes-128-turbo|aes-512|aes-512-gcm)[\"']"#).unwrap(), "Hallucinated or non-standard AES cipher algorithm variant"),
+(Regex::new(r#"(?i)[\"'](?:sha256-fast|sha256_fast|sha-128|sha128|sha256-turbo|sha3-turbo)[\"']"#).unwrap(), "Hallucinated cryptographic hash algorithm name"),
+(Regex::new(r#"(?i)[\"'](?:blowfish-gcm|chacha20-fast|des-ede3|rsa-512|rsa-768)[\"']"#).unwrap(), "Broken, deprecated or hallucinated asymmetric/symmetric algorithm variant"),
+(Regex::new(r#"(?i)hashlib\.new\s*\(\s*[\"'](?:sha256-fast|sha-128|md6|sha256_fast)[\"']\s*\)"#).unwrap(), "Python hashlib initialized with hallucinated digest name"),
+(Regex::new(r#"(?i)crypto\.createCipheriv\s*\(\s*[\"'](?:aes-256-turbo|blowfish-gcm)[\"']"#).unwrap(), "Node.js crypto cipher initialized with fictional cipher variant"),
+]
+}
+pub fn detect_hallucinated_crypto_algorithm_in_content(file_path: &str, content: &str) -> Vec<SlopFinding> {
+let mut findings = Vec::new();
+let patterns = get_hallucinated_crypto_patterns();
+for (idx, line) in content.lines().enumerate() {
+let trimmed = line.trim();
+if trimmed.starts_with("//") || trimmed.starts_with('#') || trimmed.starts_with('*') || trimmed.contains("Regex::new") {
+continue;
+}
+for (pat, desc) in &patterns {
+if pat.is_match(trimmed) {
+findings.push(SlopFinding {
+file: file_path.to_string(),
+line: idx + 1,
+column: 1,
+rule_id: "no-hallucinated-crypto-algorithm".to_string(),
+category: SlopCategory::HallucinatedCryptoAlgorithm,
+severity: SlopSeverity::Error,
+message: format!("Hallucinated or non-standard cryptographic algorithm: {desc}"),
+snippet: trimmed.to_string(),
+fixable: false,
+suggestion: Some("Enforce standard NIST/IETF primitives (aes-256-gcm, chacha20-poly1305, sha256)".to_string()),
+});
+break;
+}
+}
+}
+findings
+}
+pub fn detect_hallucinated_crypto_algorithm_in_diff(diff_files: &[DiffFile]) -> Vec<SlopFinding> {
+let mut findings = Vec::new();
+let patterns = get_hallucinated_crypto_patterns();
+for df in diff_files {
+let path = if !df.new_path.is_empty() { &df.new_path } else { &df.old_path };
+for chunk in &df.chunks {
+for dl in &chunk.lines {
+if dl.line_type != DiffLineType::Add {
+continue;
+}
+let trimmed = dl.content.trim();
+if trimmed.starts_with("//") || trimmed.starts_with('#') || trimmed.starts_with('*') || trimmed.contains("Regex::new") {
+continue;
+}
+for (pat, desc) in &patterns {
+if pat.is_match(trimmed) {
+findings.push(SlopFinding {
+file: path.to_string(),
+line: dl.new_line_number.unwrap_or(chunk.new_start),
+column: 1,
+rule_id: "no-hallucinated-crypto-algorithm".to_string(),
+category: SlopCategory::HallucinatedCryptoAlgorithm,
+severity: SlopSeverity::Error,
+message: format!("Hallucinated or non-standard cryptographic algorithm: {desc}"),
+snippet: trimmed.to_string(),
+fixable: false,
+suggestion: Some("Enforce standard NIST/IETF primitives (aes-256-gcm, chacha20-poly1305, sha256)".to_string()),
+});
+break;
+}
+}
+}
+}
+}
+findings
+}

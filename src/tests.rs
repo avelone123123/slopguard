@@ -2372,8 +2372,8 @@ assert_eq!(findings.len(), 0);
 assert!(elapsed.as_millis() < 250, "v300 microbenchmark exceeded budget: {:?}", elapsed);
 }
 #[test]
-fn test_v340_ast_63_detector_matrix_integrity() {
-assert_eq!(crate::detectors::AST_DETECTOR_DEFINITIONS.len(), 63);
+fn test_v350_ast_66_detector_matrix_integrity() {
+assert_eq!(crate::detectors::AST_DETECTOR_DEFINITIONS.len(), 66);
 let mut ids = std::collections::HashSet::new();
 for def in crate::detectors::AST_DETECTOR_DEFINITIONS {
 assert!(ids.insert(def.id), "Duplicate rule id: {}", def.id);
@@ -2383,7 +2383,7 @@ assert!(!def.cwe.is_empty());
 assert!(!def.description.is_empty());
 assert!(!def.recommendation.is_empty());
 }
-for i in 1..=63 {
+for i in 1..=66 {
 let expected_id = format!("SLOP-{:03}", i);
 assert!(ids.contains(expected_id.as_str()), "Missing rule: {}", expected_id);
 }
@@ -2396,6 +2396,15 @@ assert_eq!(d62.cwe, "CWE-400");
 let d63 = crate::detectors::AST_DETECTOR_DEFINITIONS.iter().find(|d| d.id == "SLOP-063").unwrap();
 assert_eq!(d63.name, "no-phantom-ai-wrappers");
 assert_eq!(d63.cwe, "CWE-1357");
+let d64 = crate::detectors::AST_DETECTOR_DEFINITIONS.iter().find(|d| d.id == "SLOP-064").unwrap();
+assert_eq!(d64.name, "no-speculative-file-race-toctou");
+assert_eq!(d64.cwe, "CWE-367");
+let d65 = crate::detectors::AST_DETECTOR_DEFINITIONS.iter().find(|d| d.id == "SLOP-065").unwrap();
+assert_eq!(d65.name, "no-hallucinated-crypto-algorithm");
+assert_eq!(d65.cwe, "CWE-327");
+let d66 = crate::detectors::AST_DETECTOR_DEFINITIONS.iter().find(|d| d.id == "SLOP-066").unwrap();
+assert_eq!(d66.name, "no-speculative-ssrf-interpolation");
+assert_eq!(d66.cwe, "CWE-918");
 }
 #[test]
 fn test_v320_slopsquat_package_hallucinations_polyglot_matrix() {
@@ -2920,5 +2929,119 @@ assert_eq!(d62.category, "async-concurrency");
 let d63 = crate::detectors::AST_DETECTOR_DEFINITIONS.iter().find(|d| d.id == "SLOP-063").unwrap();
 assert_eq!(d63.severity, crate::types::SlopSeverity::Error);
 assert_eq!(d63.category, "supply-chain");
+}
+#[test]
+fn test_v350_speculative_file_race_toctou_detection() {
+let js_code = "fs.existsSync(p); fs.writeFileSync(p, data);";
+let f_js = crate::detectors::path_traversal::detect_speculative_file_race_toctou_in_content("upload.js", js_code);
+assert_eq!(f_js.len(), 1);
+assert_eq!(f_js[0].rule_id, "no-speculative-file-race-toctou");
+assert_eq!(f_js[0].severity, crate::types::SlopSeverity::Error);
+assert_eq!(f_js[0].category, crate::types::SlopCategory::FileRaceToctou);
+let py_code = "if os.path.exists(p): open(p, \"w\")";
+let f_py = crate::detectors::path_traversal::detect_speculative_file_race_toctou_in_content("store.py", py_code);
+assert_eq!(f_py.len(), 1);
+let safe_js = "fs.writeFileSync(p, data, { flag: \"wx\" });";
+let safe_f_js = crate::detectors::path_traversal::detect_speculative_file_race_toctou_in_content("safe.js", safe_js);
+assert_eq!(safe_f_js.len(), 0);
+let safe_py = "open(p, \"x\")";
+let safe_f_py = crate::detectors::path_traversal::detect_speculative_file_race_toctou_in_content("safe.py", safe_py);
+assert_eq!(safe_f_py.len(), 0);
+}
+#[test]
+fn test_v350_hallucinated_crypto_algorithm_detection() {
+let js_code = "crypto.createCipheriv(\"aes-256-turbo\", key, iv);";
+let f_js = crate::detectors::insecure_crypto::detect_hallucinated_crypto_algorithm_in_content("crypto.js", js_code);
+assert_eq!(f_js.len(), 1);
+assert_eq!(f_js[0].rule_id, "no-hallucinated-crypto-algorithm");
+assert_eq!(f_js[0].severity, crate::types::SlopSeverity::Error);
+assert_eq!(f_js[0].category, crate::types::SlopCategory::HallucinatedCryptoAlgorithm);
+let py_code = "hashlib.new(\"sha256-fast\")";
+let f_py = crate::detectors::insecure_crypto::detect_hallucinated_crypto_algorithm_in_content("hash.py", py_code);
+assert_eq!(f_py.len(), 1);
+let safe_js = "crypto.createCipheriv(\"aes-256-gcm\", key, iv);";
+let safe_f_js = crate::detectors::insecure_crypto::detect_hallucinated_crypto_algorithm_in_content("safe.js", safe_js);
+assert_eq!(safe_f_js.len(), 0);
+let safe_py = "hashlib.sha256()";
+let safe_f_py = crate::detectors::insecure_crypto::detect_hallucinated_crypto_algorithm_in_content("safe.py", safe_py);
+assert_eq!(safe_f_py.len(), 0);
+}
+#[test]
+fn test_v350_speculative_ssrf_interpolation_detection() {
+let js_code = "axios.get(`https://${targetHost}/api/data`)";
+let f_js = crate::detectors::command_injection::detect_speculative_ssrf_interpolation_in_content("client.js", js_code);
+assert_eq!(f_js.len(), 1);
+assert_eq!(f_js[0].rule_id, "no-speculative-ssrf-interpolation");
+assert_eq!(f_js[0].severity, crate::types::SlopSeverity::Error);
+assert_eq!(f_js[0].category, crate::types::SlopCategory::SpeculativeSsrfInterpolation);
+let py_code = "requests.get(f\"https://{api_host}/v1\")";
+let f_py = crate::detectors::command_injection::detect_speculative_ssrf_interpolation_in_content("client.py", py_code);
+assert_eq!(f_py.len(), 1);
+let safe_code = "axios.get(\"https://api.verified.com/v1\");";
+let safe_f = crate::detectors::command_injection::detect_speculative_ssrf_interpolation_in_content("safe.js", safe_code);
+assert_eq!(safe_f.len(), 0);
+}
+#[test]
+fn test_v350_contract_severity_and_categories() {
+let d64 = crate::detectors::AST_DETECTOR_DEFINITIONS.iter().find(|d| d.id == "SLOP-064").unwrap();
+assert_eq!(d64.severity, crate::types::SlopSeverity::Error);
+assert_eq!(d64.category, "path-injection");
+let d65 = crate::detectors::AST_DETECTOR_DEFINITIONS.iter().find(|d| d.id == "SLOP-065").unwrap();
+assert_eq!(d65.severity, crate::types::SlopSeverity::Error);
+assert_eq!(d65.category, "crypto-auth");
+let d66 = crate::detectors::AST_DETECTOR_DEFINITIONS.iter().find(|d| d.id == "SLOP-066").unwrap();
+assert_eq!(d66.severity, crate::types::SlopSeverity::Error);
+assert_eq!(d66.category, "path-injection");
+}
+#[test]
+fn test_v350_full_scanner_polyglot_e2e_matrix() {
+let cfg = crate::types::SlopConfig { ignore: vec![], rules: std::collections::HashMap::new(), max_drift_files: 50, allowed_ghost_deps: vec![] };
+let root = std::path::Path::new(".");
+let f1 = crate::detectors::run_all_content_detectors("race.js", "if (fs.existsSync(filePath)) { fs.writeFileSync(filePath, data); }\n", root, &cfg);
+assert!(f1.iter().any(|f| f.rule_id == "no-speculative-file-race-toctou"));
+let f2 = crate::detectors::run_all_content_detectors("cipher.js", "const cipher = crypto.createCipheriv(\"aes-256-turbo\", key, iv);\n", root, &cfg);
+assert!(f2.iter().any(|f| f.rule_id == "no-hallucinated-crypto-algorithm"));
+let f3 = crate::detectors::run_all_content_detectors("http.py", "res = requests.get(f\"https://{api_host}/v1\")\n", root, &cfg);
+assert!(f3.iter().any(|f| f.rule_id == "no-speculative-ssrf-interpolation"));
+}
+#[test]
+fn test_v350_microbenchmark_sub_millisecond_10k_loc() {
+let mut buffer = String::with_capacity(350000);
+for i in 0..10000 {
+buffer.push_str(&format!("const production_constant_v350_{i} = {i};\n"));
+}
+let start = std::time::Instant::now();
+let findings = crate::detectors::command_injection::detect_speculative_ssrf_interpolation_in_content("bench_v350.ts", &buffer);
+let elapsed = start.elapsed();
+assert_eq!(findings.len(), 0);
+assert!(elapsed.as_millis() < 250, "v350 microbenchmark exceeded budget: {:?}", elapsed);
+}
+#[test]
+fn test_v350_diff_detectors_integration() {
+let diff_files = vec![
+crate::types::DiffFile {
+old_path: "service.js".to_string(),
+new_path: "service.js".to_string(),
+chunks: vec![crate::types::DiffChunk {
+old_start: 1,
+old_lines: 0,
+new_start: 1,
+new_lines: 3,
+lines: vec![
+crate::types::DiffLine { line_type: crate::types::DiffLineType::Add, content: "fs.existsSync(p); fs.writeFileSync(p, data);".to_string(), old_line_number: None, new_line_number: Some(1) },
+crate::types::DiffLine { line_type: crate::types::DiffLineType::Add, content: "const h = hashlib.new(\"sha256-fast\");".to_string(), old_line_number: None, new_line_number: Some(2) },
+crate::types::DiffLine { line_type: crate::types::DiffLineType::Add, content: "axios.get(`https://${targetHost}/api`);".to_string(), old_line_number: None, new_line_number: Some(3) },
+],
+}],
+is_new: false,
+is_deleted: false,
+},
+];
+let cfg = crate::types::SlopConfig { ignore: vec![], rules: std::collections::HashMap::new(), max_drift_files: 50, allowed_ghost_deps: vec![] };
+let root = std::path::Path::new(".");
+let diff_findings = crate::detectors::run_all_diff_detectors(&diff_files, root, &cfg);
+assert!(diff_findings.iter().any(|f| f.rule_id == "no-speculative-file-race-toctou"));
+assert!(diff_findings.iter().any(|f| f.rule_id == "no-hallucinated-crypto-algorithm"));
+assert!(diff_findings.iter().any(|f| f.rule_id == "no-speculative-ssrf-interpolation"));
 }
 }

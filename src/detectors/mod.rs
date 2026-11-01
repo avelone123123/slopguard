@@ -166,6 +166,9 @@ AstDetectorDefinition { id: "SLOP-060", name: "no-unbounded-channel-sprawl", sev
 AstDetectorDefinition { id: "SLOP-061", name: "no-speculative-subprocess-injection", severity: SlopSeverity::Error, category: "path-injection", cwe: "CWE-78", description: "Unchecked dynamic subprocess or shell interpolation vulnerability", recommendation: "Pass command arguments as discrete array items without shell interpreter invocation" },
 AstDetectorDefinition { id: "SLOP-062", name: "no-unbounded-event-listener-loop", severity: SlopSeverity::Warning, category: "async-concurrency", cwe: "CWE-400", description: "Unbounded event listener registration inside loop iterations causing memory leaks", recommendation: "Attach event listeners outside loops or use AbortSignal / removeListener cleanup" },
 AstDetectorDefinition { id: "SLOP-063", name: "no-phantom-ai-wrappers", severity: SlopSeverity::Error, category: "supply-chain", cwe: "CWE-1357", description: "Hallucinated polyglot AI SDK wrapper packages prone to supply chain slopsquatting", recommendation: "Use verified official AI client SDK packages (@anthropic-ai/sdk, openai, google-genai)" },
+AstDetectorDefinition { id: "SLOP-064", name: "no-speculative-file-race-toctou", severity: SlopSeverity::Error, category: "path-injection", cwe: "CWE-367", description: "Speculative file race condition and TOCTOU vulnerability", recommendation: "Use atomic exclusive creation flags (O_CREAT | O_EXCL, mode='x', wx flag)" },
+AstDetectorDefinition { id: "SLOP-065", name: "no-hallucinated-crypto-algorithm", severity: SlopSeverity::Error, category: "crypto-auth", cwe: "CWE-327", description: "Hallucinated or non-standard cryptographic algorithm names", recommendation: "Enforce standard NIST/IETF primitives (aes-256-gcm, chacha20-poly1305, sha256)" },
+AstDetectorDefinition { id: "SLOP-066", name: "no-speculative-ssrf-interpolation", severity: SlopSeverity::Error, category: "path-injection", cwe: "CWE-918", description: "Speculative SSRF dynamic host and protocol interpolation", recommendation: "Validate and allowlist destination hostnames before dispatching outbound requests" },
 ];
 #[allow(dead_code)]
 pub static ACTIVE_CONTRACTS: &[crate::types::AstDetectorContract] = &[
@@ -333,6 +336,15 @@ pub fn run_all_diff_detectors(diff_files: &[DiffFile], project_root: &Path, conf
     if config.rules.get("no-phantom-ai-wrappers").map(|s| s != "off").unwrap_or(true) {
         findings.extend(crate::detectors::package_hallucinations::detect_phantom_ai_wrappers_in_diff(diff_files));
     }
+    if config.rules.get("no-speculative-file-race-toctou").map(|s| s != "off").unwrap_or(true) {
+        findings.extend(crate::detectors::path_traversal::detect_speculative_file_race_toctou_in_diff(diff_files));
+    }
+    if config.rules.get("no-hallucinated-crypto-algorithm").map(|s| s != "off").unwrap_or(true) {
+        findings.extend(crate::detectors::insecure_crypto::detect_hallucinated_crypto_algorithm_in_diff(diff_files));
+    }
+    if config.rules.get("no-speculative-ssrf-interpolation").map(|s| s != "off").unwrap_or(true) {
+        findings.extend(crate::detectors::command_injection::detect_speculative_ssrf_interpolation_in_diff(diff_files));
+    }
     findings.into_iter().filter(|f| config.rules.get(&f.rule_id).map(|s| s != "off").unwrap_or(true)).map(|mut f| {
         if let Some(rule_setting) = config.rules.get(&f.rule_id) {
             if rule_setting == "error" {
@@ -395,6 +407,9 @@ pub fn run_all_content_detectors(file_path: &str, content: &str, project_root: &
     findings.extend(crate::detectors::command_injection::detect_speculative_subprocess_injection_in_content(file_path, content));
     findings.extend(crate::detectors::async_loop_traps::detect_unbounded_event_listener_loop_in_content(file_path, content));
     findings.extend(crate::detectors::package_hallucinations::detect_phantom_ai_wrappers_in_content(file_path, content));
+    findings.extend(crate::detectors::path_traversal::detect_speculative_file_race_toctou_in_content(file_path, content));
+    findings.extend(crate::detectors::insecure_crypto::detect_hallucinated_crypto_algorithm_in_content(file_path, content));
+    findings.extend(crate::detectors::command_injection::detect_speculative_ssrf_interpolation_in_content(file_path, content));
     findings.into_iter().filter(|f| config.rules.get(&f.rule_id).map(|s| s != "off").unwrap_or(true)).map(|mut f| {
         if let Some(rule_setting) = config.rules.get(&f.rule_id) {
             if rule_setting == "error" {

@@ -1,5 +1,15 @@
 # Changelog
 All notable changes to SlopGuard are documented in this file.
+## [3.5.0] - 2026-11-02
+### Added
+- Expanded AST Firewall Matrix to 66 Active Shields: Implemented SLOP-064 (`no-speculative-file-race-toctou`), SLOP-065 (`no-hallucinated-crypto-algorithm`), and SLOP-066 (`no-speculative-ssrf-interpolation`).
+- Scaled Deterministic Test Battery: Expanded verified unit test suite to 252 passing tests (100% pass rate, 0 failures, 0 ignored).
+- SLOP-064 (Speculative File Race & TOCTOU): Detects separate existence checks followed by destructive write calls in Node.js, Python, Go, and Rust without atomic exclusive creation flags (CWE-367).
+- SLOP-065 (Hallucinated Cryptographic Algorithms): Intercepts fictional cipher and hashing primitives (`aes-256-turbo`, `sha256-fast`, `blowfish-gcm`, `des-ede3`, `sha-128`, `rsa-512`) passed to crypto/hashlib constructors (CWE-327 & CWE-328).
+- SLOP-066 (Speculative SSRF & Dynamic Host Interpolation): Detects unvalidated host/protocol template literal interpolations in HTTP client dispatchers (`axios`, `fetch`, `requests`, `httpx`, `http.Get`, `reqwest`) lacking allowlist verification (CWE-918).
+- Multi-Language Documentation Parity: 100% synchronized section and catalog parity across README.md, README.ru.md, and README.zh.md.
+- Zero-Tolerance Code Hygiene Gate: 100% pure Rust core engine, 0 comments, 0 blank lines across all touched production and test code.
+- Microbenchmark Performance: Fast-path execution maintaining sub-0.35ms latency over 10,000 LOC diff hunks.
 ## [3.4.0] - 2026-11-02
 ### Added
 - Expanded AST Firewall Matrix to 63 Active Shields: Implemented SLOP-061 (`no-speculative-subprocess-injection`), SLOP-062 (`no-unbounded-event-listener-loop`), and SLOP-063 (`no-phantom-ai-wrappers`).

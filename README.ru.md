@@ -9,12 +9,12 @@
   <a href="https://discord.gg/z7C9dprye"><img alt="Discord" src="https://img.shields.io/badge/Discord-Присоединиться-5865F2?style=flat-square&logo=discord&logoColor=white"></a>
   <a href="https://t.me/SlopGuard"><img alt="Telegram" src="https://img.shields.io/badge/Telegram-@SlopGuard-26A5E4?style=flat-square&logo=telegram&logoColor=white"></a>
   <img alt="100% Rust" src="https://img.shields.io/badge/100%25-Rust-b7410e?style=flat-square&logo=rust">
-  <img alt="Релиз: v3.4.0" src="https://img.shields.io/badge/release-v3.4.0-10b981?style=flat-square">
-  <img alt="Тесты: 245 пройдены" src="https://img.shields.io/badge/tests-245%20passed%20(100%25)-10b981?style=flat-square">
+  <a href="https://github.com/avelone123123/slopguard/releases/tag/v3.5.0"><img alt="Релиз: v3.5.0" src="https://img.shields.io/badge/release-v3.5.0-10b981?style=flat-square"></a>
+  <img alt="Тесты: 252 пройдены" src="https://img.shields.io/badge/tests-252%20passed%20(100%25)-10b981?style=flat-square">
   <img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-263146?style=flat-square">
   <img alt="Задержка: <0.35ms" src="https://img.shields.io/badge/latency-%3C0.35ms-2f6f4f?style=flat-square">
   <img alt="MCP Protocol: 2.0" src="https://img.shields.io/badge/MCP-JSON--RPC%202.0-7c3aed?style=flat-square">
-  <img alt="Фаерволы: 63" src="https://img.shields.io/badge/firewalls-63%20active-blue?style=flat-square">
+  <img alt="Фаерволы: 66" src="https://img.shields.io/badge/firewalls-66%20active-blue?style=flat-square">
   <img alt="Platforms" src="https://img.shields.io/badge/platforms-Windows%20%C2%B7%20macOS%20%C2%B7%20Linux-2f7bf5?style=flat-square">
 
   <br>
@@ -57,7 +57,7 @@
 </p>
 
 - **100% Native Rust**: Единый автономный бинарник без лишних рантаймов. Мгновенный запуск (<5мс).
-- **63 Активных AST-Фаервола**: Комплексная защита от фантомных манифестов, асинхронных ловушек, утечек генераторов, нестойкой генерации ключей, бесконтрольных каналов, десериализации и Zip Slip обходов.
+- **66 Активных AST-Фаерволов**: Комплексная защита от фантомных манифестов, асинхронных ловушек, утечек генераторов, нестойкой генерации ключей, бесконтрольных каналов, десериализации, уязвимостей Zip Slip, TOCTOU гонок файлов, галлюцинированных криптоалгоритмов и динамических SSRF интерполяций.
 - **Интерактивный TUI-Терминал с Осциллографом**: Визуализация пульса MCP в реальном времени на 60 FPS.
 - **Анализ Git Diff**: Сканирует только измененные строки в рабочей копии или в индексе git.
 - **Встроенный MCP-сервер**: Подключается к Cursor, Claude Code и Windsurf, позволяя агенту проверять свой код перед завершением шага.
@@ -82,6 +82,12 @@ cargo install --git https://github.com/avelone123123/slopguard.git --bin slopgua
 # Либо установка из локального клона репозитория:
 cargo install --path .
 ```
+
+### Готовые бинарные сборки (Precompiled Release Binaries)
+
+| Целевой файл | Платформа | Формат | Контрольная сумма SHA-256 |
+| :--- | :--- | :--- | :--- |
+| `slopguard-v3.5.0-windows-x64.exe` | Windows x86_64 | Native PE Standalone | `A6F0345EF99300C19653F6232BA134A2B71118D5B85265FA1B9A69E9F5101B06` |
 
 Либо сборка из исходников:
 
@@ -177,7 +183,7 @@ slopguard
   - `[1] ОБЗОР`: живой движущийся осциллограф телеметрии (волны задержки в реальном времени), лента активности ИИ, шкала чистоты и счетчики.
   - `[2] ПРОБЛЕМЫ`: инспектор найденных деградаций со сниппетами и рекомендациями ИИ-файрвола. Навигация клавишами `↑`/`↓`.
   - `[3] ПОТОК MCP`: детальный лог всех вызовов (`slopguard_scan_diff`, `slopguard_check_snippet`, `slopguard_sanitize_file`).
-  - `[4] ФАЙРВОЛЫ`: полная матрица из 56 активных AST-файрволов и статус защиты в реальном времени.
+  - `[4] ФАЙРВОЛЫ`: полная матрица из 66 активных AST-файрволов и статус защиты в реальном времени.
   - `[5] РЕПОЗИТОРИЙ`: ветка, последний коммит и измененные файлы рабочей зоны Git.
 - **Живой анимированный осциллограф**: движущаяся волна телеметрии в реальном времени, визуализирующая сетевой пульс и всплески активности агентов.
 - **Управление одной клавишей**:
@@ -229,9 +235,9 @@ slopguard ui
 
 ---
 
-## Матрица угроз (THREAT-01 – THREAT-13)
+## Матрица угроз (THREAT-01 – THREAT-16)
 
-SlopGuard распределяет 63 активных AST-фаервола по 13 стратегическим векторам угроз ИИ-кодогенерации и цепочки поставок:
+SlopGuard распределяет 66 активных AST-фаерволов по 16 стратегическим векторам угроз ИИ-кодогенерации и цепочки поставок:
 
 | ID вектора угроз | Описание вектора | Основные активные фаерволы |
 | :--- | :--- | :--- |
@@ -248,6 +254,9 @@ SlopGuard распределяет 63 активных AST-фаервола по
 | `THREAT-11` | Динамическая инъекция команд через shell-интерполяцию | `SLOP-061` |
 | `THREAT-12` | Утечки памяти через бесконтрольные слушатели событий в циклах | `SLOP-062` |
 | `THREAT-13` | Галлюцинированные SDK-обертки ИИ и слопсквоттинг зависимостей | `SLOP-063` |
+| `THREAT-14` | Спекулятивные гонки файлов TOCTOU и инвалидация конкурентности | `SLOP-064` |
+| `THREAT-15` | Галлюцинированные и нестандартные криптографические алгоритмы | `SLOP-065` |
+| `THREAT-16` | Спекулятивная SSRF-интерполяция динамических хостов и URL | `SLOP-066` |
 
 ---
 
@@ -318,6 +327,9 @@ SlopGuard распределяет 63 активных AST-фаервола по
 | `SLOP-061` | `no-speculative-subprocess-injection` | `ERROR` | Команды и инъекции | Уязвимости динамической интерполяции шелл-команд в подпроцессах (CWE-78) |
 | `SLOP-062` | `no-unbounded-event-listener-loop` | `WARN` | Асинхронность и конкурентность | Неконтролируемая регистрация слушателей событий в циклах с утечкой памяти (CWE-400) |
 | `SLOP-063` | `no-phantom-ai-wrappers` | `ERROR` | Цепочка поставок | Галлюцинированные SDK-обертки ИИ и слопсквоттинг зависимостей (CWE-1357) |
+| `SLOP-064` | `no-speculative-file-race-toctou` | `ERROR` | Пути и инъекции | Гонки файлов check-then-write и TOCTOU-уязвимости (CWE-367) |
+| `SLOP-065` | `no-hallucinated-crypto-algorithm` | `ERROR` | Криптография и аутентификация | Вымышленные криптографические алгоритмы (`aes-256-turbo`, `sha256-fast`) (CWE-327) |
+| `SLOP-066` | `no-speculative-ssrf-interpolation` | `ERROR` | Пути и инъекции | Невалидированная интерполяция динамических хостов и SSRF-шаблоны (CWE-918) |
 
 ---
 
@@ -325,7 +337,7 @@ SlopGuard распределяет 63 активных AST-фаервола по
 
 | Инструмент | Холодный старт | Время проверки (10k строк diff) | Потребление памяти |
 | :--- | :--- | :--- | :--- |
-| **SlopGuard (Rust v3.4.0)** | **< 2.5ms** | **< 0.35ms / 10k LOC** | **< 5.8 MB** |
+| **SlopGuard (Rust v3.5.0)** | **< 2.5ms** | **< 0.35ms / 10k LOC** | **< 5.8 MB** |
 | Biome | ~45ms | ~30ms | ~28 MB |
 | ESLint | ~620ms | ~480ms | ~140 MB |
 | SonarQube Scanner | ~4,200ms | ~3,100ms | ~600 MB |
