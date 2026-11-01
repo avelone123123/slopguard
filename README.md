@@ -217,6 +217,25 @@ Opens a fast, embedded local web interface at `http://127.0.0.1:4545`:
 
 ---
 
+## Threat Matrix (THREAT-01 – THREAT-10)
+
+SlopGuard maps all 60 AST firewalls across 10 strategic AI code rot and supply-chain threat vectors:
+
+| Strategic Threat ID | Description | Primary Active Shields |
+| :--- | :--- | :--- |
+| `THREAT-01` | Ghost Package & Slopsquatting Manifest Filters | `SLOP-009`, `SLOP-011`, `SLOP-046`, `SLOP-049` |
+| `THREAT-02` | Microtask Starvation & Unawaited Loop Anti-Patterns | `SLOP-014`, `SLOP-019`, `SLOP-020`, `SLOP-050` |
+| `THREAT-03` | Insecure PRNG Entropy & Predictable Key Generation | `SLOP-004`, `SLOP-048`, `SLOP-051` |
+| `THREAT-04` | Non-Canonical Deep Path Traversal & Zip-Slip Protection | `SLOP-030`, `SLOP-053`, `SLOP-054` |
+| `THREAT-05` | Polymorphic Deserialization RCE Gadget Interception | `SLOP-034`, `SLOP-052`, `SLOP-056` |
+| `THREAT-06` | Speculative Native FFI ABI & WASM Host Bindings | `SLOP-018` |
+| `THREAT-07` | Compound Slopsquatting Namespaces & Speculative Manifests | `SLOP-057` |
+| `THREAT-08` | Async Stream & Generator Iteration Unhandled Break Leaks | `SLOP-058` |
+| `THREAT-09` | Direct Insecure Pseudo-Random Keygen & Truncated Entropy | `SLOP-059` |
+| `THREAT-10` | Unbounded Channel Sprawl & Backpressure Hazards | `SLOP-060` |
+
+---
+
 ## Rules and Detections
 
 | Threat ID | Rule Name | Severity | Category | What It Catches |
