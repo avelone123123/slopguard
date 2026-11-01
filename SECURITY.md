@@ -2,6 +2,7 @@
 ## Supported Versions
 | Version | Supported |
 | :--- | :--- |
+| 3.2.x | Supported |
 | 3.1.x | Supported |
 | 3.0.x | Supported |
 | 2.9.x | Supported |

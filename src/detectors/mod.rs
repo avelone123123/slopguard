@@ -157,6 +157,8 @@ AstDetectorDefinition { id: "SLOP-051", name: "no-insecure-prng-tokens", severit
 AstDetectorDefinition { id: "SLOP-052", name: "no-unsafe-deserialization", severity: SlopSeverity::Error, category: "path-injection", cwe: "CWE-502", description: "Polyglot deserialization gadgets enabling arbitrary code execution", recommendation: "Use safe data serialization formats such as JSON or SafeLoader" },
 AstDetectorDefinition { id: "SLOP-053", name: "no-deep-path-traversal", severity: SlopSeverity::Error, category: "path-injection", cwe: "CWE-22", description: "Deep path traversal or device namespace bypass pattern detected", recommendation: "Canonicalize path and verify boundary root confinement" },
 AstDetectorDefinition { id: "SLOP-054", name: "no-zip-slip-traversal", severity: SlopSeverity::Error, category: "path-injection", cwe: "CWE-22", description: "ZipSlip archive extraction traversal vulnerability", recommendation: "Validate extraction target paths before writing archived files" },
+AstDetectorDefinition { id: "SLOP-055", name: "no-ide-protocol-hallucinations", severity: SlopSeverity::Error, category: "supply-chain", cwe: "CWE-758", description: "Hallucinated IDE or editor protocol extension APIs", recommendation: "Use verified official VS Code extension API or language server protocol" },
+AstDetectorDefinition { id: "SLOP-056", name: "no-polymorphic-deserialization", severity: SlopSeverity::Error, category: "path-injection", cwe: "CWE-502", description: "Polyglot polymorphic deserialization gadgets enabling code execution", recommendation: "Use safe structured formats or configure safe deserializer bindings" },
 ];
 #[allow(dead_code)]
 pub static ACTIVE_CONTRACTS: &[crate::types::AstDetectorContract] = &[
@@ -243,7 +245,7 @@ pub fn run_all_diff_detectors(diff_files: &[DiffFile], project_root: &Path, conf
     if config.rules.get("no-disabled-tls").map(|s| s != "off").unwrap_or(true) {
         findings.extend(detect_insecure_transport_in_diff(diff_files));
     }
-    if config.rules.get("no-unsafe-deserialization").map(|s| s != "off").unwrap_or(true) {
+    if config.rules.get("no-unsafe-deserialization").map(|s| s != "off").unwrap_or(true) || config.rules.get("no-polymorphic-deserialization").map(|s| s != "off").unwrap_or(true) {
         findings.extend(detect_unsafe_deserialization_in_diff(diff_files));
     }
     if config.rules.get("no-insecure-cors").map(|s| s != "off").unwrap_or(true) {
@@ -288,7 +290,7 @@ pub fn run_all_diff_detectors(diff_files: &[DiffFile], project_root: &Path, conf
     if config.rules.get("no-speculative-orm-methods").map(|s| s != "off").unwrap_or(true) {
         findings.extend(detect_speculative_orm_in_diff(diff_files));
     }
-    if config.rules.get("no-deep-path-traversal").map(|s| s != "off").unwrap_or(true) {
+    if config.rules.get("no-deep-path-traversal").map(|s| s != "off").unwrap_or(true) || config.rules.get("no-zip-slip-traversal").map(|s| s != "off").unwrap_or(true) {
         findings.extend(detect_deep_path_traversal_in_diff(diff_files));
     }
     if config.rules.get("no-async-pipeline-races").map(|s| s != "off").unwrap_or(true) {

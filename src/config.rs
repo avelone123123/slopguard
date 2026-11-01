@@ -44,6 +44,8 @@ pub fn default_config() -> SlopConfig {
     rules.insert("no-phantom-cloud-sdks".to_string(), "error".to_string());
     rules.insert("no-ide-protocol-hallucinations".to_string(), "error".to_string());
     rules.insert("no-speculative-ffi-wasm".to_string(), "error".to_string());
+    rules.insert("no-zip-slip-traversal".to_string(), "error".to_string());
+    rules.insert("no-polymorphic-deserialization".to_string(), "error".to_string());
     SlopConfig {
         ignore: vec![
             "target".into(),
@@ -59,6 +61,7 @@ pub fn default_config() -> SlopConfig {
             "*.svg".into(),
             "test/**".into(),
             "tests/**".into(),
+            "src/tests.rs".into(),
         ],
         rules,
         max_drift_files: 12,

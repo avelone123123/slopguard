@@ -14,7 +14,7 @@ fn is_go(path: &str) -> bool {
 path.to_lowercase().ends_with(".go")
 }
 fn get_sensitive_identifier_regex() -> Regex {
-Regex::new(r#"(?i)\b[a-zA-Z0-9_$]*(?:token|secret|salt|nonce|api_?key|session|password|passwd|auth|csrf|jwt|private_key|auth_token|reset|otp|pin)[a-zA-Z0-9_$]*\b"#).unwrap()
+Regex::new(r#"(?i)\b[a-zA-Z0-9_$]*(?:token|secret|salt|nonce|api_?key|session|password|passwd|auth|csrf|jwt|private_key|auth_token|reset|otp|pin|iv)[a-zA-Z0-9_$]*\b"#).unwrap()
 }
 fn get_js_weak_prng_regex() -> Regex {
 Regex::new(r#"(?:\bMath\.random|\bcrypto\.pseudoRandomBytes)\s*\("#).unwrap()

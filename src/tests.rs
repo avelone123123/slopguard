@@ -2371,4 +2371,230 @@ let elapsed = start.elapsed();
 assert_eq!(findings.len(), 0);
 assert!(elapsed.as_millis() < 250, "v300 microbenchmark exceeded budget: {:?}", elapsed);
 }
+#[test]
+fn test_v320_ast_56_detector_matrix_integrity() {
+assert_eq!(crate::detectors::AST_DETECTOR_DEFINITIONS.len(), 56);
+let mut ids = std::collections::HashSet::new();
+for def in crate::detectors::AST_DETECTOR_DEFINITIONS {
+assert!(ids.insert(def.id), "Duplicate rule id: {}", def.id);
+assert!(!def.name.is_empty());
+assert!(!def.category.is_empty());
+assert!(!def.cwe.is_empty());
+assert!(!def.description.is_empty());
+assert!(!def.recommendation.is_empty());
+}
+for i in 1..=56 {
+let expected_id = format!("SLOP-{:03}", i);
+assert!(ids.contains(expected_id.as_str()), "Missing rule: {}", expected_id);
+}
+let d55 = crate::detectors::AST_DETECTOR_DEFINITIONS.iter().find(|d| d.id == "SLOP-055").unwrap();
+assert_eq!(d55.name, "no-ide-protocol-hallucinations");
+assert_eq!(d55.category, "supply-chain");
+let d56 = crate::detectors::AST_DETECTOR_DEFINITIONS.iter().find(|d| d.id == "SLOP-056").unwrap();
+assert_eq!(d56.name, "no-polymorphic-deserialization");
+assert_eq!(d56.category, "path-injection");
+}
+#[test]
+fn test_v320_slopsquat_package_hallucinations_polyglot_matrix() {
+let npm_json = "{\n\"dependencies\": {\n\"@huggingface/transformer-tools\": \"^1.0.0\",\n\"crypto-node\": \"^2.0.0\",\n\"react-smart-toast\": \"^1.2.0\",\n\"next-auth-shield\": \"^0.1.0\",\n\"express-jwt-auto-auth\": \"^1.0.0\"\n}\n}";
+let npm_res = crate::detectors::package_hallucinations::detect_package_hallucinations_in_content("package.json", npm_json);
+assert_eq!(npm_res.len(), 5);
+let cargo_toml = "[dependencies]\ntokio-sync-helpers = \"0.1.0\"\ntokio-requests = \"0.3.0\"\nserde-crypto = \"1.0.0\"\nanyhow-derive = \"0.1.0\"\nfast-jwt-verifier = \"0.2.0\"\ntokio-redis-pro = \"1.0.0\"\nserde_json_fast = \"1.0.0\"\nactix-rate-limit-plus = \"0.4.0\"\n";
+let cargo_res = crate::detectors::package_hallucinations::detect_package_hallucinations_in_content("Cargo.toml", cargo_toml);
+assert_eq!(cargo_res.len(), 8);
+let py_reqs = "flask-bcrypt-auth>=1.0\ncrypto-util-helpers==0.2\nhuggingface-transformer-tools>=0.1\nrequests-async-retry>=2.0\ndjango-smart-cache==1.0\n";
+let py_res = crate::detectors::package_hallucinations::detect_package_hallucinations_in_content("requirements.txt", py_reqs);
+assert_eq!(py_res.len(), 5);
+let go_mod = "module myapp\n\nrequire (\n\tgithub.com/gin-gonic/gin-helpers v1.0.0\n\tgithub.com/gin-gonic/gin-cors v1.2.0\n\tgithub.com/golang-jwt/jwt-verifier v0.5.0\n\tgithub.com/gorilla/mux-shield v1.1.0\n)\n";
+let go_res = crate::detectors::package_hallucinations::detect_package_hallucinations_in_content("go.mod", go_mod);
+assert_eq!(go_res.len(), 4);
+}
+#[test]
+fn test_v320_slopsquat_manifest_wildcard_unpinned_permutations() {
+let npm_wildcard = "{\n\"dependencies\": {\n\"lodash\": \"*\",\n\"express\": \"latest\"\n}\n}";
+let findings = crate::detectors::package_hallucinations::detect_package_hallucinations_in_content("package.json", npm_wildcard);
+assert_eq!(findings.len(), 2);
+let cargo_wildcard = "[dependencies]\nserde = \"*\"\ntokio = \"latest\"\n";
+let cargo_res = crate::detectors::package_hallucinations::detect_package_hallucinations_in_content("Cargo.toml", cargo_wildcard);
+assert_eq!(cargo_res.len(), 2);
+let py_wildcard = "fastapi==*\npydantic==latest\nrequests v0.0.0-latest\n";
+let py_res = crate::detectors::package_hallucinations::detect_package_hallucinations_in_content("requirements.txt", py_wildcard);
+assert_eq!(py_res.len(), 3);
+}
+#[test]
+fn test_v320_async_loop_traps_backpressure_and_joinset() {
+let js_foreach = "items.forEach(async (item) => {\n  await db.query('INSERT INTO logs VALUES (?)', [item]);\n});\n";
+let findings = crate::detectors::async_loop_traps::detect_async_loop_traps_in_content("batch.js", js_foreach);
+assert_eq!(findings.len(), 1);
+assert_eq!(findings[0].rule_id, "no-unawaited-async-in-loops");
+let js_map = "const tasks = items.map(async (item) => await fetch('/api/task/' + item.id));\n";
+let map_findings = crate::detectors::async_loop_traps::detect_async_loop_traps_in_content("mapper.ts", js_map);
+assert_eq!(map_findings.len(), 1);
+let rs_loop = "for task in tasks {\n  tokio::spawn(async move {\n    process(task).await;\n  });\n}\n";
+let rs_findings = crate::detectors::async_loop_traps::detect_async_loop_traps_in_content("worker.rs", rs_loop);
+assert_eq!(rs_findings.len(), 1);
+let py_loop = "for item in items:\n    asyncio.create_task(process_item(item))\n";
+let py_findings = crate::detectors::async_loop_traps::detect_async_loop_traps_in_content("async_pool.py", py_loop);
+assert_eq!(py_findings.len(), 1);
+}
+#[test]
+fn test_v320_async_loop_traps_infinite_while_unbounded_await() {
+let while_loop = "while (true) {\n  const res = await fetch('https://api.internal/heartbeat');\n}\n";
+let findings = crate::detectors::async_loop_traps::detect_async_loop_traps_in_content("heartbeat.js", while_loop);
+assert_eq!(findings.len(), 1);
+assert_eq!(findings[0].rule_id, "no-unawaited-async-in-loops");
+let for_loop = "for (;;) {\n  await axios.get('/stream');\n}\n";
+let for_findings = crate::detectors::async_loop_traps::detect_async_loop_traps_in_content("loop.ts", for_loop);
+assert_eq!(for_findings.len(), 1);
+}
+#[test]
+fn test_v320_async_loop_safe_joinset_and_promise_all_passes() {
+let safe_js = "await Promise.all(items.map(async (item) => await fetch('/api/' + item.id)));\n";
+assert_eq!(crate::detectors::async_loop_traps::detect_async_loop_traps_in_content("safe.ts", safe_js).len(), 0);
+let safe_rs = "let mut set = JoinSet::new();\nfor task in tasks {\n  set.spawn(async move { task.run().await });\n}\n";
+assert_eq!(crate::detectors::async_loop_traps::detect_async_loop_traps_in_content("safe.rs", safe_rs).len(), 0);
+let safe_py = "sem = asyncio.Semaphore(10)\nfor item in items:\n    asyncio.gather(process_item(item))\n";
+assert_eq!(crate::detectors::async_loop_traps::detect_async_loop_traps_in_content("safe.py", safe_py).len(), 0);
+}
+#[test]
+fn test_v320_polyglot_deserialization_csharp_ruby_php_java() {
+let cs_bin = "var formatter = new BinaryFormatter();\nvar payload = (Order)formatter.Deserialize(stream);\n";
+let cs_findings = crate::detectors::unsafe_deserialization::detect_unsafe_deserialization_in_content("Order.cs", cs_bin);
+assert_eq!(cs_findings.len(), 1);
+let cs_netdata = "var serializer = new NetDataContractSerializer();\nvar data = serializer.Deserialize(stream);\n";
+let cs_netdata_findings = crate::detectors::unsafe_deserialization::detect_unsafe_deserialization_in_content("App.cs", cs_netdata);
+assert_eq!(cs_netdata_findings.len(), 1);
+let java_xml = "XMLDecoder decoder = new XMLDecoder(stream);\nObject obj = decoder.readObject();\n";
+let java_findings = crate::detectors::unsafe_deserialization::detect_unsafe_deserialization_in_content("Parser.java", java_xml);
+assert_eq!(java_findings.len(), 2);
+let rb_code = "session = Marshal.load(redis.get('session_key'))\n";
+let rb_findings = crate::detectors::unsafe_deserialization::detect_unsafe_deserialization_in_content("session.rb", rb_code);
+assert_eq!(rb_findings.len(), 1);
+let php_code = "$user = unserialize($_COOKIE['user_session']);\n";
+let php_findings = crate::detectors::unsafe_deserialization::detect_unsafe_deserialization_in_content("session.php", php_code);
+assert_eq!(php_findings.len(), 1);
+}
+#[test]
+fn test_v320_polyglot_deserialization_python_marshal_and_shelve() {
+let py_marshal = "bytecode = marshal.loads(raw_bytecode)\n";
+let py_findings = crate::detectors::unsafe_deserialization::detect_unsafe_deserialization_in_content("loader.py", py_marshal);
+assert_eq!(py_findings.len(), 1);
+let py_shelve = "db = shelve.open('user_cache.db')\n";
+let shelve_findings = crate::detectors::unsafe_deserialization::detect_unsafe_deserialization_in_content("cache.py", py_shelve);
+assert_eq!(shelve_findings.len(), 1);
+let py_yaml = "cfg = yaml.unsafe_load(user_stream)\n";
+let yaml_findings = crate::detectors::unsafe_deserialization::detect_unsafe_deserialization_in_content("config.py", py_yaml);
+assert_eq!(yaml_findings.len(), 1);
+}
+#[test]
+fn test_v320_polyglot_deserialization_safe_parsers_pass() {
+let safe_js = "const state = JSON.parse(rawText);\n";
+assert_eq!(crate::detectors::unsafe_deserialization::detect_unsafe_deserialization_in_content("safe.ts", safe_js).len(), 0);
+let safe_py = "data = yaml.safe_load(stream, Loader=yaml.SafeLoader)\n";
+assert_eq!(crate::detectors::unsafe_deserialization::detect_unsafe_deserialization_in_content("safe.py", safe_py).len(), 0);
+let safe_php = "$user = unserialize($data, ['allowed_classes' => false]);\n";
+assert_eq!(crate::detectors::unsafe_deserialization::detect_unsafe_deserialization_in_content("safe.php", safe_php).len(), 0);
+let safe_rb = "cfg = YAML.safe_load(content, permitted_classes: [Symbol])\n";
+assert_eq!(crate::detectors::unsafe_deserialization::detect_unsafe_deserialization_in_content("safe.rb", safe_rb).len(), 0);
+}
+#[test]
+fn test_v320_insecure_prng_csprng_entropy_enforcement() {
+let js_bad = "const authToken = Math.random().toString(36);\n";
+let js_res = crate::detectors::insecure_crypto::detect_insecure_crypto_in_content("auth.ts", js_bad);
+assert_eq!(js_res.len(), 1);
+assert_eq!(js_res[0].rule_id, "no-insecure-prng-tokens");
+let py_bad = "def create_session():\n    session_secret = random.random()\n";
+let py_res = crate::detectors::insecure_crypto::detect_insecure_crypto_in_content("session.py", py_bad);
+assert_eq!(py_res.len(), 1);
+let rs_bad = "fn generate_salt() {\n    let salt = rand::thread_rng().gen::<[u8; 32]>();\n}\n";
+let rs_res = crate::detectors::insecure_crypto::detect_insecure_crypto_in_content("crypto.rs", rs_bad);
+assert_eq!(rs_res.len(), 1);
+let go_bad = "func generateNonce() {\n    nonce := rand.Intn(1000000)\n}\n";
+let go_res = crate::detectors::insecure_crypto::detect_insecure_crypto_in_content("auth.go", go_bad);
+assert_eq!(go_res.len(), 1);
+}
+#[test]
+fn test_v320_insecure_prng_static_seed_rejection() {
+let py_seed = "random.seed(42)\n";
+let findings = crate::detectors::insecure_crypto::detect_insecure_crypto_in_content("test.py", py_seed);
+assert_eq!(findings.len(), 1);
+let rs_seed = "let mut rng = StdRng::seed_from_u64(1337);\n";
+let rs_findings = crate::detectors::insecure_crypto::detect_insecure_crypto_in_content("rng.rs", rs_seed);
+assert_eq!(rs_findings.len(), 1);
+}
+#[test]
+fn test_v320_csprng_entropy_safe_generators_pass() {
+let safe_js = "const buf = new Uint8Array(32);\ncrypto.getRandomValues(buf);\n";
+assert_eq!(crate::detectors::insecure_crypto::detect_insecure_crypto_in_content("safe.ts", safe_js).len(), 0);
+let safe_py = "token = secrets.token_hex(32)\n";
+assert_eq!(crate::detectors::insecure_crypto::detect_insecure_crypto_in_content("safe.py", safe_py).len(), 0);
+let safe_rs = "let secret = rand::rngs::OsRng;\n";
+assert_eq!(crate::detectors::insecure_crypto::detect_insecure_crypto_in_content("safe.rs", safe_rs).len(), 0);
+}
+#[test]
+fn test_v320_deep_path_traversal_windows_unc_and_archive_slips() {
+let unc = "const p = \"\\\\\\\\?\\\\GLOBALROOT\\\\Device\\\\Harddisk0\";\n";
+let unc_res = crate::detectors::path_traversal_deep::detect_deep_path_traversal_in_content("fs.ts", unc);
+assert_eq!(unc_res.len(), 1);
+assert_eq!(unc_res[0].rule_id, "no-deep-path-traversal");
+let multi_enc = "const path = \"%252e%252e%252fetc%252fshadow\";\n";
+let enc_res = crate::detectors::path_traversal_deep::detect_deep_path_traversal_in_content("server.js", multi_enc);
+assert_eq!(enc_res.len(), 1);
+let tar_slip = "tarfile.open(archive).extractall('/var/www')\n";
+let tar_res = crate::detectors::path_traversal_deep::detect_deep_path_traversal_in_content("backup.py", tar_slip);
+assert_eq!(tar_res.len(), 1);
+}
+#[test]
+fn test_v320_deep_path_traversal_canonicalize_and_whitelist_passes() {
+let safe_rs = "let safe = std::fs::canonicalize(input)?;\n";
+assert_eq!(crate::detectors::path_traversal_deep::detect_deep_path_traversal_in_content("file.rs", safe_rs).len(), 0);
+let safe_py = "filename = secure_filename(uploaded_file.filename)\n";
+assert_eq!(crate::detectors::path_traversal_deep::detect_deep_path_traversal_in_content("upload.py", safe_py).len(), 0);
+let safe_go = "cleanPath := filepath.Clean(userPath)\n";
+assert_eq!(crate::detectors::path_traversal_deep::detect_deep_path_traversal_in_content("handler.go", safe_go).len(), 0);
+}
+#[test]
+fn test_v320_fuzzing_malformed_tokens_and_unicode_permutations() {
+let fuzzed = "const file = \"\\u002e\\u002e/%252e%252e/%c0%ae%c0%ae/%00/etc/passwd\";\n";
+let findings = crate::detectors::path_traversal_deep::detect_deep_path_traversal_in_content("fuzz.ts", fuzzed);
+assert_eq!(findings.len(), 1);
+}
+#[test]
+fn test_v320_fuzzing_deeply_nested_structures_no_panic() {
+let mut nested = String::from("const nested = ");
+for _ in 0..500 {
+nested.push_str("([{\"\": ");
+}
+nested.push_str("42");
+for _ in 0..500 {
+nested.push_str("}}])");
+}
+nested.push_str(";\n");
+let findings = crate::detectors::package_hallucinations::detect_package_hallucinations_in_content("fuzz.ts", &nested);
+assert_eq!(findings.len(), 0);
+}
+#[test]
+fn test_v320_compound_speculative_package_prefixes_and_suffixes() {
+let cargo = "[dependencies]\nserde-sync-helpers = \"1.0\"\ntokio-auto-auth = \"0.2\"\nfastapi-jwt-guard = \"0.1\"\nexpress-smart-toast = \"1.0\"\n";
+let findings = crate::detectors::package_hallucinations::detect_package_hallucinations_in_content("Cargo.toml", cargo);
+assert_eq!(findings.len(), 4);
+}
+#[test]
+fn test_v320_ide_protocol_hallucinations_slop_055() {
+let bad_code = "vscode.window.showAIMessage('Generating code...');\ncursor.editor.injectPrompt({ prompt: 'Refactor' });\n";
+let findings = crate::detectors::ide_protocol::detect_ide_protocol_hallucinations_in_content("ext.ts", bad_code);
+assert_eq!(findings.len(), 2);
+}
+#[test]
+fn test_v320_microbenchmark_sub_millisecond_10k_loc() {
+let mut buffer = String::with_capacity(350000);
+for i in 0..10000 {
+buffer.push_str(&format!("const production_constant_v320_{i} = {i};\n"));
+}
+let start = std::time::Instant::now();
+let findings = crate::detectors::package_hallucinations::detect_package_hallucinations_in_content("bench_v320.ts", &buffer);
+let elapsed = start.elapsed();
+assert_eq!(findings.len(), 0);
+assert!(elapsed.as_millis() < 250, "v320 microbenchmark exceeded budget: {:?}", elapsed);
+}
 }

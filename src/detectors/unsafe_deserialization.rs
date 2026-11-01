@@ -54,7 +54,7 @@ patterns.push((Regex::new(r#"(?i)\bYAML\.load\s*\("#).unwrap(), Some("permitted_
 }
 if !specific || is_java(file_path) {
 patterns.push((Regex::new(r#"(?i)\bXMLDecoder\s*\("#).unwrap(), None, "Java XMLDecoder allows arbitrary object instantiation", "Use Jackson or Gson with strict type validation"));
-patterns.push((Regex::new(r#"(?i)\bBinaryFormatter\.Deserialize\s*\("#).unwrap(), None, "BinaryFormatter deserialization allows arbitrary type instantiation", "Use System.Text.Json with typed DTOs"));
+patterns.push((Regex::new(r#"(?i)\b(?:BinaryFormatter|NetDataContractSerializer)\b"#).unwrap(), None, ".NET deserializer allows arbitrary type instantiation and RCE", "Use System.Text.Json with typed DTOs"));
 if has_read_object {
 patterns.push((Regex::new(r#"(?i)\.readObject\s*\("#).unwrap(), None, "Java ObjectInputStream deserialization allows gadget chain execution", "Implement serial filtering (ObjectInputFilter) before calling readObject"));
 } else {
@@ -129,6 +129,7 @@ let gadgets = [
 ("yaml.unsafe_load(", "SLOP-052", "Unsafe YAML loading permits arbitrary object instantiation"),
 ("unserialize(", "SLOP-052", "PHP object injection via untrusted unserialize invocation"),
 ("BinaryFormatter", "SLOP-052", ".NET BinaryFormatter enables arbitrary payload deserialization"),
+("NetDataContractSerializer", "SLOP-052", ".NET NetDataContractSerializer enables arbitrary payload deserialization"),
 ("XMLDecoder", "SLOP-052", "Java XMLDecoder allows remote code execution via object graph reconstruction")
 ];
 for (idx, line) in content.lines().enumerate() {

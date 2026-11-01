@@ -29,7 +29,7 @@ fn has_py_sync_guard(line: &str) -> bool {
 line.contains("await ") || line.contains(".append(") || line.contains(".add(") || line.contains("asyncio.gather") || line.contains("Semaphore") || line.contains("yield ") || line.contains("return ")
 }
 fn has_rust_sync_guard(line: &str) -> bool {
-line.contains(".await") || line.contains(".push(") || line.contains("join_all") || line.contains("Semaphore") || line.contains("join_set") || line.contains("JoinSet")
+line.contains(".await") || line.contains(".push(") || line.contains("join_all") || line.contains("Semaphore") || line.contains("join_set") || line.contains("JoinSet") || line.contains("permit")
 }
 #[allow(dead_code)]
 pub const CONTRACT: crate::types::AstDetectorContract = crate::types::AstDetectorContract {

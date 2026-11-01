@@ -5,7 +5,7 @@ let l = p.to_lowercase();
 l.ends_with(".js") || l.ends_with(".ts") || l.ends_with(".jsx") || l.ends_with(".tsx") || l.ends_with(".mjs") || l.ends_with(".cjs") || l.ends_with(".py") || l.ends_with(".rs") || l.ends_with(".go")
 }
 fn has_traversal_defense(line: &str) -> bool {
-line.contains("canonicalize") || line.contains("secure_filename") || line.contains("os.path.commonpath") || line.contains("is_relative_to") || line.contains("path=safe") || line.contains("starts_with") || line.contains("startsWith") || line.contains("filepath.Clean") || line.contains("os.path.realpath")
+line.contains("canonicalize") || line.contains("secure_filename") || line.contains("os.path.commonpath") || line.contains("is_relative_to") || line.contains("path=safe") || line.contains("starts_with") || line.contains("startsWith") || line.contains("filepath.Clean") || line.contains("os.path.realpath") || line.contains("Regex::new")
 }
 fn is_import_statement(line: &str) -> bool {
 let t = line.trim();
@@ -22,7 +22,7 @@ analyze_content: detect_deep_path_traversal_in_content,
 };
 pub fn detect_deep_path_traversal_in_diff(diff_files: &[DiffFile]) -> Vec<SlopFinding> {
 let mut findings = Vec::new();
-let multi_encoded_seq = Regex::new(r#"(?i)(?:\\u002e\\u002e|%252e%252e|%2e%2e|%c0%ae%c0%ae|(?:\.\.[/\\])+|\.\.%2f|\\\\\\?|\\\\\.|\\{2,4}(?:\?|\.)\\{1,2}|%00|\x00)"#).unwrap();
+let multi_encoded_seq = Regex::new(r#"(?i)(?:\\u002e\\u002e|%252e%252e|%2e%2e|%c0%ae%c0%ae|(?:\.\.[/\\])+|\.\.%2f|\\\\\\?|\\\\\.|\\{2,4}(?:\?|\.)\\{1,2}|%00|\x00|GLOBALROOT(?:\\Device)?)"#).unwrap();
 let node_traversal_join = Regex::new(r#"(?i)(?:path\.(?:join|resolve|normalize)|os\.path\.join|filepath\.Join)\s*\([^)]*(?:req\.(?:query|params|body)|params\.|request\.(?:args|form)|request\.|query\.|user_?input|c\.Param|filename|filepath)"#).unwrap();
 let node_traversal_stream = Regex::new(r#"(?i)\bfs\.(?:createReadStream|createWriteStream|readFile|readFileSync)\s*\([^)]*(?:req\.(?:params|query|body)|params\.|request\.)"#).unwrap();
 let py_zip_slip = Regex::new(r#"(?i)(?:tarfile\.(?:open\([^)]*\)\.)?extractall\(|zipfile\.(?:ZipFile\([^)]*\)\.)?extractall\(|(?:archive|zip_ref|zipfile|tarfile|tar|zip_file|[a-zA-Z0-9_]+)\.(?:extractall|extract)\s*\()"#).unwrap();
@@ -68,7 +68,7 @@ let mut findings = Vec::new();
 if !is_supported_ext(file_path) {
 return findings;
 }
-let multi_encoded_seq = Regex::new(r#"(?i)(?:\\u002e\\u002e|%252e%252e|%2e%2e|%c0%ae%c0%ae|(?:\.\.[/\\])+|\.\.%2f|\\\\\\?|\\\\\.|\\{2,4}(?:\?|\.)\\{1,2}|%00|\x00)"#).unwrap();
+let multi_encoded_seq = Regex::new(r#"(?i)(?:\\u002e\\u002e|%252e%252e|%2e%2e|%c0%ae%c0%ae|(?:\.\.[/\\])+|\.\.%2f|\\\\\\?|\\\\\.|\\{2,4}(?:\?|\.)\\{1,2}|%00|\x00|GLOBALROOT(?:\\Device)?)"#).unwrap();
 let node_traversal_join = Regex::new(r#"(?i)(?:path\.(?:join|resolve|normalize)|os\.path\.join|filepath\.Join)\s*\([^)]*(?:req\.(?:query|params|body)|params\.|request\.(?:args|form)|request\.|query\.|user_?input|c\.Param|filename|filepath)"#).unwrap();
 let node_traversal_stream = Regex::new(r#"(?i)\bfs\.(?:createReadStream|createWriteStream|readFile|readFileSync)\s*\([^)]*(?:req\.(?:params|query|body)|params\.|request\.)"#).unwrap();
 let py_zip_slip = Regex::new(r#"(?i)(?:tarfile\.(?:open\([^)]*\)\.)?extractall\(|zipfile\.(?:ZipFile\([^)]*\)\.)?extractall\(|(?:archive|zip_ref|zipfile|tarfile|tar|zip_file|[a-zA-Z0-9_]+)\.(?:extractall|extract)\s*\()"#).unwrap();

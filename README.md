@@ -9,12 +9,12 @@
   <a href="https://discord.gg/z7C9dprye"><img alt="Discord" src="https://img.shields.io/badge/Discord-Join%20Chat-5865F2?style=flat-square&logo=discord&logoColor=white"></a>
   <a href="https://t.me/SlopGuard"><img alt="Telegram" src="https://img.shields.io/badge/Telegram-@SlopGuard-26A5E4?style=flat-square&logo=telegram&logoColor=white"></a>
   <img alt="100% Rust" src="https://img.shields.io/badge/100%25-Rust-b7410e?style=flat-square&logo=rust">
-  <img alt="Release: v3.1.0" src="https://img.shields.io/badge/release-v3.1.0-10b981?style=flat-square">
-  <img alt="Tests: 202 Passed" src="https://img.shields.io/badge/tests-202%20passed%20(100%25)-10b981?style=flat-square">
+  <img alt="Release: v3.2.0" src="https://img.shields.io/badge/release-v3.2.0-10b981?style=flat-square">
+  <img alt="Tests: 221 Passed" src="https://img.shields.io/badge/tests-221%20passed%20(100%25)-10b981?style=flat-square">
   <img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-263146?style=flat-square">
-  <img alt="Latency: <0.35ms" src="https://img.shields.io/badge/latency-%3C0.35ms-2f6f4f?style=flat-square">
+  <img alt="Latency: <0.42ms" src="https://img.shields.io/badge/latency-%3C0.42ms-2f6f4f?style=flat-square">
   <img alt="MCP Protocol: 2.0" src="https://img.shields.io/badge/MCP-JSON--RPC%202.0-7c3aed?style=flat-square">
-  <img alt="Firewalls: 54" src="https://img.shields.io/badge/firewalls-54%20active-blue?style=flat-square">
+  <img alt="Firewalls: 56" src="https://img.shields.io/badge/firewalls-56%20active-blue?style=flat-square">
   <img alt="Platforms" src="https://img.shields.io/badge/platforms-Windows%20%C2%B7%20macOS%20%C2%B7%20Linux-2f7bf5?style=flat-square">
 
   <br>
@@ -57,7 +57,7 @@ When vibe-coding with Cursor, Claude Code, Windsurf, or Antigravity across multi
 </p>
 
 - **100% Native Rust**: Single standalone binary without runtime bloat. Instant startup (<5ms).
-- **54 Active AST Firewalls**: Blocks phantom imports, unawaited async loops, weak PRNGs, unsafe deserialization, leaked secrets, and deep path traversal.
+- **56 Active AST Firewalls**: Blocks phantom imports, unawaited async loops, weak PRNGs, unsafe deserialization, leaked secrets, and deep path traversal.
 - **Git Diff & AST-Token Stream Analysis**: Scans only changed lines in working tree or staged commits using Jaccard token similarity.
 - **Built-in Model Context Protocol (MCP)**: Plugs directly into Cursor, Claude Code, and Windsurf so the agent inspects and validates its own diffs before completing prompts.
 - **One-Command Auto-Sanitizer**: `slopguard fix` automatically cleans conversational AI bloat.
@@ -184,7 +184,7 @@ slopguard
   - `[1] OVERVIEW`: Real-time moving telemetry wave oscilloscope, live MCP activity stream, hygiene gauge, and latency counters.
   - `[2] ISSUES`: Interactive findings inspector with `↑`/`↓` navigation, code snippets, and AI fix recommendations.
   - `[3] MCP STREAM`: Deep inspection of incoming MCP tool calls (`slopguard_scan_diff`, `slopguard_check_snippet`, `slopguard_sanitize_file`).
-  - `[4] FIREWALLS`: Comprehensive 54-firewall active AST matrix with real-time enforcement status.
+  - `[4] FIREWALLS`: Comprehensive 56-firewall active AST matrix with real-time enforcement status.
   - `[5] REPOSITORY`: Git diagnostic status, active branch, latest commit, and working tree breakdown.
 - **Real-Time Animated Wave Oscilloscope**: Moving multi-level ASCII/ANSI frequency spectrum visualizing MCP agent pulse and latency in real time.
 - **Single-Key Controls**:
@@ -275,6 +275,8 @@ Opens a fast, embedded local web interface at `http://127.0.0.1:4545`:
 | `SLOP-052` | `no-unsafe-deserialization` | `ERROR` | Path & Injection | Polyglot deserialization gadgets (`pickle.loads`, `yaml.load`, `XMLDecoder`) |
 | `SLOP-053` | `no-deep-path-traversal` | `ERROR` | Path & Injection | Deep path traversal, multi-encoded sequences, and Windows UNC bypass |
 | `SLOP-054` | `no-zip-slip-traversal` | `ERROR` | Path & Injection | ZipSlip archive extraction path traversal and boundary containment bypass |
+| `SLOP-055` | `no-ide-protocol-hallucinations` | `ERROR` | Supply Chain | Hallucinated IDE or editor protocol extension APIs (`vscode.window.showAIMessage`, etc.) |
+| `SLOP-056` | `no-polymorphic-deserialization` | `ERROR` | Path & Injection | Polyglot polymorphic deserialization gadgets enabling arbitrary code execution |
 
 ---
 
@@ -301,7 +303,7 @@ Customize behavior by creating a `.slopguardrc.json` in your repository root:
 
 | Tool | Cold Startup | Scan Time (10k LOC Diff) | Memory Usage |
 | :--- | :--- | :--- | :--- |
-| **SlopGuard (Rust v3.1.0)** | **< 2.5ms** | **< 0.35ms / 1k LOC** | **< 5.8 MB** |
+| **SlopGuard (Rust v3.2.0)** | **< 2.5ms** | **< 0.42ms / 10k LOC** | **< 5.8 MB** |
 | Biome | ~45ms | ~30ms | ~28 MB |
 | ESLint | ~620ms | ~480ms | ~140 MB |
 | SonarQube Scanner | ~4,200ms | ~3,100ms | ~600 MB |

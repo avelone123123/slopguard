@@ -16,6 +16,10 @@ pub const RULE_NO_UNSAFE_DESERIALIZATION: &str = "no-unsafe-deserialization";
 pub const RULE_NO_IDE_PROTOCOL_HALLUCINATIONS: &str = "no-ide-protocol-hallucinations";
 #[allow(dead_code)]
 pub const RULE_NO_SPECULATIVE_FFI_WASM: &str = "no-speculative-ffi-wasm";
+#[allow(dead_code)]
+pub const RULE_NO_ZIP_SLIP_TRAVERSAL: &str = "no-zip-slip-traversal";
+#[allow(dead_code)]
+pub const RULE_NO_POLYMORPHIC_DESERIALIZATION: &str = "no-polymorphic-deserialization";
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
 pub enum SlopCategory {
 Placeholder,
