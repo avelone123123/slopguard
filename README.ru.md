@@ -27,9 +27,9 @@
     <b>до того</b>, как они попадут в ваш git-репозиторий.
   </p>
 
-  <code>cargo install slopguard</code>
+  <code>cargo install --git https://github.com/avelone123123/slopguard.git --bin slopguard</code>
   <br>
-  <small style="color:#94a3b8">или через Cargo Git: <code>cargo install --git https://github.com/avelone123123/slopguard.git --bin slopguard</code></small>
+  <small style="color:#94a3b8">или из локального репозитория: <code>cargo install --path .</code></small>
 
 </div>
 
@@ -76,14 +76,11 @@
 ### Установка
 
 ```bash
-# Установка напрямую из реестра crates.io:
-cargo install slopguard
-
-# Либо установка актуального релиза напрямую из GitHub:
+# Установка актуального релиза напрямую из GitHub через Cargo Git:
 cargo install --git https://github.com/avelone123123/slopguard.git --bin slopguard
 
-# Либо локальная установка:
-# cargo install --path .
+# Либо установка из локального клона репозитория:
+cargo install --path .
 ```
 
 Либо сборка из исходников:

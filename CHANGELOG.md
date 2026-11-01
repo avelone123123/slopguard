@@ -6,6 +6,7 @@ All notable changes to SlopGuard are documented in this file.
 - Zero-Dependency AST Lexical Traversal: Reinforced stream-based tokenization with context-sensitive state tracking, maintaining sub-0.35ms fast-path hunk execution and 132 KiB compressed package footprint.
 - Ecosystem Upgrade across Core, Web & Studio: Synchronized Web AST Diff Playground with 5 pre-configured attack presets, pure SVG gauges, and aligned Desktop Studio sprint telemetry.
 - 54 AST Firewalls & 202 Verified Tests: Maintained 100% pass rate across all 202 unit test targets under strict zero-comment, zero-empty-line hygiene protocol.
+- Standardized Distribution Commands: Verified installation commands via Cargo Git (`cargo install --git https://github.com/avelone123123/slopguard.git --bin slopguard`) and local workspace clone (`cargo install --path .`) across all localized documentation.
 ## [3.0.0] - 2026-11-01
 ### Added
 - NextGen Release v3.0.0: Pure Native Rust Core Engine, 0 C-Dependencies, Sub-Millisecond AST Stream, 202 Verified Tests.

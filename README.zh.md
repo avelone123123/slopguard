@@ -26,9 +26,9 @@
     在 AI 幻觉、未完成占位符、影子工具函数和类型退化进入 Git 历史<b>之前</b>将其拦截。
   </p>
 
-  <code>cargo install slopguard</code>
+  <code>cargo install --git https://github.com/avelone123123/slopguard.git --bin slopguard</code>
   <br>
-  <small style="color:#94a3b8">或通过 Cargo Git 安装: <code>cargo install --git https://github.com/avelone123123/slopguard.git --bin slopguard</code></small>
+  <small style="color:#94a3b8">或从本地工作区克隆安装: <code>cargo install --path .</code></small>
 
 </div>
 
@@ -66,14 +66,11 @@
 ### 安装
 
 ```bash
-# 从 crates.io 官方注册表直接安装:
-cargo install slopguard
-
-# 或通过 Cargo Git 安装最新发布版本:
+# 通过 Cargo Git 安装最新发布版本:
 cargo install --git https://github.com/avelone123123/slopguard.git --bin slopguard
 
 # 或从本地工作区安装:
-# cargo install --path .
+cargo install --path .
 ```
 
 或从源码构建：

@@ -27,9 +27,9 @@
     <b>before</b> they pollute your git history.
   </p>
 
-  <code>cargo install slopguard</code>
+  <code>cargo install --git https://github.com/avelone123123/slopguard.git --bin slopguard</code>
   <br>
-  <small style="color:#94a3b8">or via Cargo Git: <code>cargo install --git https://github.com/avelone123123/slopguard.git --bin slopguard</code></small>
+  <small style="color:#94a3b8">or from local clone: <code>cargo install --path .</code></small>
 
 </div>
 
@@ -71,14 +71,11 @@ When vibe-coding with Cursor, Claude Code, Windsurf, or Antigravity across multi
 ### Installation
 
 ```bash
-# Install directly from crates.io:
-cargo install slopguard
-
-# Or install latest release binary directly via Cargo Git:
+# Install latest release binary directly via Cargo Git:
 cargo install --git https://github.com/avelone123123/slopguard.git --bin slopguard
 
 # Or install from local workspace clone:
-# cargo install --path .
+cargo install --path .
 ```
 
 Or build from source:
