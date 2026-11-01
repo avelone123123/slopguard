@@ -55,7 +55,7 @@ When vibe-coding with Cursor, Claude Code, Windsurf, or Antigravity across multi
 </p>
 
 - **100% Native Rust**: Single standalone binary without runtime bloat. Instant startup (<5ms).
-- **17 Active AST Firewalls**: Blocks phantom imports, empty catches, ghost dependencies, leaked secrets, and unsafe eval calls.
+- **53 Active AST Firewalls**: Blocks phantom imports, unawaited async loops, weak PRNGs, unsafe deserialization, leaked secrets, and deep path traversal.
 - **Git Diff & AST-Token Stream Analysis**: Scans only changed lines in working tree or staged commits using Jaccard token similarity.
 - **Built-in Model Context Protocol (MCP)**: Plugs directly into Cursor, Claude Code, and Windsurf so the agent inspects and validates its own diffs before completing prompts.
 - **One-Command Auto-Sanitizer**: `slopguard fix` automatically cleans conversational AI bloat.
@@ -182,7 +182,7 @@ slopguard
   - `[1] OVERVIEW`: Real-time moving telemetry wave oscilloscope, live MCP activity stream, hygiene gauge, and latency counters.
   - `[2] ISSUES`: Interactive findings inspector with `↑`/`↓` navigation, code snippets, and AI fix recommendations.
   - `[3] MCP STREAM`: Deep inspection of incoming MCP tool calls (`slopguard_scan_diff`, `slopguard_check_snippet`, `slopguard_sanitize_file`).
-  - `[4] FIREWALLS`: 13 active AST rule firewalls matrix with real-time enforcement status.
+  - `[4] FIREWALLS`: Comprehensive 53-firewall active AST matrix with real-time enforcement status.
   - `[5] REPOSITORY`: Git diagnostic status, active branch, latest commit, and working tree breakdown.
 - **Real-Time Animated Wave Oscilloscope**: Moving multi-level ASCII/ANSI frequency spectrum visualizing MCP agent pulse and latency in real time.
 - **Single-Key Controls**:
@@ -236,12 +236,37 @@ Opens a fast, embedded local web interface at `http://127.0.0.1:4545`:
 | `no-duplicate-shadow-utilities`| `WARN` | Re-invented helper functions that duplicate existing utilities |
 | `no-ai-conversational-bloat`| `WARN` | Conversational comments (`// Here is the fix:`, `// Step 1:`) |
 | `no-excessive-scope-drift` | `WARN` | Agent touching >12 files or sensitive `.env` / config files |
-| `no-unbounded-concurrency` | `WARN` | Unthrottled concurrent iterations (`Promise.all` over `.map`, `asyncio.gather` comprehension, `join_all`) risking socket & EMFILE exhaustion |
-| `no-hallucinated-package-manifest` | `ERROR` | AI-hallucinated composite package names and unpinned wildcard dependencies (npm, PyPI, Cargo, Go) |
-| `no-unawaited-async-in-loops` | `ERROR` | Synchronous `.forEach(async)` / unshielded `.map(async)`, uncollected `tokio::spawn` and `asyncio.create_task` |
-| `no-insecure-prng-tokens` | `ERROR` | Non-cryptographic PRNGs (`Math.random()`, `random.choice()`, `rand::random()`) for security tokens |
-| `no-unsafe-deserialization` | `ERROR` | Polymorphic deserialization gadgets (`pickle.loads`, `yaml.load`, `node-serialize`, `XMLDecoder`, `Marshal.load`) |
-| `no-deep-path-traversal` | `ERROR` | Multi-encoded traversal (`%252e%252e`, `\u002e\u002e`), Windows UNC bypass (`\\?\`), and Zip Slip extraction |
+| `no-sql-injection-risk` | `ERROR` | Raw SQL concatenation and template interpolation vulnerabilities |
+| `no-floating-promises` | `ERROR` | Unhandled floating promises missing await, catch, or void markers |
+| `no-async-array-predicates` | `ERROR` | Async callback truthy trap in `.filter()`, `.some()`, `.every()`, `.find()` |
+| `no-prototype-pollution` | `ERROR` | Prototype pollution via unvalidated `__proto__` or prototype mutations |
+| `no-command-injection-risk` | `ERROR` | Command injection via unescaped shell process execution |
+| `no-path-traversal-risk` | `ERROR` | Arbitrary file access via unsanitized `../` path joining |
+| `no-silent-error-swallowing` | `ERROR` | Silently suppressed promise rejections and swallowed runtime errors |
+| `no-redos-vulnerability` | `ERROR` | Catastrophic regular expression backtracking vulnerabilities |
+| `no-coverage-theater` | `ERROR` | Empty assertions, vacuous test bodies, and synthetic pass assertions |
+| `no-disabled-tls` | `ERROR` | Insecure transport flags (`NODE_TLS_REJECT_UNAUTHORIZED='0'`, `verify=False`) |
+| `no-insecure-cors` | `ERROR` | Wildcard origins (`Access-Control-Allow-Origin: *`) with credentials allowed |
+| `no-inlined-secrets` | `ERROR` | Hardcoded client-side API secrets and private tokens in frontend bundles |
+| `no-slopsquat-deps` | `ERROR` | Typosquatted and slopsquatted malicious package dependencies |
+| `no-insecure-crypto` | `ERROR` | Broken cryptographic hashes (`MD5`, `SHA1`, `DES`) in security paths |
+| `no-hallucinated-speculative-apis` | `ERROR` | Fictional runtime methods and speculative standard library functions |
+| `no-test-sabotage` | `ERROR` | Commented-out assertions, `.skip` abuse, or forced unconditional test passes |
+| `no-async-in-sync-callbacks` | `ERROR` | Async closures in synchronous event loops dropping errors or unhandled rejections |
+| `no-hardcoded-jwt-secrets` | `ERROR` | Hardcoded HMAC secrets, `alg: none` JWTs, and weak verification keys |
+| `no-unscoped-idor-queries` | `ERROR` | Unscoped database lookups missing tenant/user boundary isolation |
+| `no-unsafe-xml-or-ssrf` | `ERROR` | XXE external entity injection and unvalidated internal SSRF requests |
+| `no-speculative-orm-methods` | `ERROR` | Hallucinated ORM/ODM query helper methods (Prisma, TypeORM, Mongoose) |
+| `no-async-pipeline-races` | `ERROR` | Unshielded `Promise.race()` and unhandled stream pipeline abort leaks |
+| `no-phantom-cloud-sdks` | `ERROR` | Speculative cloud SDK packages and synthetic provider bindings in manifests |
+| `no-ide-protocol-hallucinations` | `ERROR` | Synthetic IDE extension APIs (`vscode.window.showAIMessage`, `cursor.ai.*`) |
+| `no-speculative-ffi-wasm` | `ERROR` | Synthetic extern "C" symbols and speculative WebAssembly host imports |
+| `no-unbounded-concurrency` | `WARN` | Unthrottled concurrent iterations (`Promise.all` over `.map`, `asyncio.gather`) risking socket exhaustion |
+| `no-hallucinated-package-manifest` | `ERROR` | [Firewall 49] AI-hallucinated composite packages and wildcard versions (`*`, `==*`, `latest`) across npm, PyPI, Cargo, Go |
+| `no-unawaited-async-in-loops` | `ERROR` | [Firewall 50] Synchronous `.forEach(async)`, unshielded `.map(async)`, uncollected `tokio::spawn` and `asyncio.create_task` |
+| `no-insecure-prng-tokens` | `ERROR` | [Firewall 51] Non-cryptographic PRNGs (`Math.random()`, `random.choice()`, `rand::random()`) for security tokens & secrets |
+| `no-unsafe-deserialization` | `ERROR` | [Firewall 52] Polymorphic deserialization gadgets (`pickle.loads`, `yaml.load`, `node-serialize`, `XMLDecoder`, `Marshal.load`) |
+| `no-deep-path-traversal` | `ERROR` | [Firewall 53] Multi-encoded traversal (`%252e%252e`, `\u002e\u002e`), Windows UNC bypass (`\\?\`), and Zip Slip extraction |
 
 ---
 
@@ -268,7 +293,7 @@ Customize behavior by creating a `.slopguardrc.json` in your repository root:
 
 | Tool | Cold Startup | Scan Time (10k LOC Diff) | Memory Usage |
 | :--- | :--- | :--- | :--- |
-| **SlopGuard (Rust v2.9.0)** | **< 2.5ms** | **< 0.35ms / 1k LOC** | **< 6 MB** |
+| **SlopGuard (Rust v2.9.0)** | **< 2.5ms** | **< 0.35ms / 1k LOC** | **< 5.8 MB** |
 | Biome | ~45ms | ~30ms | ~28 MB |
 | ESLint | ~620ms | ~480ms | ~140 MB |
 | SonarQube Scanner | ~4,200ms | ~3,100ms | ~600 MB |

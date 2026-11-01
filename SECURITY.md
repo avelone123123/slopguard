@@ -2,8 +2,9 @@
 ## Supported Versions
 | Version | Supported |
 | :--- | :--- |
-| 1.0.x | Supported |
-| < 1.0 | Unsupported |
+| 2.9.x | Supported |
+| 2.8.x | Supported |
+| < 2.8 | Unsupported |
 ## Reporting a Vulnerability
 Please report security vulnerabilities responsibly:
 1. Open a private GitHub Security Advisory at `https://github.com/avelone123123/slopguard/security/advisories/new`.

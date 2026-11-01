@@ -2,7 +2,7 @@
 ## Cold Startup & Scan Latency
 | Security & Linter Engine | Language | Cold Startup | 10k LOC AST Scan | Peak RSS Memory |
 | :--- | :--- | :--- | :--- | :--- |
-| **SlopGuard v1.0.0** | **Pure Rust** | **< 3ms** | **~7ms** | **~6 MB** |
+| **SlopGuard v2.9.0** | **Pure Rust** | **< 2.5ms** | **< 3.5ms** | **~5.8 MB** |
 | Biome 1.9 | Rust/JS | ~45ms | ~32ms | ~29 MB |
 | ESLint 9 (Flat Config) | Node.js | ~620ms | ~485ms | ~145 MB |
 | SonarQube Scanner CLI | Java | ~4,200ms | ~3,100ms | ~610 MB |
