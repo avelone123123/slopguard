@@ -49,8 +49,8 @@ return findings;
 let lines: Vec<&str> = content.lines().collect();
 let js_loop_re = get_js_loop_regex();
 let js_async_re = get_js_unawaited_async_regex();
-let foreach_async_re = Regex::new(r#"\.forEach\s*\(\s*async\s*(?:\([^)]*\)|[a-zA-Z0-9_$]+|\bfunction\b)"#).unwrap();
-let map_async_re = Regex::new(r#"\.map\s*\(\s*async\s*(?:\([^)]*\)|[a-zA-Z0-9_$]+|\bfunction\b)"#).unwrap();
+let foreach_async_re = Regex::new(r#"\.forEach\s*\(\s*async\b"#).unwrap();
+let map_async_re = Regex::new(r#"\.map\s*\(\s*async\b"#).unwrap();
 let py_loop_re = get_py_loop_regex();
 let py_async_re = get_py_unawaited_async_regex();
 let rs_loop_re = get_rust_loop_regex();
@@ -79,7 +79,7 @@ suggestion: Some("Use 'for (const item of items)' with await or 'await Promise.a
 });
 continue;
 }
-if js && map_async_re.is_match(trimmed) && !trimmed.contains("Promise.all") && !trimmed.contains("Promise.allSettled") {
+if js && map_async_re.is_match(trimmed) && !trimmed.contains("Promise.all") && !trimmed.contains("Promise.allSettled") && !trimmed.contains("pLimit") && !trimmed.contains("p-limit") {
 findings.push(SlopFinding {
 file: file_path.to_string(),
 line: line_num,
@@ -110,6 +110,40 @@ suggestion: Some("Await the promise before yielding or delegate with 'yield*'".t
 continue;
 }
 if js && js_loop_re.is_match(trimmed) {
+let is_infinite_loop = trimmed.contains("while (true)") || trimmed.contains("while(true)") || trimmed.contains("while (1)") || trimmed.contains("while(1)") || trimmed.contains("for (;;)");
+if is_infinite_loop {
+let mut has_async_call = false;
+let mut has_backoff = false;
+for off in 1..=16 {
+if let Some(bl) = lines.get(idx + off) {
+let bt = bl.trim();
+if bt.contains("fetch(") || bt.contains("axios.") || bt.contains("http.") || bt.contains("db.") || bt.contains("client.") {
+has_async_call = true;
+}
+if bt.contains("sleep(") || bt.contains("delay(") || bt.contains("backoff") || bt.contains("break;") || bt.contains("break ") || bt.contains("return ") || bt.contains("return;") || bt.contains("setTimeout") {
+has_backoff = true;
+}
+if bt == "}" || bt.starts_with("};") {
+break;
+}
+}
+}
+if has_async_call && !has_backoff {
+findings.push(SlopFinding {
+file: file_path.to_string(),
+line: line_num,
+column: 1,
+rule_id: "no-unawaited-async-in-loops".to_string(),
+category: SlopCategory::UnawaitedAsyncLoopTrap,
+severity: SlopSeverity::Error,
+message: "Unbounded while(true) loop executing async operations without backoff or break termination risks event loop starvation".to_string(),
+snippet: trimmed.to_string(),
+fixable: false,
+suggestion: Some("Add exponential backoff delay (await sleep(ms)) or break condition on termination".to_string()),
+});
+continue;
+}
+}
 if (trimmed.contains("fetch(") || trimmed.contains("fetch (") || trimmed.contains("axios.")) && (trimmed.contains("await ") || trimmed.contains("await\t")) && !trimmed.contains("signal:") && !trimmed.contains("signal") {
 findings.push(SlopFinding {
 file: file_path.to_string(),

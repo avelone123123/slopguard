@@ -2145,4 +2145,230 @@ let elapsed = start.elapsed();
 assert_eq!(findings.len(), 0);
 assert!(elapsed.as_millis() < 200, "Execution exceeded threshold: {:?}", elapsed);
 }
+#[test]
+fn test_v300_slopsquat_pypi_flask_bcrypt_auth_and_crypto_util_helpers() {
+let py_req = "flask-bcrypt-auth==1.2.0\ncrypto-util-helpers==0.4.1\n";
+let findings = crate::detectors::package_hallucinations::detect_package_hallucinations_in_content("requirements.txt", py_req);
+assert_eq!(findings.len(), 2);
+assert_eq!(findings[0].rule_id, "no-hallucinated-package-manifest");
+assert_eq!(findings[1].rule_id, "no-hallucinated-package-manifest");
+let py_import = "import flask_bcrypt_auth\nimport crypto_util_helpers\n";
+let import_findings = crate::detectors::package_hallucinations::detect_package_hallucinations_in_content("auth.py", py_import);
+assert_eq!(import_findings.len(), 2);
+}
+#[test]
+fn test_v300_slopsquat_npm_huggingface_transformer_tools_and_crypto_node() {
+let pkg_json = "{\n  \"dependencies\": {\n    \"huggingface-transformer-tools\": \"^1.0.0\",\n    \"crypto-node\": \"^0.2.1\"\n  }\n}";
+let findings = crate::detectors::package_hallucinations::detect_package_hallucinations_in_content("package.json", pkg_json);
+assert_eq!(findings.len(), 2);
+let js_req = "const hf = require('huggingface-transformer-tools');\nconst cn = require('crypto-node');\n";
+let js_findings = crate::detectors::package_hallucinations::detect_package_hallucinations_in_content("index.js", js_req);
+assert_eq!(js_findings.len(), 2);
+}
+#[test]
+fn test_v300_slopsquat_cargo_speculative_crates_and_prefix_traps() {
+let cargo_toml = "[dependencies]\ntokio-requests = \"0.1.0\"\nserde-crypto = \"1.0.0\"\nanyhow-derive = \"0.2.0\"\n";
+let findings = crate::detectors::package_hallucinations::detect_package_hallucinations_in_content("Cargo.toml", cargo_toml);
+assert_eq!(findings.len(), 3);
+let rs_use = "use tokio_requests::Client;\nuse serde_crypto::Encrypt;\nuse anyhow_derive::Error;\n";
+let rs_findings = crate::detectors::package_hallucinations::detect_package_hallucinations_in_content("lib.rs", rs_use);
+assert_eq!(rs_findings.len(), 3);
+}
+#[test]
+fn test_v300_slopsquat_go_speculative_module_patterns() {
+let go_mod = "module example.com/api\nrequire github.com/gin-gonic/gin-cors v1.0.0\nrequire github.com/golang-jwt/jwt-verifier v0.5.0\nrequire github.com/gorilla/mux-shield v1.2.0\n";
+let findings = crate::detectors::package_hallucinations::detect_package_hallucinations_in_content("go.mod", go_mod);
+assert_eq!(findings.len(), 3);
+}
+#[test]
+fn test_v300_manifest_wildcard_pinned_version_enforcement() {
+let pkg_wildcard = "{\n  \"dependencies\": {\n    \"lodash\": \"*\",\n    \"axios\": \"latest\"\n  }\n}";
+let pkg_findings = crate::detectors::package_hallucinations::detect_package_hallucinations_in_content("package.json", pkg_wildcard);
+assert_eq!(pkg_findings.len(), 2);
+let cargo_wildcard = "[dependencies]\nserde = \"*\"\ntokio = \"latest\"\n";
+let cargo_findings = crate::detectors::package_hallucinations::detect_package_hallucinations_in_content("Cargo.toml", cargo_wildcard);
+assert_eq!(cargo_findings.len(), 2);
+let py_wildcard = "requests==*\nflask==latest\n";
+let py_findings = crate::detectors::package_hallucinations::detect_package_hallucinations_in_content("requirements.txt", py_wildcard);
+assert_eq!(py_findings.len(), 2);
+let go_wildcard = "require github.com/gin-gonic/gin v0.0.0-latest\n";
+let go_findings = crate::detectors::package_hallucinations::detect_package_hallucinations_in_content("go.mod", go_wildcard);
+assert_eq!(go_findings.len(), 1);
+}
+#[test]
+fn test_v300_async_foreach_unhandled_promise_rejection_js_ts() {
+let js_code = "users.forEach(async (user) => {\n  await db.users.update(user);\n});\n";
+let findings = crate::detectors::async_loop_traps::detect_async_loop_traps_in_content("sync.ts", js_code);
+assert_eq!(findings.len(), 1);
+assert_eq!(findings[0].rule_id, "no-unawaited-async-in-loops");
+}
+#[test]
+fn test_v300_async_map_unshielded_iteration_starvation() {
+let js_code = "const promises = items.map(async (item) => {\n  return await fetch('/api/' + item.id);\n});\n";
+let findings = crate::detectors::async_loop_traps::detect_async_loop_traps_in_content("fetcher.ts", js_code);
+assert_eq!(findings.len(), 1);
+assert_eq!(findings[0].rule_id, "no-unawaited-async-in-loops");
+let safe_code = "const results = await Promise.all(items.map(async (item) => {\n  return await fetch('/api/' + item.id);\n}));\n";
+let safe_findings = crate::detectors::async_loop_traps::detect_async_loop_traps_in_content("fetcher.ts", safe_code);
+assert_eq!(safe_findings.len(), 0);
+}
+#[test]
+fn test_v300_while_loop_unbounded_await_without_backoff() {
+let bad_while = "while (true) {\n  await db.query('SELECT 1');\n}\n";
+let bad_findings = crate::detectors::async_loop_traps::detect_async_loop_traps_in_content("poll.ts", bad_while);
+assert_eq!(bad_findings.len(), 1);
+assert_eq!(bad_findings[0].rule_id, "no-unawaited-async-in-loops");
+let safe_while = "while (true) {\n  await db.query('SELECT 1');\n  await sleep(1000);\n}\n";
+let safe_findings = crate::detectors::async_loop_traps::detect_async_loop_traps_in_content("poll.ts", safe_while);
+assert_eq!(safe_findings.len(), 0);
+}
+#[test]
+fn test_v300_python_asyncio_task_loop_leak_without_shield() {
+let py_code = "for item in pending_items:\n    asyncio.create_task(dispatch(item))\n";
+let findings = crate::detectors::async_loop_traps::detect_async_loop_traps_in_content("dispatcher.py", py_code);
+assert_eq!(findings.len(), 1);
+assert_eq!(findings[0].rule_id, "no-unawaited-async-in-loops");
+let safe_py = "for item in pending_items:\n    t = asyncio.create_task(dispatch(item))\n    tasks.append(t)\n";
+let safe_findings = crate::detectors::async_loop_traps::detect_async_loop_traps_in_content("dispatcher.py", safe_py);
+assert_eq!(safe_findings.len(), 0);
+}
+#[test]
+fn test_v300_rust_tokio_spawn_in_loop_without_joinset_barrier() {
+let rs_code = "for req in requests {\n  tokio::spawn(async move {\n    process(req).await;\n  });\n}\n";
+let findings = crate::detectors::async_loop_traps::detect_async_loop_traps_in_content("server.rs", rs_code);
+assert_eq!(findings.len(), 1);
+assert_eq!(findings[0].rule_id, "no-unawaited-async-in-loops");
+let safe_rs = "for req in requests {\n  let handle = tokio::spawn(async move {\n    process(req).await;\n  });\n  join_set.push(handle);\n}\n";
+let safe_findings = crate::detectors::async_loop_traps::detect_async_loop_traps_in_content("server.rs", safe_rs);
+assert_eq!(safe_findings.len(), 0);
+}
+#[test]
+fn test_v300_insecure_prng_math_random_auth_token_rejection() {
+let js_code = "const auth_token = Math.random().toString(36).substring(2);\n";
+let findings = crate::detectors::insecure_crypto::detect_insecure_crypto_in_content("auth.js", js_code);
+assert_eq!(findings.len(), 1);
+assert_eq!(findings[0].rule_id, "no-insecure-prng-tokens");
+}
+#[test]
+fn test_v300_insecure_prng_python_random_session_key_rejection() {
+let py_code = "session_key = ''.join(random.choice(chars) for _ in range(32))\n";
+let findings = crate::detectors::insecure_crypto::detect_insecure_crypto_in_content("session.py", py_code);
+assert_eq!(findings.len(), 1);
+assert_eq!(findings[0].rule_id, "no-insecure-prng-tokens");
+}
+#[test]
+fn test_v300_insecure_prng_rust_thread_rng_salt_rejection() {
+let rs_code = "let password_salt: u64 = rand::thread_rng().gen();\n";
+let findings = crate::detectors::insecure_crypto::detect_insecure_crypto_in_content("crypto.rs", rs_code);
+assert_eq!(findings.len(), 1);
+assert_eq!(findings[0].rule_id, "no-insecure-prng-tokens");
+}
+#[test]
+fn test_v300_csprng_crypto_get_random_values_clean_pass() {
+let js_code = "const buf = new Uint8Array(32);\ncrypto.getRandomValues(buf);\nconst session_token = Buffer.from(buf).toString('hex');\n";
+let findings = crate::detectors::insecure_crypto::detect_insecure_crypto_in_content("auth.ts", js_code);
+assert_eq!(findings.len(), 0);
+let py_code = "import secrets\nsession_token = secrets.token_hex(32)\n";
+let py_findings = crate::detectors::insecure_crypto::detect_insecure_crypto_in_content("auth.py", py_code);
+assert_eq!(py_findings.len(), 0);
+}
+#[test]
+fn test_v300_polyglot_deserialization_pickle_loads_rejection() {
+let py_code = "user_state = pickle.loads(untrusted_bytes)\n";
+let findings = crate::detectors::unsafe_deserialization::detect_unsafe_deserialization_in_content("state.py", py_code);
+assert_eq!(findings.len(), 1);
+assert_eq!(findings[0].rule_id, "no-unsafe-deserialization");
+}
+#[test]
+fn test_v300_polyglot_deserialization_unsafe_yaml_load_rejection() {
+let py_bad = "config = yaml.load(raw_config, Loader=yaml.Loader)\n";
+let findings = crate::detectors::unsafe_deserialization::detect_unsafe_deserialization_in_content("config.py", py_bad);
+assert_eq!(findings.len(), 1);
+assert_eq!(findings[0].rule_id, "no-unsafe-deserialization");
+let py_safe = "config = yaml.load(raw_config, Loader=yaml.SafeLoader)\n";
+let safe_findings = crate::detectors::unsafe_deserialization::detect_unsafe_deserialization_in_content("config.py", py_safe);
+assert_eq!(safe_findings.len(), 0);
+}
+#[test]
+fn test_v300_polyglot_deserialization_php_unserialize_rejection() {
+let php_bad = "$data = unserialize($payload);\n";
+let findings = crate::detectors::unsafe_deserialization::detect_unsafe_deserialization_in_content("index.php", php_bad);
+assert_eq!(findings.len(), 1);
+assert_eq!(findings[0].rule_id, "no-unsafe-deserialization");
+let php_safe = "$data = unserialize($payload, ['allowed_classes' => false]);\n";
+let safe_findings = crate::detectors::unsafe_deserialization::detect_unsafe_deserialization_in_content("index.php", php_safe);
+assert_eq!(safe_findings.len(), 0);
+}
+#[test]
+fn test_v300_polyglot_deserialization_ruby_marshal_load_rejection() {
+let rb_bad = "cached_data = Marshal.load(redis.get('session'))\n";
+let findings = crate::detectors::unsafe_deserialization::detect_unsafe_deserialization_in_content("cache.rb", rb_bad);
+assert_eq!(findings.len(), 1);
+assert_eq!(findings[0].rule_id, "no-unsafe-deserialization");
+}
+#[test]
+fn test_v300_polyglot_deserialization_java_xmldecoder_rejection() {
+let java_bad = "XMLDecoder decoder = new XMLDecoder(inputStream);\n";
+let findings = crate::detectors::unsafe_deserialization::detect_unsafe_deserialization_in_content("XmlParser.java", java_bad);
+assert_eq!(findings.len(), 1);
+assert_eq!(findings[0].rule_id, "no-unsafe-deserialization");
+}
+#[test]
+fn test_v300_polyglot_deserialization_dotnet_binary_formatter_rejection() {
+let cs_bad = "var obj = BinaryFormatter.Deserialize(stream);\n";
+let findings = crate::detectors::unsafe_deserialization::detect_unsafe_deserialization_in_content("Service.cs", cs_bad);
+assert_eq!(findings.len(), 1);
+assert_eq!(findings[0].rule_id, "no-unsafe-deserialization");
+}
+#[test]
+fn test_v300_deep_path_traversal_windows_unc_device_path() {
+let unc_code = "let path = \"\\\\\\\\?\\\\GLOBALROOT\\\\Device\\\\Harddisk0\";\n";
+let findings = crate::detectors::path_traversal_deep::detect_deep_path_traversal_in_content("io.rs", unc_code);
+assert_eq!(findings.len(), 1);
+assert_eq!(findings[0].rule_id, "no-deep-path-traversal");
+let dev_code = "const dev = \"\\\\\\\\.\\\\PhysicalDrive0\";\n";
+let dev_findings = crate::detectors::path_traversal_deep::detect_deep_path_traversal_in_content("disk.ts", dev_code);
+assert_eq!(dev_findings.len(), 1);
+}
+#[test]
+fn test_v300_deep_path_traversal_multi_encoded_bypass() {
+let bypass_code = "const target = \"%c0%ae%c0%ae/etc/shadow\";\n";
+let findings = crate::detectors::path_traversal_deep::detect_deep_path_traversal_in_content("server.js", bypass_code);
+assert_eq!(findings.len(), 1);
+assert_eq!(findings[0].rule_id, "no-deep-path-traversal");
+let bypass_2 = "let user_file = \"%252e%252e%252fboot.ini\";\n";
+let findings_2 = crate::detectors::path_traversal_deep::detect_deep_path_traversal_in_content("fs.ts", bypass_2);
+assert_eq!(findings_2.len(), 1);
+}
+#[test]
+fn test_v300_deep_path_traversal_python_tarfile_zipfile_slip() {
+let tar_slip = "tarfile.open('upload.tar.gz').extractall('/var/www/uploads')\n";
+let findings = crate::detectors::path_traversal_deep::detect_deep_path_traversal_in_content("extractor.py", tar_slip);
+assert_eq!(findings.len(), 1);
+assert_eq!(findings[0].rule_id, "no-deep-path-traversal");
+let zip_slip = "zipfile.ZipFile('bundle.zip').extractall(dest_path)\n";
+let zip_findings = crate::detectors::path_traversal_deep::detect_deep_path_traversal_in_content("unzip.py", zip_slip);
+assert_eq!(zip_findings.len(), 1);
+}
+#[test]
+fn test_v300_deep_path_traversal_canonicalize_clean_pass() {
+let safe_rs = "let canonical = std::fs::canonicalize(&untrusted)?;\nif canonical.starts_with(&root_dir) {\n  std::fs::read(&canonical)?;\n}\n";
+let findings = crate::detectors::path_traversal_deep::detect_deep_path_traversal_in_content("safe.rs", safe_rs);
+assert_eq!(findings.len(), 0);
+let safe_py = "safe_name = secure_filename(file.filename)\n";
+let py_findings = crate::detectors::path_traversal_deep::detect_deep_path_traversal_in_content("upload.py", safe_py);
+assert_eq!(py_findings.len(), 0);
+}
+#[test]
+fn test_v300_microbenchmark_sub_millisecond_10k_loc_v300() {
+let mut buffer = String::with_capacity(300000);
+for i in 0..10000 {
+buffer.push_str(&format!("const production_constant_v300_{i} = {i};\n"));
+}
+let start = std::time::Instant::now();
+let findings = crate::detectors::package_hallucinations::detect_package_hallucinations_in_content("bench.ts", &buffer);
+let elapsed = start.elapsed();
+assert_eq!(findings.len(), 0);
+assert!(elapsed.as_millis() < 250, "v300 microbenchmark exceeded budget: {:?}", elapsed);
+}
 }

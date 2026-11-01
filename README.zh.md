@@ -9,12 +9,12 @@
   <a href="https://discord.gg/z7C9dprye"><img alt="Discord" src="https://img.shields.io/badge/Discord-Join%20Chat-5865F2?style=flat-square&logo=discord&logoColor=white"></a>
   <a href="https://t.me/SlopGuard"><img alt="Telegram" src="https://img.shields.io/badge/Telegram-@SlopGuard-26A5E4?style=flat-square&logo=telegram&logoColor=white"></a>
   <img alt="100% Rust" src="https://img.shields.io/badge/100%25-Rust-b7410e?style=flat-square&logo=rust">
-  <img alt="版本: v2.9.0" src="https://img.shields.io/badge/release-v2.9.0-10b981?style=flat-square">
-  <img alt="测试: 177 通过" src="https://img.shields.io/badge/tests-177%20passed%20(100%25)-10b981?style=flat-square">
+  <img alt="版本: v3.0.0" src="https://img.shields.io/badge/release-v3.0.0-10b981?style=flat-square">
+  <img alt="测试: 202 通过" src="https://img.shields.io/badge/tests-202%20passed%20(100%25)-10b981?style=flat-square">
   <img alt="开源许可证: MIT" src="https://img.shields.io/badge/license-MIT-263146?style=flat-square">
   <img alt="极低延迟: <5ms" src="https://img.shields.io/badge/latency-%3C0.35ms-2f6f4f?style=flat-square">
   <img alt="MCP 协议: 2.0" src="https://img.shields.io/badge/MCP-JSON--RPC%202.0-7c3aed?style=flat-square">
-  <img alt="防御防火墙: 53" src="https://img.shields.io/badge/firewalls-53%20active-blue?style=flat-square">
+  <img alt="防御防火墙: 54" src="https://img.shields.io/badge/firewalls-54%20active-blue?style=flat-square">
   <img alt="跨平台" src="https://img.shields.io/badge/platforms-Windows%20%C2%B7%20macOS%20%C2%B7%20Linux-2f7bf5?style=flat-square">
 
   <br>
@@ -50,7 +50,7 @@
 ## 核心特性
 
 - **100% 纯 Rust**：独立原生二进制文件，启动时间低于 2.5ms。
-- **53 个活跃 AST 防火墙**：全面拦截幻觉包导入、未等待异步循环、弱伪随机数、多态反序列化利用与深层路径穿越。
+- **54 个活跃 AST 防火墙**：全面拦截幻觉包导入、未等待异步循环、弱伪随机数、多态反序列化利用与深层路径穿越。
 - **Git Diff 极速扫描**：仅针对暂存区或工作区变动行进行 AST Token 流比对。
 - **内置 MCP 协议服务**：直接集成至 Cursor 与 Claude Code，在智能体生成完代码后即刻自检。
 - **一键清理**：`slopguard fix` 自动剥离 AI 冗余对话注释。
@@ -244,7 +244,7 @@ slopguard ui
 
 | 评估工具 | 冷启动耗时 | 扫描耗时 (10k 行 Diff) | 内存峰值 |
 | :--- | :--- | :--- | :--- |
-| **SlopGuard (Rust v2.9.0)** | **< 2.5ms** | **< 0.35ms / 1k LOC** | **< 5.8 MB** |
+| **SlopGuard (Rust v3.0.0)** | **< 2.5ms** | **< 0.35ms / 1k LOC** | **< 5.8 MB** |
 | Biome | ~45ms | ~30ms | ~28 MB |
 | ESLint | ~620ms | ~480ms | ~140 MB |
 | SonarQube Scanner | ~4,200ms | ~3,100ms | ~600 MB |

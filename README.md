@@ -9,12 +9,12 @@
   <a href="https://discord.gg/z7C9dprye"><img alt="Discord" src="https://img.shields.io/badge/Discord-Join%20Chat-5865F2?style=flat-square&logo=discord&logoColor=white"></a>
   <a href="https://t.me/SlopGuard"><img alt="Telegram" src="https://img.shields.io/badge/Telegram-@SlopGuard-26A5E4?style=flat-square&logo=telegram&logoColor=white"></a>
   <img alt="100% Rust" src="https://img.shields.io/badge/100%25-Rust-b7410e?style=flat-square&logo=rust">
-  <img alt="Release: v2.9.0" src="https://img.shields.io/badge/release-v2.9.0-10b981?style=flat-square">
-  <img alt="Tests: 177 Passed" src="https://img.shields.io/badge/tests-177%20passed%20(100%25)-10b981?style=flat-square">
+  <img alt="Release: v3.0.0" src="https://img.shields.io/badge/release-v3.0.0-10b981?style=flat-square">
+  <img alt="Tests: 202 Passed" src="https://img.shields.io/badge/tests-202%20passed%20(100%25)-10b981?style=flat-square">
   <img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-263146?style=flat-square">
   <img alt="Latency: <0.35ms" src="https://img.shields.io/badge/latency-%3C0.35ms-2f6f4f?style=flat-square">
   <img alt="MCP Protocol: 2.0" src="https://img.shields.io/badge/MCP-JSON--RPC%202.0-7c3aed?style=flat-square">
-  <img alt="Firewalls: 53" src="https://img.shields.io/badge/firewalls-53%20active-blue?style=flat-square">
+  <img alt="Firewalls: 54" src="https://img.shields.io/badge/firewalls-54%20active-blue?style=flat-square">
   <img alt="Platforms" src="https://img.shields.io/badge/platforms-Windows%20%C2%B7%20macOS%20%C2%B7%20Linux-2f7bf5?style=flat-square">
 
   <br>
@@ -55,7 +55,7 @@ When vibe-coding with Cursor, Claude Code, Windsurf, or Antigravity across multi
 </p>
 
 - **100% Native Rust**: Single standalone binary without runtime bloat. Instant startup (<5ms).
-- **53 Active AST Firewalls**: Blocks phantom imports, unawaited async loops, weak PRNGs, unsafe deserialization, leaked secrets, and deep path traversal.
+- **54 Active AST Firewalls**: Blocks phantom imports, unawaited async loops, weak PRNGs, unsafe deserialization, leaked secrets, and deep path traversal.
 - **Git Diff & AST-Token Stream Analysis**: Scans only changed lines in working tree or staged commits using Jaccard token similarity.
 - **Built-in Model Context Protocol (MCP)**: Plugs directly into Cursor, Claude Code, and Windsurf so the agent inspects and validates its own diffs before completing prompts.
 - **One-Command Auto-Sanitizer**: `slopguard fix` automatically cleans conversational AI bloat.
@@ -293,7 +293,7 @@ Customize behavior by creating a `.slopguardrc.json` in your repository root:
 
 | Tool | Cold Startup | Scan Time (10k LOC Diff) | Memory Usage |
 | :--- | :--- | :--- | :--- |
-| **SlopGuard (Rust v2.9.0)** | **< 2.5ms** | **< 0.35ms / 1k LOC** | **< 5.8 MB** |
+| **SlopGuard (Rust v3.0.0)** | **< 2.5ms** | **< 0.35ms / 1k LOC** | **< 5.8 MB** |
 | Biome | ~45ms | ~30ms | ~28 MB |
 | ESLint | ~620ms | ~480ms | ~140 MB |
 | SonarQube Scanner | ~4,200ms | ~3,100ms | ~600 MB |
