@@ -9,12 +9,12 @@
   <a href="https://discord.gg/z7C9dprye"><img alt="Discord" src="https://img.shields.io/badge/Discord-Присоединиться-5865F2?style=flat-square&logo=discord&logoColor=white"></a>
   <a href="https://t.me/SlopGuard"><img alt="Telegram" src="https://img.shields.io/badge/Telegram-@SlopGuard-26A5E4?style=flat-square&logo=telegram&logoColor=white"></a>
   <img alt="100% Rust" src="https://img.shields.io/badge/100%25-Rust-b7410e?style=flat-square&logo=rust">
-  <img alt="Релиз: v3.3.0" src="https://img.shields.io/badge/release-v3.4.0-10b981?style=flat-square">
-  <img alt="Тесты: 241 пройдены" src="https://img.shields.io/badge/tests-245%20passed%20(100%25)-10b981?style=flat-square">
+  <img alt="Релиз: v3.4.0" src="https://img.shields.io/badge/release-v3.4.0-10b981?style=flat-square">
+  <img alt="Тесты: 245 пройдены" src="https://img.shields.io/badge/tests-245%20passed%20(100%25)-10b981?style=flat-square">
   <img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-263146?style=flat-square">
-  <img alt="Задержка: <0.42ms" src="https://img.shields.io/badge/latency-%3C0.42ms-2f6f4f?style=flat-square">
+  <img alt="Задержка: <0.35ms" src="https://img.shields.io/badge/latency-%3C0.35ms-2f6f4f?style=flat-square">
   <img alt="MCP Protocol: 2.0" src="https://img.shields.io/badge/MCP-JSON--RPC%202.0-7c3aed?style=flat-square">
-  <img alt="Фаерволы: 60" src="https://img.shields.io/badge/firewalls-63%20active-blue?style=flat-square">
+  <img alt="Фаерволы: 63" src="https://img.shields.io/badge/firewalls-63%20active-blue?style=flat-square">
   <img alt="Platforms" src="https://img.shields.io/badge/platforms-Windows%20%C2%B7%20macOS%20%C2%B7%20Linux-2f7bf5?style=flat-square">
 
   <br>
@@ -229,9 +229,9 @@ slopguard ui
 
 ---
 
-## Матрица угроз (THREAT-01 – THREAT-10)
+## Матрица угроз (THREAT-01 – THREAT-13)
 
-SlopGuard распределяет 60 активных AST-фаерволов по 10 стратегическим векторам угроз ИИ-кодогенерации и цепочки поставок:
+SlopGuard распределяет 63 активных AST-фаервола по 13 стратегическим векторам угроз ИИ-кодогенерации и цепочки поставок:
 
 | ID вектора угроз | Описание вектора | Основные активные фаерволы |
 | :--- | :--- | :--- |
@@ -315,6 +315,9 @@ SlopGuard распределяет 60 активных AST-фаерволов п
 | `SLOP-058` | `no-async-generator-unhandled-break` | `ERROR` | Асинхронность и конкурентность | Необработанный break/return в асинхронном генераторе, вызывающий утечку сокетов |
 | `SLOP-059` | `no-insecure-direct-crypto-keygen` | `ERROR` | Криптография и аутентификация | Прямая генерация ключей через PRNG или усеченная энтропия (<256 бит) |
 | `SLOP-060` | `no-unbounded-channel-sprawl` | `ERROR` | Асинхронность и конкурентность | Создание неограниченных очередей и каналов без механизмов противодавления (backpressure) |
+| `SLOP-061` | `no-speculative-subprocess-injection` | `ERROR` | Команды и инъекции | Уязвимости динамической интерполяции шелл-команд в подпроцессах (CWE-78) |
+| `SLOP-062` | `no-unbounded-event-listener-loop` | `WARN` | Асинхронность и конкурентность | Неконтролируемая регистрация слушателей событий в циклах с утечкой памяти (CWE-400) |
+| `SLOP-063` | `no-phantom-ai-wrappers` | `ERROR` | Цепочка поставок | Галлюцинированные SDK-обертки ИИ и слопсквоттинг зависимостей (CWE-1357) |
 
 ---
 
@@ -322,7 +325,7 @@ SlopGuard распределяет 60 активных AST-фаерволов п
 
 | Инструмент | Холодный старт | Время проверки (10k строк diff) | Потребление памяти |
 | :--- | :--- | :--- | :--- |
-| **SlopGuard (Rust v3.4.0)** | **< 2.5ms** | **< 0.42ms / 10k LOC** | **< 5.8 MB** |
+| **SlopGuard (Rust v3.4.0)** | **< 2.5ms** | **< 0.35ms / 10k LOC** | **< 5.8 MB** |
 | Biome | ~45ms | ~30ms | ~28 MB |
 | ESLint | ~620ms | ~480ms | ~140 MB |
 | SonarQube Scanner | ~4,200ms | ~3,100ms | ~600 MB |

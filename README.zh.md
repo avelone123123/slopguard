@@ -9,12 +9,12 @@
   <a href="https://discord.gg/z7C9dprye"><img alt="Discord" src="https://img.shields.io/badge/Discord-Join%20Chat-5865F2?style=flat-square&logo=discord&logoColor=white"></a>
   <a href="https://t.me/SlopGuard"><img alt="Telegram" src="https://img.shields.io/badge/Telegram-@SlopGuard-26A5E4?style=flat-square&logo=telegram&logoColor=white"></a>
   <img alt="100% Rust" src="https://img.shields.io/badge/100%25-Rust-b7410e?style=flat-square&logo=rust">
-  <img alt="版本: v3.3.0" src="https://img.shields.io/badge/release-v3.4.0-10b981?style=flat-square">
-  <img alt="测试: 241 通过" src="https://img.shields.io/badge/tests-245%20passed%20(100%25)-10b981?style=flat-square">
+  <img alt="版本: v3.4.0" src="https://img.shields.io/badge/release-v3.4.0-10b981?style=flat-square">
+  <img alt="测试: 245 通过" src="https://img.shields.io/badge/tests-245%20passed%20(100%25)-10b981?style=flat-square">
   <img alt="开源许可证: MIT" src="https://img.shields.io/badge/license-MIT-263146?style=flat-square">
-  <img alt="极低延迟: <0.42ms" src="https://img.shields.io/badge/latency-%3C0.42ms-2f6f4f?style=flat-square">
+  <img alt="极低延迟: <0.35ms" src="https://img.shields.io/badge/latency-%3C0.35ms-2f6f4f?style=flat-square">
   <img alt="MCP 协议: 2.0" src="https://img.shields.io/badge/MCP-JSON--RPC%202.0-7c3aed?style=flat-square">
-  <img alt="防御防火墙: 60" src="https://img.shields.io/badge/firewalls-63%20active-blue?style=flat-square">
+  <img alt="防御防火墙: 63" src="https://img.shields.io/badge/firewalls-63%20active-blue?style=flat-square">
   <img alt="跨平台" src="https://img.shields.io/badge/platforms-Windows%20%C2%B7%20macOS%20%C2%B7%20Linux-2f7bf5?style=flat-square">
 
   <br>
@@ -52,7 +52,7 @@
 ## 核心特性
 
 - **100% 纯 Rust**：独立原生二进制文件，启动时间低于 2.5ms。
-- **60 个活跃 AST 防火墙**：全面拦截幻觉包导入、未等待异步循环、生成器泄露、伪随机数生成密钥、无界通道扩散与多态反序列化利用。
+- **63 个活跃 AST 防火墙**：全面拦截幻觉包导入、未等待异步循环、生成器泄露、伪随机数生成密钥、无界通道扩散与多态反序列化利用。
 - **Git Diff 极速扫描**：仅针对暂存区或工作区变动行进行 AST Token 流比对。
 - **内置 MCP 协议服务**：直接集成至 Cursor 与 Claude Code，在智能体生成完代码后即刻自检。
 - **一键清理**：`slopguard fix` 自动剥离 AI 冗余对话注释。
@@ -171,7 +171,7 @@ slopguard ui
 - **MCP 实时活动流**：微秒级精度记录 AI 工具调用与审计结果。
 - **AI 洁净度评分计**：随着代码生成动态评估代码健康度与评级。
 - **拦截垃圾计数器**：实时显示已拦截的未完成占位符、假数据与类型降级。
-- **毫秒级延迟图表**：验证 Rust 极致响应速度（<0.42ms），零开发卡顿。
+- **毫秒级延迟图表**：验证 Rust 极致响应速度（<0.35ms），零开发卡顿。
 
 ---
 
@@ -194,9 +194,9 @@ slopguard ui
 
 ---
 
-## 战略威胁矩阵 (THREAT-01 – THREAT-10)
+## 战略威胁矩阵 (THREAT-01 – THREAT-13)
 
-SlopGuard 将全部 60 个活跃 AST 防火墙映射到 10 个战略级 AI 代码退化与供应链威胁向量：
+SlopGuard 将全部 63 个活跃 AST 防火墙映射到 13 个战略级 AI 代码退化与供应链威胁向量：
 
 | 战略威胁 ID | 威胁描述 | 核心活跃防火墙 |
 | :--- | :--- | :--- |
@@ -210,6 +210,9 @@ SlopGuard 将全部 60 个活跃 AST 防火墙映射到 10 个战略级 AI 代�
 | `THREAT-08` | 异步流与生成器迭代中未捕获 break/return 句柄泄露 | `SLOP-058` |
 | `THREAT-09` | 直接非 CSPRNG 截断伪随机密钥派生与弱熵拦截 | `SLOP-059` |
 | `THREAT-10` | 无界通道泛滥与无背压队列内存溢出 (OOM) 防护 | `SLOP-060` |
+| `THREAT-11` | 动态子进程与 Shell 字符串插值命令注入防御 | `SLOP-061` |
+| `THREAT-12` | 循环内未管理事件监听器无界积累与内存泄露 | `SLOP-062` |
+| `THREAT-13` | 虚构跨语言 AI SDK 封装包与供应链抢注防御 | `SLOP-063` |
 
 ---
 
@@ -277,6 +280,9 @@ SlopGuard 将全部 60 个活跃 AST 防火墙映射到 10 个战略级 AI 代�
 | `SLOP-058` | `no-async-generator-unhandled-break` | `ERROR` | 异步与并发 | [防火墙 58] 异步流或生成器迭代中未处理的提前 break/return 引发句柄泄露 |
 | `SLOP-059` | `no-insecure-direct-crypto-keygen` | `ERROR` | 密码与认证 | [防火墙 59] 直接通过弱 PRNG 或截断伪随机字节派生对称密钥 (<256位熵) |
 | `SLOP-060` | `no-unbounded-channel-sprawl` | `ERROR` | 异步与并发 | [防火墙 60] 无背压控制的无界消息队列与通道泛滥导致内存耗尽 (OOM) |
+| `SLOP-061` | `no-speculative-subprocess-injection` | `ERROR` | 命令与注入 | [防火墙 61] 检查动态 shell 命令插值与子进程注入风险 (CWE-78) |
+| `SLOP-062` | `no-unbounded-event-listener-loop` | `WARN` | 异步与并发 | [防火墙 62] 循环内未管理事件监听器注册引发无界内存泄露 (CWE-400) |
+| `SLOP-063` | `no-phantom-ai-wrappers` | `ERROR` | 软件供应链 | [防火墙 63] 幻觉生成的虚构跨语言 AI SDK 封装包仿冒 (CWE-1357) |
 
 ---
 
@@ -284,7 +290,7 @@ SlopGuard 将全部 60 个活跃 AST 防火墙映射到 10 个战略级 AI 代�
 
 | 评估工具 | 冷启动耗时 | 扫描耗时 (10k 行 Diff) | 内存峰值 |
 | :--- | :--- | :--- | :--- |
-| **SlopGuard (Rust v3.4.0)** | **< 2.5ms** | **< 0.42ms / 10k LOC** | **< 5.8 MB** |
+| **SlopGuard (Rust v3.4.0)** | **< 2.5ms** | **< 0.35ms / 10k LOC** | **< 5.8 MB** |
 | Biome | ~45ms | ~30ms | ~28 MB |
 | ESLint | ~620ms | ~480ms | ~140 MB |
 | SonarQube Scanner | ~4,200ms | ~3,100ms | ~600 MB |
