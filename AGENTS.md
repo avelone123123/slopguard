@@ -23,3 +23,5 @@ Core      Dev       UX                    Red Team    Auditor   Manager
 2. Peer code review gatekeeping: every line must be 100% clean, zero AI comments, zero empty lines.
 3. Automated issue generation and assignment via GitHub.
 4. Continuous release tagging and binary publishing.
+5. Mandatory Documentation Synchronization: Scribe and Council must update all .md files (README, translations, CHANGELOG, ROADMAP) on every sprint. Never leave documentation stale.
+6. Deep Root-Cause Engineering: Divergent hypothesis generation, multi-angle reasoning, tool verification, and zero crutches.

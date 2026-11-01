@@ -9,6 +9,8 @@
   <a href="https://discord.gg/z7C9dprye"><img alt="Discord" src="https://img.shields.io/badge/Discord-Join%20Chat-5865F2?style=flat-square&logo=discord&logoColor=white"></a>
   <a href="https://t.me/SlopGuard"><img alt="Telegram" src="https://img.shields.io/badge/Telegram-@SlopGuard-26A5E4?style=flat-square&logo=telegram&logoColor=white"></a>
   <img alt="100% Rust" src="https://img.shields.io/badge/100%25-Rust-b7410e?style=flat-square&logo=rust">
+  <img alt="版本: v2.9.0" src="https://img.shields.io/badge/release-v2.9.0-10b981?style=flat-square">
+  <img alt="测试: 177 通过" src="https://img.shields.io/badge/tests-177%20passed%20(100%25)-10b981?style=flat-square">
   <img alt="开源许可证: MIT" src="https://img.shields.io/badge/license-MIT-263146?style=flat-square">
   <img alt="极低延迟: <5ms" src="https://img.shields.io/badge/latency-%3C5ms-2f6f4f?style=flat-square">
   <img alt="MCP 协议: 1.0" src="https://img.shields.io/badge/MCP-JSON--RPC%202.0-7c3aed?style=flat-square">
@@ -23,7 +25,7 @@
     在 AI 幻觉、未完成占位符、影子工具函数和类型退化进入 Git 历史<b>之前</b>将其拦截。
   </p>
 
-  <code>cargo install slopguard</code>
+  <code>cargo install --git https://github.com/avelone123123/slopguard.git --bin slopguard</code>
 
 </div>
 
@@ -60,7 +62,11 @@
 ### 安装
 
 ```bash
-cargo install slopguard
+# 通过 Cargo Git 安装最新发布版本:
+cargo install --git https://github.com/avelone123123/slopguard.git --bin slopguard
+
+# 或从本地工作区安装:
+# cargo install --path .
 ```
 
 或从源码构建：

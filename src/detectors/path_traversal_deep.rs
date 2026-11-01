@@ -22,10 +22,10 @@ analyze_content: detect_deep_path_traversal_in_content,
 };
 pub fn detect_deep_path_traversal_in_diff(diff_files: &[DiffFile]) -> Vec<SlopFinding> {
 let mut findings = Vec::new();
-let multi_encoded_seq = Regex::new(r#"(?i)(?:\\u002e\\u002e[/\\%]|%252e%252e[/\\%]|%2e%2e[/\\%]|(?:\.\.[/\\])+|%00|\x00)"#).unwrap();
-let node_traversal_join = Regex::new(r#"(?i)\bpath\.(?:join|resolve|normalize)\s*\([^)]*(?:req\.(?:params|query|body)|params\.|request\.|query\.|user_input|filename|filepath)"#).unwrap();
+let multi_encoded_seq = Regex::new(r#"(?i)(?:\\u002e\\u002e[/\\%]|%252e%252e[/\\%]|%2e%2e[/\\%]|(?:\.\.[/\\])+|\.\.%2f|\\{2,4}(?:\?|\.)\\{1,2}|%00|\x00)"#).unwrap();
+let node_traversal_join = Regex::new(r#"(?i)(?:path\.(?:join|resolve|normalize)|os\.path\.join|filepath\.Join)\s*\([^)]*(?:req\.(?:query|params|body)|params\.|request\.(?:args|form)|request\.|query\.|user_?input|c\.Param|filename|filepath)"#).unwrap();
 let node_traversal_stream = Regex::new(r#"(?i)\bfs\.(?:createReadStream|createWriteStream|readFile|readFileSync)\s*\([^)]*(?:req\.(?:params|query|body)|params\.|request\.)"#).unwrap();
-let py_zip_slip = Regex::new(r#"(?i)(?:tarfile\.open\([^)]*\)\.extractall\(|zipfile\.ZipFile\([^)]*\)\.extractall\(|(?:archive|[a-zA-Z0-9_]+)\.(?:extractall|extract)\s*\()"#).unwrap();
+let py_zip_slip = Regex::new(r#"(?i)(?:tarfile\.(?:open\([^)]*\)\.)?extractall\(|zipfile\.(?:ZipFile\([^)]*\)\.)?extractall\(|(?:archive|zip_ref|zipfile|tarfile|tar|zip_file|[a-zA-Z0-9_]+)\.(?:extractall|extract)\s*\()"#).unwrap();
 let rust_file_format = Regex::new(r#"(?i)(?:File::(?:create|open)\s*\(\s*)?format!\s*\(\s*["'][^"']*(?:\{}/|\{\}\\)[^"']*["']\s*,\s*[a-zA-Z0-9_]+\s*,\s*(?:req|param|query|input|[a-zA-Z0-9_]*param|[a-zA-Z0-9_]*input)"#).unwrap();
 for df in diff_files {
 let path = if !df.new_path.is_empty() { &df.new_path } else { &df.old_path };
@@ -68,10 +68,10 @@ let mut findings = Vec::new();
 if !is_supported_ext(file_path) {
 return findings;
 }
-let multi_encoded_seq = Regex::new(r#"(?i)(?:\\u002e\\u002e[/\\%]|%252e%252e[/\\%]|%2e%2e[/\\%]|(?:\.\.[/\\])+|%00|\x00)"#).unwrap();
-let node_traversal_join = Regex::new(r#"(?i)\bpath\.(?:join|resolve|normalize)\s*\([^)]*(?:req\.(?:params|query|body)|params\.|request\.|query\.|user_input|filename|filepath)"#).unwrap();
+let multi_encoded_seq = Regex::new(r#"(?i)(?:\\u002e\\u002e[/\\%]|%252e%252e[/\\%]|%2e%2e[/\\%]|(?:\.\.[/\\])+|\.\.%2f|\\{2,4}(?:\?|\.)\\{1,2}|%00|\x00)"#).unwrap();
+let node_traversal_join = Regex::new(r#"(?i)(?:path\.(?:join|resolve|normalize)|os\.path\.join|filepath\.Join)\s*\([^)]*(?:req\.(?:query|params|body)|params\.|request\.(?:args|form)|request\.|query\.|user_?input|c\.Param|filename|filepath)"#).unwrap();
 let node_traversal_stream = Regex::new(r#"(?i)\bfs\.(?:createReadStream|createWriteStream|readFile|readFileSync)\s*\([^)]*(?:req\.(?:params|query|body)|params\.|request\.)"#).unwrap();
-let py_zip_slip = Regex::new(r#"(?i)(?:tarfile\.open\([^)]*\)\.extractall\(|zipfile\.ZipFile\([^)]*\)\.extractall\(|(?:archive|[a-zA-Z0-9_]+)\.(?:extractall|extract)\s*\()"#).unwrap();
+let py_zip_slip = Regex::new(r#"(?i)(?:tarfile\.(?:open\([^)]*\)\.)?extractall\(|zipfile\.(?:ZipFile\([^)]*\)\.)?extractall\(|(?:archive|zip_ref|zipfile|tarfile|tar|zip_file|[a-zA-Z0-9_]+)\.(?:extractall|extract)\s*\()"#).unwrap();
 let rust_file_format = Regex::new(r#"(?i)(?:File::(?:create|open)\s*\(\s*)?format!\s*\(\s*["'][^"']*(?:\{}/|\{\}\\)[^"']*["']\s*,\s*[a-zA-Z0-9_]+\s*,\s*(?:req|param|query|input|[a-zA-Z0-9_]*param|[a-zA-Z0-9_]*input)"#).unwrap();
 let lines: Vec<&str> = content.lines().collect();
 for (idx, line) in lines.iter().enumerate() {

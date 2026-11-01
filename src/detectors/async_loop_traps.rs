@@ -8,13 +8,13 @@ fn get_js_loop_regex() -> Regex {
 Regex::new(r#"^\s*(?:for\s*\(|while\s*\(|for\s+await\s*\()"#).unwrap()
 }
 fn get_js_unawaited_async_regex() -> Regex {
-Regex::new(r#"(?:^|[^\w$.])(?:fetch\s*\(|axios\.(?:get|post|put|delete|patch|request)\s*\(|http\.(?:get|request)\s*\(|https\.(?:get|request)\s*\(|db\.(?:query|execute|save)\s*\(|prisma\.[a-zA-Z0-9_]+\.(?:find|create|update|delete|upsert)\s*\(|fs\.promises\.[a-zA-Z0-9_]+\s*\()"#).unwrap()
+Regex::new(r#"(?:^|[^\w$.])(?:fetch\s*\(|axios\.(?:get|post|put|delete|patch|request)\s*\(|http\.(?:get|request)\s*\(|https\.(?:get|request)\s*\(|db\.(?:query|execute|save|find)\s*\(|prisma\.[a-zA-Z0-9_]+\.(?:find|create|update|delete|upsert)\s*\(|fs\.promises\.[a-zA-Z0-9_]+\s*\(|sendEmail\s*\(|dispatchTask\s*\()"#).unwrap()
 }
 fn get_py_loop_regex() -> Regex {
 Regex::new(r#"^\s*(?:for\s+[a-zA-Z0-9_,\s]+\s+in\s+|while\s+)"#).unwrap()
 }
 fn get_py_unawaited_async_regex() -> Regex {
-Regex::new(r#"(?:^|[^\w$.])(?:aiohttp\.[a-zA-Z0-9_.]+\s*\(|asyncio\.sleep\s*\(|client\.(?:get|post|put|delete|request)\s*\(|session\.(?:get|post|put|delete|request)\s*\(|cursor\.(?:execute|fetchall|fetchone)\s*\()"#).unwrap()
+Regex::new(r#"(?:^|[^\w$.])(?:aiohttp\.[a-zA-Z0-9_.]+\s*\(|asyncio\.sleep\s*\(|asyncio\.create_task\s*\(|client\.(?:get|post|put|delete|request)\s*\(|session\.(?:get|post|put|delete|request)\s*\(|cursor\.(?:execute|fetchall|fetchone)\s*\()"#).unwrap()
 }
 fn get_rust_loop_regex() -> Regex {
 Regex::new(r#"^\s*(?:for\s+[a-zA-Z0-9_,\s]+\s+in\s+|while\s+|loop\s*\{)"#).unwrap()
@@ -23,10 +23,10 @@ fn get_rust_unawaited_async_regex() -> Regex {
 Regex::new(r#"(?:tokio::spawn\s*\(|async\s+move\s*\{)"#).unwrap()
 }
 fn has_js_sync_guard(line: &str) -> bool {
-line.contains("await ") || line.contains(".push(") || line.contains("Promise.all") || line.contains("pLimit") || line.contains("p-limit") || line.contains("yield ") || line.contains("return ")
+line.contains("await ") || line.contains(".then") || line.contains(".push(") || line.contains("Promise.all") || line.contains("pLimit") || line.contains("p-limit") || line.contains("yield ") || line.contains("return ")
 }
 fn has_py_sync_guard(line: &str) -> bool {
-line.contains("await ") || line.contains(".append(") || line.contains("asyncio.gather") || line.contains("Semaphore") || line.contains("yield ") || line.contains("return ")
+line.contains("await ") || line.contains(".append(") || line.contains(".add(") || line.contains("asyncio.gather") || line.contains("Semaphore") || line.contains("yield ") || line.contains("return ")
 }
 fn has_rust_sync_guard(line: &str) -> bool {
 line.contains(".await") || line.contains(".push(") || line.contains("join_all") || line.contains("Semaphore") || line.contains("join_set") || line.contains("JoinSet")
@@ -35,7 +35,7 @@ line.contains(".await") || line.contains(".push(") || line.contains("join_all") 
 pub const CONTRACT: crate::types::AstDetectorContract = crate::types::AstDetectorContract {
 rule_id: "no-unawaited-async-in-loops",
 severity: SlopSeverity::Error,
-category: SlopCategory::AsyncIterationHazard,
+category: SlopCategory::UnawaitedAsyncLoopTrap,
 target_languages: &["js", "ts", "jsx", "tsx", "py", "rs"],
 analyze_diff: detect_async_loop_traps_in_diff,
 analyze_content: detect_async_loop_traps_in_content,
@@ -49,7 +49,8 @@ return findings;
 let lines: Vec<&str> = content.lines().collect();
 let js_loop_re = get_js_loop_regex();
 let js_async_re = get_js_unawaited_async_regex();
-let foreach_async_re = Regex::new(r#"\.forEach\s*\(\s*async\s*(?:\([^)]*\)|[a-zA-Z0-9_$]+)\s*=>"#).unwrap();
+let foreach_async_re = Regex::new(r#"\.forEach\s*\(\s*async\s*(?:\([^)]*\)|[a-zA-Z0-9_$]+|\bfunction\b)"#).unwrap();
+let map_async_re = Regex::new(r#"\.map\s*\(\s*async\s*(?:\([^)]*\)|[a-zA-Z0-9_$]+|\bfunction\b)"#).unwrap();
 let py_loop_re = get_py_loop_regex();
 let py_async_re = get_py_unawaited_async_regex();
 let rs_loop_re = get_rust_loop_regex();
@@ -75,6 +76,21 @@ message: "Synchronous forEach with async closure does not await promises, causin
 snippet: trimmed.to_string(),
 fixable: false,
 suggestion: Some("Use 'for (const item of items)' with await or 'await Promise.all(items.map(...))'".to_string()),
+});
+continue;
+}
+if js && map_async_re.is_match(trimmed) && !trimmed.contains("Promise.all") && !trimmed.contains("Promise.allSettled") {
+findings.push(SlopFinding {
+file: file_path.to_string(),
+line: line_num,
+column: 1,
+rule_id: "no-unawaited-async-in-loops".to_string(),
+category: SlopCategory::AsyncIterationHazard,
+severity: SlopSeverity::Error,
+message: "Array.prototype.map with async callback without Promise.all creates floating unawaited promises (CWE-835)".to_string(),
+snippet: trimmed.to_string(),
+fixable: false,
+suggestion: Some("Wrap with 'await Promise.all(items.map(...))' or use sequential 'for...of'".to_string()),
 });
 continue;
 }
@@ -183,6 +199,26 @@ suggestion: Some("Await coroutine with 'await' or accumulate into 'asyncio.Semap
 continue;
 }
 let base_indent = line.len() - line.trim_start().len();
+let mut py_guarded = false;
+for off in 1..=12 {
+if let Some(bl) = lines.get(idx + off) {
+let bt = bl.trim();
+if bt.is_empty() || bt.starts_with('#') {
+continue;
+}
+let ci = bl.len() - bl.trim_start().len();
+if ci <= base_indent {
+break;
+}
+if has_py_sync_guard(bt) {
+py_guarded = true;
+break;
+}
+}
+}
+if py_guarded {
+continue;
+}
 for offset in 1..=12 {
 if let Some(body_line) = lines.get(idx + offset) {
 let body_trimmed = body_line.trim();
@@ -228,6 +264,22 @@ suggestion: Some("Collect JoinHandle instances into JoinSet and await them".to_s
 continue;
 }
 if rs_loop_re.is_match(trimmed) {
+let mut rs_guarded = false;
+for off in 1..=12 {
+if let Some(bl) = lines.get(idx + off) {
+let bt = bl.trim();
+if bt.contains(".push(") || bt.contains("join_set") || bt.contains("JoinSet") || bt.contains("join_all") || bt.contains("Semaphore") || bt.contains("handles.") {
+rs_guarded = true;
+break;
+}
+if bt == "}" || bt.starts_with("};") {
+break;
+}
+}
+}
+if rs_guarded {
+continue;
+}
 for offset in 1..=12 {
 if let Some(body_line) = lines.get(idx + offset) {
 let body_trimmed = body_line.trim();

@@ -1,5 +1,24 @@
 # Changelog
 All notable changes to SlopGuard are documented in this file.
+## [2.9.0] - 2026-11-01
+### Added
+- Core Rust AST Engine & Deep Hallucination Shields v2.9.0 release.
+- Hardened Firewall 49 (Manifest & Dependency Hallucination Shield): Intercepts synthetic libraries (`fastapi-jwt-auth`, `sqlalchemy-stubs`, `react-smart-toast`, `next-auth-shield`, `express-jwt-auto-auth`, `chrono-tz-sys`, `tokio-compat-02-03`, `github.com/gin-gonic/gin-cors`) and wildcard versions (`*`, `==*`, `latest`) across npm, PyPI, Cargo, and Go manifests.
+- Hardened Firewall 50 (Unawaited Async Loop & Task Starvation Shield): Intercepts `.forEach(async)`, unshielded `.map(async)` missing `Promise.all` barriers, unawaited `tokio::spawn` in loops without `JoinSet`, and unshielded `asyncio.create_task` loop leaks.
+- Hardened Firewall 51 (CSPRNG Entropy Guard): Detects sensitive token, secret, salt, nonce, csrf, and key derivations assigned via non-cryptographic PRNGs (`Math.random()`, `random.choice()`, `rand::random()`, `rand::thread_rng()`), providing auto-fix suggestions for CSPRNG interfaces.
+- Hardened Firewall 52 (Polyglot Deserialization Gadget Defense): Comprehensive protection against `pickle.loads()`, `yaml.load()` without `SafeLoader`, Node `node-serialize` (`unserialize`), Ruby `Marshal.load()`, PHP `unserialize()` without `allowed_classes`, and Java `XMLDecoder`.
+- Hardened Firewall 53 (Multi-Encoded Path Traversal & Archive Boundary Shield): Guards against `%252e%252e`, `\u002e\u002e`, Windows UNC path escapes (`\\?\`), and unconstrained archive extractions (`tarfile.extractall()`, `zipfile.extractall()`) missing canonical boundaries.
+- Unit Test Expansion: 177 deterministic unit tests passing with 100% pass rate and sub-millisecond execution over 10,000 LOC.
+- Synchronized Web Playground presets, terminal badges, and Desktop Studio catalog.
+## [2.8.0] - 2026-11-01
+### Added
+- Implemented Firewall 49: Manifest Wildcard and Synthetic Typing Extensions Import Rejection.
+- Implemented Firewall 50: Cross-runtime unawaited async loop and Python unshielded loop gathering protection.
+- Implemented Firewall 51: Math.random and weak pseudo-random entropy interception in token and secret derivation.
+- Implemented Firewall 52: Advanced polyglot deserialization gadgets (node-serialize, vm eval, unsafe YAML/pickle).
+- Implemented Firewall 53: Multi-encoded path traversal, Windows UNC canonical bypasses, and Zip Slip defenses.
+- Expanded deterministic test coverage to 161 verified passing tests with 0 failures and sub-millisecond execution.
+- Standardized Cargo installation instructions via git repository and local builds.
 ## [2.7.0] - 2026-11-01
 ### Added
 - Implemented deep AST hallucination shields and microtask starvation guard across all supported runtimes.

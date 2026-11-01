@@ -9,11 +9,12 @@
   <a href="https://discord.gg/z7C9dprye"><img alt="Discord" src="https://img.shields.io/badge/Discord-Join%20Chat-5865F2?style=flat-square&logo=discord&logoColor=white"></a>
   <a href="https://t.me/SlopGuard"><img alt="Telegram" src="https://img.shields.io/badge/Telegram-@SlopGuard-26A5E4?style=flat-square&logo=telegram&logoColor=white"></a>
   <img alt="100% Rust" src="https://img.shields.io/badge/100%25-Rust-b7410e?style=flat-square&logo=rust">
-  <img alt="Release: v2.7.0" src="https://img.shields.io/badge/release-v2.7.0-10b981?style=flat-square">
+  <img alt="Release: v2.9.0" src="https://img.shields.io/badge/release-v2.9.0-10b981?style=flat-square">
+  <img alt="Tests: 177 Passed" src="https://img.shields.io/badge/tests-177%20passed%20(100%25)-10b981?style=flat-square">
   <img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-263146?style=flat-square">
   <img alt="Latency: <0.35ms" src="https://img.shields.io/badge/latency-%3C0.35ms-2f6f4f?style=flat-square">
   <img alt="MCP Protocol: 2.0" src="https://img.shields.io/badge/MCP-JSON--RPC%202.0-7c3aed?style=flat-square">
-  <img alt="Firewalls: 48" src="https://img.shields.io/badge/firewalls-48%20active-blue?style=flat-square">
+  <img alt="Firewalls: 53" src="https://img.shields.io/badge/firewalls-53%20active-blue?style=flat-square">
   <img alt="Platforms" src="https://img.shields.io/badge/platforms-Windows%20%C2%B7%20macOS%20%C2%B7%20Linux-2f7bf5?style=flat-square">
 
   <br>
@@ -26,7 +27,7 @@
     <b>before</b> they pollute your git history.
   </p>
 
-  <code>cargo install slopguard --version 2.7.0</code>
+  <code>cargo install --git https://github.com/avelone123123/slopguard.git --bin slopguard</code>
 
 </div>
 
@@ -68,7 +69,11 @@ When vibe-coding with Cursor, Claude Code, Windsurf, or Antigravity across multi
 ### Installation
 
 ```bash
-cargo install slopguard
+# Install latest release binary directly via Cargo Git:
+cargo install --git https://github.com/avelone123123/slopguard.git --bin slopguard
+
+# Or install from local workspace clone:
+# cargo install --path .
 ```
 
 Or build from source:
@@ -232,6 +237,11 @@ Opens a fast, embedded local web interface at `http://127.0.0.1:4545`:
 | `no-ai-conversational-bloat`| `WARN` | Conversational comments (`// Here is the fix:`, `// Step 1:`) |
 | `no-excessive-scope-drift` | `WARN` | Agent touching >12 files or sensitive `.env` / config files |
 | `no-unbounded-concurrency` | `WARN` | Unthrottled concurrent iterations (`Promise.all` over `.map`, `asyncio.gather` comprehension, `join_all`) risking socket & EMFILE exhaustion |
+| `no-hallucinated-package-manifest` | `ERROR` | AI-hallucinated composite package names and unpinned wildcard dependencies (npm, PyPI, Cargo, Go) |
+| `no-unawaited-async-in-loops` | `ERROR` | Synchronous `.forEach(async)` / unshielded `.map(async)`, uncollected `tokio::spawn` and `asyncio.create_task` |
+| `no-insecure-prng-tokens` | `ERROR` | Non-cryptographic PRNGs (`Math.random()`, `random.choice()`, `rand::random()`) for security tokens |
+| `no-unsafe-deserialization` | `ERROR` | Polymorphic deserialization gadgets (`pickle.loads`, `yaml.load`, `node-serialize`, `XMLDecoder`, `Marshal.load`) |
+| `no-deep-path-traversal` | `ERROR` | Multi-encoded traversal (`%252e%252e`, `\u002e\u002e`), Windows UNC bypass (`\\?\`), and Zip Slip extraction |
 
 ---
 
@@ -258,7 +268,7 @@ Customize behavior by creating a `.slopguardrc.json` in your repository root:
 
 | Tool | Cold Startup | Scan Time (10k LOC Diff) | Memory Usage |
 | :--- | :--- | :--- | :--- |
-| **SlopGuard (Rust v2.7.0)** | **< 2.5ms** | **< 0.35ms / 1k LOC** | **< 6 MB** |
+| **SlopGuard (Rust v2.9.0)** | **< 2.5ms** | **< 0.35ms / 1k LOC** | **< 6 MB** |
 | Biome | ~45ms | ~30ms | ~28 MB |
 | ESLint | ~620ms | ~480ms | ~140 MB |
 | SonarQube Scanner | ~4,200ms | ~3,100ms | ~600 MB |

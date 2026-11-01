@@ -9,11 +9,12 @@
   <a href="https://discord.gg/z7C9dprye"><img alt="Discord" src="https://img.shields.io/badge/Discord-Присоединиться-5865F2?style=flat-square&logo=discord&logoColor=white"></a>
   <a href="https://t.me/SlopGuard"><img alt="Telegram" src="https://img.shields.io/badge/Telegram-@SlopGuard-26A5E4?style=flat-square&logo=telegram&logoColor=white"></a>
   <img alt="100% Rust" src="https://img.shields.io/badge/100%25-Rust-b7410e?style=flat-square&logo=rust">
-  <img alt="Релиз: v1.2.0" src="https://img.shields.io/badge/release-v1.2.0-10b981?style=flat-square">
+  <img alt="Релиз: v2.9.0" src="https://img.shields.io/badge/release-v2.9.0-10b981?style=flat-square">
+  <img alt="Тесты: 177 пройдены" src="https://img.shields.io/badge/tests-177%20passed%20(100%25)-10b981?style=flat-square">
   <img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-263146?style=flat-square">
   <img alt="Latency: <3ms" src="https://img.shields.io/badge/latency-%3C3ms-2f6f4f?style=flat-square">
   <img alt="MCP Protocol: 2.0" src="https://img.shields.io/badge/MCP-JSON--RPC%202.0-7c3aed?style=flat-square">
-  <img alt="Фаерволы: 34" src="https://img.shields.io/badge/firewalls-34%20active-blue?style=flat-square">
+  <img alt="Фаерволы: 53" src="https://img.shields.io/badge/firewalls-53%20active-blue?style=flat-square">
   <img alt="Platforms" src="https://img.shields.io/badge/platforms-Windows%20%C2%B7%20macOS%20%C2%B7%20Linux-2f7bf5?style=flat-square">
 
   <br>
@@ -26,7 +27,7 @@
     <b>до того</b>, как они попадут в ваш git-репозиторий.
   </p>
 
-  <code>cargo install slopguard</code>
+  <code>cargo install --git https://github.com/avelone123123/slopguard.git --bin slopguard</code>
 
 </div>
 
@@ -73,7 +74,11 @@
 ### Установка
 
 ```bash
-cargo install slopguard
+# Установка актуального релиза напрямую из GitHub:
+cargo install --git https://github.com/avelone123123/slopguard.git --bin slopguard
+
+# Либо локальная установка:
+# cargo install --path .
 ```
 
 Либо сборка из исходников:

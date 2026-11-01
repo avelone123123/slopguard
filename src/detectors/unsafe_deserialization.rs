@@ -14,7 +14,8 @@ fn is_rb(p: &str) -> bool {
 p.to_lowercase().ends_with(".rb")
 }
 fn is_java(p: &str) -> bool {
-p.to_lowercase().ends_with(".java")
+let l = p.to_lowercase();
+l.ends_with(".java") || l.ends_with(".cs")
 }
 fn is_unsafe_match(line: &str, re: &Regex, safe_opt: Option<&'static str>) -> bool {
 re.is_match(line) && !safe_opt.map_or(false, |s| line.contains(s))
@@ -40,8 +41,9 @@ patterns.push((Regex::new(r#"(?i)\bshelve\.open\s*\("#).unwrap(), None, "Python 
 }
 if !specific || is_js_ts(file_path) {
 patterns.push((Regex::new(r#"(?i)\b(?:node-serialize|serialize)\.unserialize\s*\("#).unwrap(), None, "node-serialize unserialize vulnerability allows RCE via IIFE gadget payloads", "Replace node-serialize with JSON.parse and strict runtime type validation"));
-patterns.push((Regex::new(r#"(?i)\b(?:serialize-javascript|serializeJavascript|serialize)\.deserialize\s*\("#).unwrap(), None, "serialize-javascript deserialization allows remote code execution", "Parse untrusted state with JSON.parse and validated schemas"));
-patterns.push((Regex::new(r#"(?i)\beval\s*\(\s*["']\s*\(?["']\s*\+\s*[a-zA-Z_$]"#).unwrap(), None, "Unsafe eval JSON hydration evaluates arbitrary script payloads", "Use JSON.parse(payload) instead of eval"));
+patterns.push((Regex::new(r#"(?i)\b(?:serialize-javascript|serializeJavascript)\.(?:unserialize|deserialize)\s*\("#).unwrap(), None, "serialize-javascript deserialization allows remote code execution", "Parse untrusted state with JSON.parse and validated schemas"));
+patterns.push((Regex::new(r#"(?i)\bvm\.(?:runInThisContext|runInNewContext|runInContext)\s*\("#).unwrap(), None, "vm dynamic context execution evaluates arbitrary code", "Avoid vm execution on untrusted code or run in isolated worker"));
+patterns.push((Regex::new(r#"(?i)\beval\s*\("#).unwrap(), None, "Dynamic eval execution evaluates arbitrary scripts", "Use JSON.parse(payload) instead of eval"));
 }
 if !specific || is_php(file_path) {
 patterns.push((Regex::new(r#"(?i)\bunserialize\s*\("#).unwrap(), Some("allowed_classes"), "PHP unserialize allows object injection and POP chain exploitation", "Use json_decode($data, true) or pass ['allowed_classes' => false] to unserialize"));
@@ -52,6 +54,7 @@ patterns.push((Regex::new(r#"(?i)\bYAML\.load\s*\("#).unwrap(), Some("permitted_
 }
 if !specific || is_java(file_path) {
 patterns.push((Regex::new(r#"(?i)\bXMLDecoder\s*\("#).unwrap(), None, "Java XMLDecoder allows arbitrary object instantiation", "Use Jackson or Gson with strict type validation"));
+patterns.push((Regex::new(r#"(?i)\bBinaryFormatter\.Deserialize\s*\("#).unwrap(), None, "BinaryFormatter deserialization allows arbitrary type instantiation", "Use System.Text.Json with typed DTOs"));
 if has_read_object {
 patterns.push((Regex::new(r#"(?i)\.readObject\s*\("#).unwrap(), None, "Java ObjectInputStream deserialization allows gadget chain execution", "Implement serial filtering (ObjectInputFilter) before calling readObject"));
 } else {

@@ -11,31 +11,37 @@ is_manifest_file(p) || l.ends_with(".py") || l.ends_with(".js") || l.ends_with("
 }
 fn is_safe_line(line: &str) -> bool {
 let trimmed = line.trim();
-trimmed.starts_with('#') || trimmed.starts_with("//") || trimmed.contains("path =") || trimmed.contains("file:") || trimmed.contains("git =") || trimmed.contains("git+") || trimmed.contains("@types/") || trimmed.contains("@nestjs/") || trimmed.contains("@angular/") || trimmed.contains("@babel/") || trimmed.contains("@prisma/client") || trimmed.contains("@radix-ui/") || trimmed.contains("@tanstack/")
+if trimmed.contains("@tanstack/react-query-next") || trimmed.contains("react-query-v5") || trimmed.contains("prisma-multi-tenant-helpers") || trimmed.contains("axios-auto-retry") || trimmed.contains("react-smart-toast") || trimmed.contains("next-safe-query") || trimmed.contains("next-auth-shield") || trimmed.contains("express-jwt-auto-auth") || trimmed.contains("chrono-tz-sys") || trimmed.contains("tokio-compat-02-03") || trimmed.contains("fastapi-jwt-auth") || trimmed.contains("sqlalchemy-stubs") || trimmed.contains("gin-cors") {
+return false;
+}
+trimmed.starts_with('#') || trimmed.starts_with("//") || trimmed.contains("path =") || trimmed.contains("file:") || trimmed.contains("git =") || trimmed.contains("git+") || trimmed.contains("@types/") || trimmed.contains("@nestjs/") || trimmed.contains("@angular/") || trimmed.contains("@babel/") || trimmed.contains("@prisma/client") || trimmed.contains("@radix-ui/") || trimmed.contains("@tanstack/react-query") || trimmed.contains("std::") || trimmed.contains("core::")
 }
 fn get_hallucination_rules() -> Vec<(Regex, &'static str, &'static str)> {
 vec![
-(Regex::new(r#"(?i)(?:import\s+(?:requests_async|boto4|flask_jwt_simple|openai_client|crypto_js_node|fastapi_jwt|sqlalchemy_async)\b|from\s+(?:requests_async|boto4|flask_jwt_simple|openai_client|crypto_js_node|fastapi_jwt|sqlalchemy_async)\b)"#).unwrap(), "Known synthetic hallucinated Python import", "Migrate to canonical libraries: boto3, httpx, PyJWT, openai"),
-(Regex::new(r#"(?i)(?:require\s*\(\s*['"](?:crypto-node|bcrypt-browser|jsonwebtoken-async|express-async-router)['"]\s*\)|from\s*['"](?:crypto-node|bcrypt-browser|jsonwebtoken-async|express-async-router)['"])"#).unwrap(), "Known synthetic hallucinated JavaScript/Node module", "Migrate to canonical libraries: crypto, bcrypt, jsonwebtoken, express-promise-router"),
-(Regex::new(r#"(?i)use\s+(?:tokio_requests|serde_crypto|anyhow_derive)\b"#).unwrap(), "Known synthetic hallucinated Rust crate reference", "Migrate to canonical crates: reqwest, ring, anyhow"),
-(Regex::new(r#"(?i)["']?(?:requests-async|boto4|flask-jwt-simple|openai-client|crypto-js-node|fastapi-jwt|sqlalchemy-async|crypto-node|bcrypt-browser|jsonwebtoken-async|express-async-router|tokio-requests|serde-crypto|anyhow-derive)["']?"#).unwrap(), "AI-hallucinated package signature subject to supply chain slopsquatting", "Verify official registry existence before declaring speculative package"),
+(Regex::new(r#"(?i)^\s*(?:from|import)\s+(?:typing_extensions\s+import\s+(?:NonExistentType|TypedDictExtra|AnyCallable|StrictStr|ProtocolV2)|pydantic_enhanced|flask_crypto_utils|fastapi_jwt_guard|torch_tensor_helpers|fastapi_jwt_auth|sqlalchemy_stubs)"#).unwrap(), "Synthetic hallucinated Python typing or framework import", "Replace with standard typing or canonical library"),
+(Regex::new(r#"(?i)(?:from\s+['"]|require\s*\(\s*['"])(?:react-query-v5|@tanstack/react-query-next|axios-auto-retry|react-smart-toast|next-safe-query|prisma-multi-tenant-helpers|next-auth-shield|express-jwt-auto-auth)['"]"#).unwrap(), "Synthetic hallucinated JavaScript/TypeScript library import", "Replace with canonical library"),
+(Regex::new(r#"(?i)(?:import\s+(?:requests_async|boto4|flask_jwt_simple|openai_client|crypto_js_node|fastapi_jwt|sqlalchemy_async|fastapi_jwt_auth|sqlalchemy_stubs)\b|from\s+(?:requests_async|boto4|flask_jwt_simple|openai_client|crypto_js_node|fastapi_jwt|sqlalchemy_async|fastapi_jwt_auth|sqlalchemy_stubs)\b)"#).unwrap(), "Known synthetic hallucinated Python import", "Migrate to canonical libraries: boto3, httpx, PyJWT, openai"),
+(Regex::new(r#"(?i)(?:require\s*\(\s*['"](?:crypto-node|bcrypt-browser|jsonwebtoken-async|express-async-router|react-smart-toast|next-auth-shield|express-jwt-auto-auth)['"]\s*\)|from\s*['"](?:crypto-node|bcrypt-browser|jsonwebtoken-async|express-async-router|react-smart-toast|next-auth-shield|express-jwt-auto-auth)['"])"#).unwrap(), "Known synthetic hallucinated JavaScript/Node module", "Migrate to canonical libraries: crypto, bcrypt, jsonwebtoken, express-promise-router"),
+(Regex::new(r#"(?i)use\s+(?:tokio_requests|serde_crypto|anyhow_derive|chrono_tz_sys|tokio_compat_02_03)\b"#).unwrap(), "Known synthetic hallucinated Rust crate reference", "Migrate to canonical crates: reqwest, ring, anyhow"),
+(Regex::new(r#"(?i)["']?(?:requests-async|boto4|flask-jwt-simple|openai-client|crypto-js-node|fastapi-jwt|sqlalchemy-async|crypto-node|bcrypt-browser|jsonwebtoken-async|express-async-router|tokio-requests|serde-crypto|anyhow-derive|fastapi-jwt-auth|sqlalchemy-stubs|react-smart-toast|next-auth-shield|express-jwt-auto-auth|chrono-tz-sys|tokio-compat-02-03)["']?"#).unwrap(), "AI-hallucinated package signature subject to supply chain slopsquatting", "Verify official registry existence before declaring speculative package"),
 ]
 }
 fn get_manifest_rules() -> Vec<(Regex, &'static str, &'static str)> {
 vec![
 (Regex::new(r#""(?:express-jwt-auto-auth|react-smart-toast|next-auth-shield|axios-rate-limit-pro|tailwind-auto-grid|redux-thunk-smart)"\s*:"#).unwrap(), "Speculative hallucinated npm dependency in manifest", "Remove fictional package or replace with verified ecosystem library"),
-(Regex::new(r#"(?:requests-async-retry|tokio-rate-limiter-pro|flask-auth-shield|pydantic-validation-plus|fastapi-rate-guard|django-smart-cache)"#).unwrap(), "Speculative hallucinated PyPI dependency in manifest", "Verify package on PyPI before adding to manifest"),
-(Regex::new(r#"(?:chrono-tz-sys|fast-jwt-verifier|tokio-redis-pro|serde_json_fast|actix-rate-limit-plus)\b"#).unwrap(), "Speculative hallucinated Crates.io crate in manifest", "Verify crate on crates.io before adding to Cargo.toml"),
-(Regex::new(r#"(?:github\.com/[a-zA-Z0-9_-]+/(?:go-redis-rate-limit|gorm-bulk-upsert|gin-jwt-shield))"#).unwrap(), "Speculative hallucinated Go module in manifest", "Verify Go module import path before running go get"),
-(Regex::new(r#""[a-zA-Z0-9@/_-]+"\s*:\s*"(?:\*|latest)""#).unwrap(), "Unpinned wildcard package dependency in manifest", "Pin dependency to an exact semantic version or range"),
-(Regex::new(r#"(?i)["']?(?:serde-json-valid|tokio-stream-ext|torch-model-utils|pydantic-validation-plus|express-jwt-auto-auth|fastapi-jwt-guard|flask-crypto-utils|axios-auto-retry|react-smart-toast|pydantic-enhanced|react-route-v7-compat|chrono-tz-sys|tokio-rate-limiter-pro|langchain-agent-pro|fast-jwt-verifier|crypto-safe-random|express-jwt-auto-verify|requests-async-retry|flask-auth-shield|express-security-guard|react-state-enhancer|next-safe-query|prisma-multi-tenant-helpers|tailwind-preset-extra|boto3-async-session|torch-tensor-helpers|crypto-secure-tokens|go-jwt-verifier|gorilla-mux-shield|gin-cors-pro)["']?"#).unwrap(), "AI-hallucinated speculative package signature vulnerable to supply chain slopsquatting", "Verify package exists in official registry (crates.io/npm/PyPI) and pin exact version before deployment"),
+(Regex::new(r#"(?:requests-async-retry|tokio-rate-limiter-pro|flask-auth-shield|pydantic-validation-plus|fastapi-rate-guard|django-smart-cache|fastapi-jwt-auth|sqlalchemy-stubs)"#).unwrap(), "Speculative hallucinated PyPI dependency in manifest", "Verify package on PyPI before adding to manifest"),
+(Regex::new(r#"(?:chrono-tz-sys|fast-jwt-verifier|tokio-redis-pro|serde_json_fast|actix-rate-limit-plus|tokio-compat-02-03)\b"#).unwrap(), "Speculative hallucinated Crates.io crate in manifest", "Verify crate on crates.io before adding to Cargo.toml"),
+(Regex::new(r#"(?:github\.com/[a-zA-Z0-9_-]+/(?:go-redis-rate-limit|gorm-bulk-upsert|gin-jwt-shield|gin-cors)|github\.com/gin-gonic/gin-cors)"#).unwrap(), "Speculative hallucinated Go module in manifest", "Verify Go module import path before running go get"),
+(Regex::new(r#"["'][a-zA-Z0-9@/_-]+["']\s*:\s*["'](?:\*|latest)["']"#).unwrap(), "Unpinned wildcard package dependency in manifest", "Pin dependency to an exact semantic version or range"),
+(Regex::new(r#"(?i)["']?(?:serde-json-valid|tokio-stream-ext|torch-model-utils|pydantic-validation-plus|express-jwt-auto-auth|fastapi-jwt-guard|flask-crypto-utils|axios-auto-retry|react-smart-toast|pydantic-enhanced|react-route-v7-compat|chrono-tz-sys|tokio-rate-limiter-pro|langchain-agent-pro|fast-jwt-verifier|crypto-safe-random|express-jwt-auto-verify|requests-async-retry|flask-auth-shield|express-security-guard|react-state-enhancer|next-safe-query|prisma-multi-tenant-helpers|tailwind-preset-extra|boto3-async-session|torch-tensor-helpers|crypto-secure-tokens|go-jwt-verifier|gorilla-mux-shield|gin-cors-pro|tokio-compat-02-03|next-auth-shield|fastapi-jwt-auth|sqlalchemy-stubs)"#).unwrap(), "AI-hallucinated speculative package signature vulnerable to supply chain slopsquatting", "Verify package exists in official registry (crates.io/npm/PyPI) and pin exact version before deployment"),
 (Regex::new(r#"(?i)["']?(?:serde|tokio|torch|pydantic|express|fastapi|flask|axios|react)-(?:valid|ext|utils|validation-plus|auto-auth|guard|crypto-utils|auto-retry|smart-toast)["']?"#).unwrap(), "Speculative compound prefix-suffix pattern generated by autonomous code agents", "Verify package exists in official registry (crates.io/npm/PyPI) and pin exact version before deployment"),
 (Regex::new(r#"(?i)["']?(?:[a-zA-Z0-9_-]+)-(?:v2|enhanced|modern|async-wrapper|safe|async-retry|rate-limiter-pro|auth-shield|security-guard|jwt-guard|state-enhancer|safe-query|multi-tenant-helpers|client-wrapper|ai-plugin|auto-retry|helpers-pro|utils-plus|auto-verify|smart-toast|safe-random|pro)["']?"#).unwrap(), "Speculative compound suffix pattern generated by autonomous code agents", "Verify package exists in official registry (crates.io/npm/PyPI) and pin exact version before deployment"),
-(Regex::new(r#"(?i)(?:github\.com/[a-zA-Z0-9_-]+/(?:jwt-guard|auth-shield|rate-limiter-pro|fast-jwt-verifier|gorilla-mux-shield|gin-cors-pro))"#).unwrap(), "AI-hallucinated Go module speculative repository reference", "Verify repository exists before referencing"),
-(Regex::new(r#"^[a-zA-Z0-9_-]+\s*=\s*["']\*["']"#).unwrap(), "Unpinned wildcard dependency in Cargo or TOML manifest", "Pin exact dependency version"),
-(Regex::new(r#"^[a-zA-Z0-9_-]+\s*=\s*\{[^}]*version\s*=\s*["']\*["']"#).unwrap(), "Unpinned wildcard version table in TOML manifest", "Pin exact dependency version"),
-(Regex::new(r#"(?i)["'][a-zA-Z0-9_-]+(?:\*|==\*)["']"#).unwrap(), "Wildcard version specifier in dependencies array", "Pin exact dependency version"),
-(Regex::new(r#"\b[a-zA-Z0-9_-]+\s*==\s*\*"#).unwrap(), "Wildcard unpinned requirement in Python requirements manifest", "Pin exact dependency version"),
+(Regex::new(r#"(?i)(?:github\.com/[a-zA-Z0-9_-]+/(?:jwt-guard|auth-shield|rate-limiter-pro|fast-jwt-verifier|gorilla-mux-shield|gin-cors-pro|gin-cors))"#).unwrap(), "AI-hallucinated Go module speculative repository reference", "Verify repository exists before referencing"),
+(Regex::new(r#"^[a-zA-Z0-9_-]+\s*=\s*["'](?:\*|latest)["']"#).unwrap(), "Unpinned wildcard dependency in Cargo or TOML manifest", "Pin exact dependency version"),
+(Regex::new(r#"^[a-zA-Z0-9_-]+\s*=\s*\{[^}]*version\s*=\s*["'](?:\*|latest)["']"#).unwrap(), "Unpinned wildcard version table in TOML manifest", "Pin exact dependency version"),
+(Regex::new(r#"(?i)["'][a-zA-Z0-9_-]+(?:\*|==\*|latest)["']"#).unwrap(), "Wildcard version specifier in dependencies array", "Pin exact dependency version"),
+(Regex::new(r#"\b[a-zA-Z0-9_-]+\s*(?:==\s*\*|==\*|==\s*latest|\*)"#).unwrap(), "Wildcard unpinned requirement in Python requirements manifest", "Pin exact dependency version"),
+(Regex::new(r#"require\s+[a-zA-Z0-9_./-]+\s+(?:\*|v0\.0\.0-latest|latest)"#).unwrap(), "Wildcard or unpinned dependency in Go mod manifest", "Pin exact dependency version"),
 ]
 }
 #[allow(dead_code)]
@@ -53,6 +59,9 @@ if !is_target_file(file_path) {
 return findings;
 }
 let is_manifest = is_manifest_file(file_path);
+if !is_manifest && !content.contains("import") && !content.contains("from") && !content.contains("require") && !content.contains("use") {
+return findings;
+}
 let rules = get_hallucination_rules();
 let manifest_rules = if is_manifest { get_manifest_rules() } else { Vec::new() };
 for (idx, line) in content.lines().enumerate() {
@@ -64,6 +73,7 @@ if !is_manifest && !trimmed.contains("import") && !trimmed.contains("from") && !
 continue;
 }
 let mut matched = false;
+if !is_manifest {
 for (re, desc, alt) in &rules {
 if re.is_match(trimmed) {
 findings.push(SlopFinding {
@@ -80,6 +90,7 @@ suggestion: Some(alt.to_string()),
 });
 matched = true;
 break;
+}
 }
 }
 if !matched && is_manifest {
@@ -137,6 +148,7 @@ if !is_manifest && !trimmed.contains("import") && !trimmed.contains("from") && !
 continue;
 }
 let mut matched = false;
+if !is_manifest {
 for (re, desc, alt) in &rules {
 if re.is_match(trimmed) {
 findings.push(SlopFinding {
@@ -153,6 +165,7 @@ suggestion: Some(alt.to_string()),
 });
 matched = true;
 break;
+}
 }
 }
 if !matched && is_manifest {
