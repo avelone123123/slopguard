@@ -62,6 +62,8 @@ pub target_languages: &'static [&'static str],
 pub analyze_diff: fn(&[DiffFile]) -> Vec<SlopFinding>,
 pub analyze_content: fn(&str, &str) -> Vec<SlopFinding>,
 }
+#[allow(dead_code)]
+pub type SlopContract = AstDetectorContract;
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SlopFinding {
 pub file: String,

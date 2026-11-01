@@ -281,6 +281,7 @@ slopguard ui
 | `no-insecure-prng-tokens` | `ERROR` | [Фаервол 51] Некриптографические PRNG (`Math.random()`, `random.choice()`) для токенов и секретов |
 | `no-unsafe-deserialization` | `ERROR` | [Фаервол 52] Гаджеты полиморфной десериализации (`pickle`, `yaml`, `node-serialize`, `XMLDecoder`, `Marshal`) |
 | `no-deep-path-traversal` | `ERROR` | [Фаервол 53] Мультикодированные обходы (`%252e%252e`), Windows UNC (`\\?\`) и извлечение архивов Zip Slip |
+| `no-zip-slip-traversal` | `ERROR` | [Фаервол 54] ZipSlip-обход путей при распаковке архивов и нарушение изоляции границ |
 
 ---
 

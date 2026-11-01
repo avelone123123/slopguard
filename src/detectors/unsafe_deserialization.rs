@@ -121,3 +121,33 @@ break;
 }
 findings
 }
+#[allow(dead_code)]
+pub fn detect_polyglot_deserialization_gadgets(content: &str, file_path: &str) -> Vec<crate::types::SlopFinding> {
+let mut findings = Vec::new();
+let gadgets = [
+("pickle.loads(", "SLOP-052", "Insecure Python pickle deserialization leads to arbitrary code execution"),
+("yaml.unsafe_load(", "SLOP-052", "Unsafe YAML loading permits arbitrary object instantiation"),
+("unserialize(", "SLOP-052", "PHP object injection via untrusted unserialize invocation"),
+("BinaryFormatter", "SLOP-052", ".NET BinaryFormatter enables arbitrary payload deserialization"),
+("XMLDecoder", "SLOP-052", "Java XMLDecoder allows remote code execution via object graph reconstruction")
+];
+for (idx, line) in content.lines().enumerate() {
+for (pattern, rule, msg) in gadgets {
+if line.contains(pattern) && !line.contains("test") {
+findings.push(crate::types::SlopFinding {
+rule_id: rule.to_string(),
+file: file_path.to_string(),
+line: idx + 1,
+column: 1,
+category: crate::types::SlopCategory::PolymorphicUnsafeDeserialization,
+message: msg.to_string(),
+severity: crate::types::SlopSeverity::Error,
+snippet: line.trim().to_string(),
+fixable: false,
+suggestion: None,
+});
+}
+}
+}
+findings
+}

@@ -202,3 +202,42 @@ break;
 }
 findings
 }
+#[allow(dead_code)]
+pub fn detect_hallucinated_manifest_dependencies(content: &str, file_path: &str) -> Vec<crate::types::SlopFinding> {
+let mut findings = Vec::new();
+let lower_path = file_path.to_lowercase();
+if lower_path.ends_with("package.json") {
+let synthetic_npm = ["crypto-node", "flask-bcrypt-auth", "transformer-tools", "react-route-v7-compat", "tokio-rate-limiter-pro"];
+for pkg in synthetic_npm {
+if content.contains(&format!("\"{}\"", pkg)) {
+findings.push(crate::types::SlopFinding {
+rule_id: "SLOP-049".to_string(),
+file: file_path.to_string(),
+line: 1,
+column: 1,
+category: crate::types::SlopCategory::SupplyChainPoisoning,
+message: format!("Autonomous slopsquatting hazard: synthetic dependency '{}' detected", pkg),
+severity: crate::types::SlopSeverity::Error,
+snippet: format!("\"{}\"", pkg),
+fixable: false,
+suggestion: None,
+});
+}
+}
+if content.contains("\": \"*\"") || content.contains("\": \"latest\"") {
+findings.push(crate::types::SlopFinding {
+rule_id: "SLOP-049".to_string(),
+file: file_path.to_string(),
+line: 1,
+column: 1,
+category: crate::types::SlopCategory::SupplyChainPoisoning,
+message: "Wildcard unpinned dependency '*' or 'latest' violates supply-chain stability".to_string(),
+severity: crate::types::SlopSeverity::Error,
+snippet: "*".to_string(),
+fixable: false,
+suggestion: None,
+});
+}
+}
+findings
+}

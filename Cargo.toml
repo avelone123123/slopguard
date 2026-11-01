@@ -9,6 +9,8 @@ repository = "https://github.com/avelone123123/slopguard"
 homepage = "https://avelone123123.github.io/slopguard-site/"
 documentation = "https://github.com/avelone123123/slopguard#readme"
 readme = "README.md"
+keywords = ["security", "linter", "ai", "ast", "cli"]
+categories = ["development-tools", "development-tools::cargo-plugins"]
 [dependencies]
 crossterm = "0.28"
 serde = { version = "1.0", features = ["derive"] }

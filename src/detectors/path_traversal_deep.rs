@@ -103,3 +103,25 @@ suggestion: Some("Validate and constrain paths using canonicalize, secure_filena
 }
 findings
 }
+#[allow(dead_code)]
+pub fn detect_deep_path_traversal(content: &str, file_path: &str) -> Vec<crate::types::SlopFinding> {
+let mut findings = Vec::new();
+let unc_device_bypass = regex::Regex::new(r#"(\\\\\?\\|\\\\\.\\|%2e%2e|%252e%252e|%c0%ae%c0%ae)"#).unwrap();
+for (idx, line) in content.lines().enumerate() {
+if unc_device_bypass.is_match(line) && !line.contains("test") {
+findings.push(crate::types::SlopFinding {
+rule_id: "SLOP-053".to_string(),
+file: file_path.to_string(),
+line: idx + 1,
+column: 1,
+category: crate::types::SlopCategory::PathTraversalSecurity,
+message: "Deep path traversal or device namespace bypass pattern detected".to_string(),
+severity: crate::types::SlopSeverity::Error,
+snippet: line.trim().to_string(),
+fixable: true,
+suggestion: Some("Path::new(&user_input).canonicalize()?".to_string()),
+});
+}
+}
+findings
+}

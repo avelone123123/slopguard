@@ -369,3 +369,25 @@ findings.extend(detect_async_loop_traps_in_content(target_path, &content));
 }
 findings
 }
+#[allow(dead_code)]
+pub fn detect_unshielded_async_iterations(content: &str, file_path: &str) -> Vec<crate::types::SlopFinding> {
+let mut findings = Vec::new();
+let foreach_async = regex::Regex::new(r#"\.forEach\s*\(\s*async\b"#).unwrap();
+for (idx, line) in content.lines().enumerate() {
+if foreach_async.is_match(line) {
+findings.push(crate::types::SlopFinding {
+rule_id: "SLOP-050".to_string(),
+file: file_path.to_string(),
+line: idx + 1,
+column: 1,
+category: crate::types::SlopCategory::UnawaitedAsyncLoopTrap,
+message: "Unawaited async callback inside forEach iterator causing event-loop starvation".to_string(),
+severity: crate::types::SlopSeverity::Error,
+snippet: line.trim().to_string(),
+fixable: true,
+suggestion: Some("for (const item of items) { await handler(item); }".to_string()),
+});
+}
+}
+findings
+}

@@ -267,6 +267,7 @@ Opens a fast, embedded local web interface at `http://127.0.0.1:4545`:
 | `no-insecure-prng-tokens` | `ERROR` | [Firewall 51] Non-cryptographic PRNGs (`Math.random()`, `random.choice()`, `rand::random()`) for security tokens & secrets |
 | `no-unsafe-deserialization` | `ERROR` | [Firewall 52] Polymorphic deserialization gadgets (`pickle.loads`, `yaml.load`, `node-serialize`, `XMLDecoder`, `Marshal.load`) |
 | `no-deep-path-traversal` | `ERROR` | [Firewall 53] Multi-encoded traversal (`%252e%252e`, `\u002e\u002e`), Windows UNC bypass (`\\?\`), and Zip Slip extraction |
+| `no-zip-slip-traversal` | `ERROR` | [Firewall 54] ZipSlip archive extraction path traversal and boundary containment bypass |
 
 ---
 

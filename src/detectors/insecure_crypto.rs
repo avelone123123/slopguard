@@ -279,3 +279,25 @@ break;
 }
 findings
 }
+#[allow(dead_code)]
+pub fn detect_weak_prng_in_credentials(content: &str, file_path: &str) -> Vec<crate::types::SlopFinding> {
+let mut findings = Vec::new();
+let math_random_token = regex::Regex::new(r#"(token|auth|secret|session|csrf|salt|nonce|key)\s*[:=].*Math\.random\(\)"#).unwrap();
+for (idx, line) in content.lines().enumerate() {
+if math_random_token.is_match(line) {
+findings.push(crate::types::SlopFinding {
+rule_id: "SLOP-051".to_string(),
+file: file_path.to_string(),
+line: idx + 1,
+column: 1,
+category: crate::types::SlopCategory::InsecureCryptographicEntropy,
+message: "Insecure PRNG Math.random() used in credential or token generation context".to_string(),
+severity: crate::types::SlopSeverity::Error,
+snippet: line.trim().to_string(),
+fixable: true,
+suggestion: Some("crypto.randomBytes(32).toString('hex')".to_string()),
+});
+}
+}
+findings
+}

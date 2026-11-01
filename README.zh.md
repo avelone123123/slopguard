@@ -246,6 +246,7 @@ slopguard ui
 | `no-insecure-prng-tokens` | `ERROR` | [防火墙 51] 使用非密码学 PRNG (`Math.random()`, `random.choice()`) 派生安全令牌与密钥 |
 | `no-unsafe-deserialization` | `ERROR` | [防火墙 52] 多态反序列化攻击链 (`pickle`, `yaml`, `node-serialize`, `XMLDecoder`, `Marshal`) |
 | `no-deep-path-traversal` | `ERROR` | [防火墙 53] 多重编码穿越 (`%252e%252e`)、Windows UNC 绕过 (`\\?\`) 与 Zip Slip 归档解压 |
+| `no-zip-slip-traversal` | `ERROR` | [防火墙 54] ZipSlip 压缩包解压路径穿越与边界隔离绕过 |
 
 ---
 

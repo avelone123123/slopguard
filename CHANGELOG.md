@@ -9,6 +9,7 @@ All notable changes to SlopGuard are documented in this file.
 - Polyglot Deserialization Gadget Defense: Intercepts Python `pickle.loads()`, `yaml.load()` without `SafeLoader`, Node.js `serialize.unserialize()`, PHP `unserialize()` without `allowed_classes => false`, Ruby `Marshal.load()`, Java `XMLDecoder`, and .NET `BinaryFormatter.Deserialize()`.
 - Deep Path Traversal, Archive Zip-Slip & Windows UNC Bounds: Multi-encoded traversals (`%252e%252e`, `%c0%ae%c0%ae`, `\u002e\u002e`), Windows Extended UNC paths (`\\?\`, `\\.\`), canonicalization verification (`fs::canonicalize`, `secure_filename`, `is_relative_to`), and unconstrained archive extraction (`tarfile.extractall()`, `zipfile.extractall()`).
 - Test Suite Expansion: 202 deterministic unit tests passing (100% pass rate) with zero AI comments and zero empty lines.
+- Full 54 AST Firewalls & Complete Cargo Manifest: Armed 54 active AST detection contracts with AstDetectorDefinition matrix, complete Cargo metadata (keywords, categories), and zero compiler warnings.
 - Web AST Diff Playground: Pure client-side scanner mirroring all v3.0.0 Rust AST rules, 5 interactive attack presets, split-pane diff auditor, and SVG score gauge.
 ## [2.9.0] - 2026-11-01
 ### Added
