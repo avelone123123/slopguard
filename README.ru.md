@@ -8,7 +8,7 @@
 
   <a href="https://discord.gg/z7C9dprye"><img alt="Discord" src="https://img.shields.io/badge/Discord-Присоединиться-5865F2?style=flat-square&logo=discord&logoColor=white"></a>
   <a href="https://t.me/SlopGuard"><img alt="Telegram" src="https://img.shields.io/badge/Telegram-@SlopGuard-26A5E4?style=flat-square&logo=telegram&logoColor=white"></a>
-  <a href="https://m8ven.ai/mcp/avelone123123/slopguard?s=readme"><img alt="M8ven Verified" src="https://m8ven.ai/badge/mcp/avelone123123/slopguard?variant=verified"></a>
+  [![M8ven Score](https://m8ven.ai/badge/mcp/avelone123123-slopguard-ddb87e?v=1df5fbf82927b6594eea8e9316b97d3b)](https://m8ven.ai/mcp/avelone123123-slopguard-ddb87e?s=readme)
   <img alt="100% Rust" src="https://img.shields.io/badge/100%25-Rust-b7410e?style=flat-square&logo=rust">
   <a href="https://github.com/avelone123123/slopguard/releases/tag/v3.5.0"><img alt="Релиз: v3.5.0" src="https://img.shields.io/badge/release-v3.5.0-10b981?style=flat-square"></a>
   <img alt="Тесты: 256 пройдены" src="https://img.shields.io/badge/tests-256%20passed%20(100%25)-10b981?style=flat-square">
