@@ -30,7 +30,7 @@ pub fn start_mcp_server() {
         }
     }
 }
-fn handle_mcp_message(msg: &Value, target_root: &Path, shared: &SharedTelemetry) -> Option<Value> {
+pub fn handle_mcp_message(msg: &Value, target_root: &Path, shared: &SharedTelemetry) -> Option<Value> {
     let id = msg.get("id");
     let method = msg.get("method").and_then(|v| v.as_str()).unwrap_or("");
     if method == "initialize" {
@@ -59,6 +59,16 @@ fn handle_mcp_message(msg: &Value, target_root: &Path, shared: &SharedTelemetry)
                     {
                         "name": "slopguard_scan_diff",
                         "description": "Scan active working tree or staged git diff for AI-generated code slop, type bypasses, dummy tokens, and duplicate utilities",
+                        "readOnlyHint": true,
+                        "destructiveHint": false,
+                        "idempotentHint": true,
+                        "openWorldHint": false,
+                        "annotations": {
+                            "readOnlyHint": true,
+                            "destructiveHint": false,
+                            "idempotentHint": true,
+                            "openWorldHint": false
+                        },
                         "inputSchema": {
                             "type": "object",
                             "properties": {
@@ -69,6 +79,16 @@ fn handle_mcp_message(msg: &Value, target_root: &Path, shared: &SharedTelemetry)
                     {
                         "name": "slopguard_check_snippet",
                         "description": "Inspect an in-memory code snippet for AI placeholders, type degradation, and conversational comment bloat before writing it to disk",
+                        "readOnlyHint": true,
+                        "destructiveHint": false,
+                        "idempotentHint": true,
+                        "openWorldHint": false,
+                        "annotations": {
+                            "readOnlyHint": true,
+                            "destructiveHint": false,
+                            "idempotentHint": true,
+                            "openWorldHint": false
+                        },
                         "inputSchema": {
                             "type": "object",
                             "properties": {
@@ -81,6 +101,16 @@ fn handle_mcp_message(msg: &Value, target_root: &Path, shared: &SharedTelemetry)
                     {
                         "name": "slopguard_sanitize_file",
                         "description": "Automatically remove AI conversational comment bloat and redundant placeholders from a file",
+                        "readOnlyHint": false,
+                        "destructiveHint": false,
+                        "idempotentHint": true,
+                        "openWorldHint": false,
+                        "annotations": {
+                            "readOnlyHint": false,
+                            "destructiveHint": false,
+                            "idempotentHint": true,
+                            "openWorldHint": false
+                        },
                         "inputSchema": {
                             "type": "object",
                             "properties": {

@@ -24,7 +24,7 @@
   ],
   "current_metrics": {
     "version": "3.5.0",
-    "tests_count": 252,
+    "tests_count": 256,
     "tests_pass_rate": "100%",
     "firewalls_count": 66
   },
@@ -70,6 +70,11 @@
       "lesson_id": "L-003",
       "issue": "Markdown files (.md) get stale when code evolves",
       "prevention": "Scribe agent must audit and synchronize README.md, README.ru.md, README.zh.md, CHANGELOG.md on every cycle."
+    },
+    {
+      "lesson_id": "L-004",
+      "issue": "M8ven MCP Trust Index audit required tool annotations, tests referencing tool names, and LICENSE file",
+      "prevention": "Always declare readOnlyHint, destructiveHint, idempotentHint, openWorldHint on every MCP tool, maintain dedicated unit tests referencing each tool by name, and keep MIT LICENSE in repo root."
     }
   ],
   "sprint_history": [

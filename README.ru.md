@@ -8,9 +8,10 @@
 
   <a href="https://discord.gg/z7C9dprye"><img alt="Discord" src="https://img.shields.io/badge/Discord-Присоединиться-5865F2?style=flat-square&logo=discord&logoColor=white"></a>
   <a href="https://t.me/SlopGuard"><img alt="Telegram" src="https://img.shields.io/badge/Telegram-@SlopGuard-26A5E4?style=flat-square&logo=telegram&logoColor=white"></a>
+  <a href="https://m8ven.ai/mcp/avelone123123/slopguard?s=readme"><img alt="M8ven Verified" src="https://m8ven.ai/badge/mcp/avelone123123/slopguard?variant=verified"></a>
   <img alt="100% Rust" src="https://img.shields.io/badge/100%25-Rust-b7410e?style=flat-square&logo=rust">
   <a href="https://github.com/avelone123123/slopguard/releases/tag/v3.5.0"><img alt="Релиз: v3.5.0" src="https://img.shields.io/badge/release-v3.5.0-10b981?style=flat-square"></a>
-  <img alt="Тесты: 252 пройдены" src="https://img.shields.io/badge/tests-252%20passed%20(100%25)-10b981?style=flat-square">
+  <img alt="Тесты: 256 пройдены" src="https://img.shields.io/badge/tests-256%20passed%20(100%25)-10b981?style=flat-square">
   <img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-263146?style=flat-square">
   <img alt="Задержка: <0.35ms" src="https://img.shields.io/badge/latency-%3C0.35ms-2f6f4f?style=flat-square">
   <img alt="MCP Protocol: 2.0" src="https://img.shields.io/badge/MCP-JSON--RPC%202.0-7c3aed?style=flat-square">

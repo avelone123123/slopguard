@@ -1,7 +1,12 @@
 # Changelog
 All notable changes to SlopGuard are documented in this file.
-## [3.5.0] - 2026-11-02
+## [3.5.0] - 2026-11-03
 ### Added
+- M8ven MCP Trust Index Compliance: Full tool annotations (`readOnlyHint`, `destructiveHint`, `idempotentHint`, `openWorldHint`) added to all MCP tools for OpenAI & Anthropic catalog compatibility.
+- Official MIT License File: Added root `LICENSE` file with copyright specification.
+- MCP Tool Unit Test Coverage: Implemented dedicated tests for `slopguard_scan_diff`, `slopguard_check_snippet`, `slopguard_sanitize_file`, and schema hint verifications.
+- Scaled Deterministic Test Battery: Expanded verified unit test suite to 256 passing tests (100% pass rate, 0 failures, 0 ignored).
+- M8ven Verified Publisher Badge: Integrated official trust index badge into README documentation.
 - Expanded AST Firewall Matrix to 66 Active Shields: Implemented SLOP-064 (`no-speculative-file-race-toctou`), SLOP-065 (`no-hallucinated-crypto-algorithm`), and SLOP-066 (`no-speculative-ssrf-interpolation`).
 - Scaled Deterministic Test Battery: Expanded verified unit test suite to 252 passing tests (100% pass rate, 0 failures, 0 ignored).
 - SLOP-064 (Speculative File Race & TOCTOU): Detects separate existence checks followed by destructive write calls in Node.js, Python, Go, and Rust without atomic exclusive creation flags (CWE-367).

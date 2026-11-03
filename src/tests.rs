@@ -3044,4 +3044,92 @@ assert!(diff_findings.iter().any(|f| f.rule_id == "no-speculative-file-race-toct
 assert!(diff_findings.iter().any(|f| f.rule_id == "no-hallucinated-crypto-algorithm"));
 assert!(diff_findings.iter().any(|f| f.rule_id == "no-speculative-ssrf-interpolation"));
 }
+#[test]
+fn test_mcp_tools_list_annotations_and_hints() {
+let root = std::path::Path::new(".");
+let shared = crate::telemetry::create_shared_telemetry();
+let req = serde_json::json!({
+"jsonrpc": "2.0",
+"id": 1,
+"method": "tools/list"
+});
+let resp = crate::mcp::handle_mcp_message(&req, root, &shared).expect("response");
+let tools = resp.get("result").and_then(|r| r.get("tools")).and_then(|t| t.as_array()).expect("tools array");
+assert_eq!(tools.len(), 3);
+let names: Vec<&str> = tools.iter().filter_map(|t| t.get("name").and_then(|n| n.as_str())).collect();
+assert!(names.contains(&"slopguard_scan_diff"));
+assert!(names.contains(&"slopguard_check_snippet"));
+assert!(names.contains(&"slopguard_sanitize_file"));
+for t in tools {
+assert!(t.get("readOnlyHint").expect("readOnlyHint").is_boolean());
+assert!(t.get("destructiveHint").expect("destructiveHint").is_boolean());
+assert!(t.get("idempotentHint").expect("idempotentHint").is_boolean());
+assert!(t.get("openWorldHint").expect("openWorldHint").is_boolean());
+let anno = t.get("annotations").expect("annotations");
+assert!(anno.get("readOnlyHint").expect("anno readOnlyHint").is_boolean());
+assert!(anno.get("destructiveHint").expect("anno destructiveHint").is_boolean());
+assert!(anno.get("idempotentHint").expect("anno idempotentHint").is_boolean());
+assert!(anno.get("openWorldHint").expect("anno openWorldHint").is_boolean());
+}
+}
+#[test]
+fn test_mcp_slopguard_scan_diff() {
+let root = std::path::Path::new(".");
+let shared = crate::telemetry::create_shared_telemetry();
+let req = serde_json::json!({
+"jsonrpc": "2.0",
+"id": 2,
+"method": "tools/call",
+"params": {
+"name": "slopguard_scan_diff",
+"arguments": {
+"stagedOnly": false
+}
+}
+});
+let resp = crate::mcp::handle_mcp_message(&req, root, &shared).expect("response");
+assert_eq!(resp.get("jsonrpc").and_then(|v| v.as_str()), Some("2.0"));
+assert!(resp.get("result").is_some());
+}
+#[test]
+fn test_mcp_slopguard_check_snippet() {
+let root = std::path::Path::new(".");
+let shared = crate::telemetry::create_shared_telemetry();
+let req = serde_json::json!({
+"jsonrpc": "2.0",
+"id": 3,
+"method": "tools/call",
+"params": {
+"name": "slopguard_check_snippet",
+"arguments": {
+"filePath": "test.ts",
+"code": "const cleanCode = 42;"
+}
+}
+});
+let resp = crate::mcp::handle_mcp_message(&req, root, &shared).expect("response");
+assert_eq!(resp.get("jsonrpc").and_then(|v| v.as_str()), Some("2.0"));
+assert!(resp.get("result").is_some());
+}
+#[test]
+fn test_mcp_slopguard_sanitize_file() {
+let temp_path = std::env::temp_dir().join(format!("slop_test_{}.ts", std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap().as_nanos()));
+std::fs::write(&temp_path, "const a = 1;").unwrap();
+let root = std::path::Path::new(".");
+let shared = crate::telemetry::create_shared_telemetry();
+let req = serde_json::json!({
+"jsonrpc": "2.0",
+"id": 4,
+"method": "tools/call",
+"params": {
+"name": "slopguard_sanitize_file",
+"arguments": {
+"filePath": temp_path.to_str().unwrap()
+}
+}
+});
+let resp = crate::mcp::handle_mcp_message(&req, root, &shared).expect("response");
+assert_eq!(resp.get("jsonrpc").and_then(|v| v.as_str()), Some("2.0"));
+let _ = std::fs::remove_file(&temp_path);
+}
 }
