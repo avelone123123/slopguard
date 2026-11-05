@@ -33,8 +33,12 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-
 ### Sprint #1 — Core Rust AST Engine & Deep Hallucination Shields (2026-11-05 22:32 UTC)
 - **Intercepted Case Study**: `...` via `SLOP-06X (...)`
 - **Threat Model**: 2 concise technical sentences
 - **Live Repository Audit**: Score `100/100` across `12` files (`0 errors, 0 warnings`, `2131ms`)
+
+### Sprint #2 — Core Rust AST Engine & Deep Hallucination Shields (2026-11-05 22:33 UTC)
+- **Intercepted Case Study**: `Hallucinated Non-Standard Cipher & Hash Names` via `SLOP-065 (no-hallucinated-crypto-algorithm)`
+- **Threat Model**: We are given a seed rule SLOP-065 which is about no-hallucinated-crypto-algorithm. The vulnerable pattern uses non-standard crypto algorithm names ('aes-256-turbo', 'sha256-fast') and the safe remediation uses standard names ('aes-256-gcm', 'sha256'). The task is to write a concise 2-sentence deep engineering threat analysis explaining: 1. Why LLMs generate 
+- **Live Repository Audit**: Score `100/100` across `12` files (`0 errors, 0 warnings`, `2152ms`)
