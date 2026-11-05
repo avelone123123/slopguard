@@ -102,6 +102,11 @@
       "cycle": 3,
       "version": "3.5.0",
       "deliverables": "Sprint 3: SlopGuard v3.5.0 Enterprise Release with 66 Active AST Firewalls, 252 Passing Tests, SLOP-064 TOCTOU File Race, SLOP-065 Hallucinated Crypto, SLOP-066 SSRF Interpolation, Full Parity Across EN/RU/ZH Documentation, Web Playground v3.5.0 with Presets 13-15 and Rules Drawer."
+    },
+    {
+      "cycle": 1,
+      "version": "3.5.0",
+      "deliverables": "Sprint 1: Core Rust AST Engine & Deep Hallucination Shields"
     }
   ]
 }

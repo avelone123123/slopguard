@@ -47,3 +47,8 @@
 - **Intercepted Case Study**: `Unvalidated Hostname Interpolation in HTTP Clients (SSRF)` via `SLOP-066 (no-speculative-ssrf-interpolation)`
 - **Threat Model**: AI models hallucinate this pattern because they prioritize syntactic plausibility over semantic security checks, generating code that mirrors common but insecure interpolation idioms. SlopGuard's AST firewall detects the unvalidated host interpolation in the request expression and enforces the ALLOWED_ORIGINS whitelist before the request is issued, completing the block in under
 - **Live Repository Audit**: Score `100/100` across `12` files (`0 errors, 0 warnings`, `2258ms`)
+
+### Sprint #1 — Core Rust AST Engine & Deep Hallucination Shields (2026-11-05 22:40 UTC)
+- **Intercepted Case Study**: `TOCTOU File Existence Race Before Write` via `SLOP-064 (no-speculative-file-race-toctou)`
+- **Threat Model**: AI models hallucinate the exists‑then‑write pattern because they learn from insecure code snippets and lack semantic awareness of race conditions, so they reproduce the unsafe idiom without
+- **Live Repository Audit**: Score `100/100` across `12` files (`0 errors, 0 warnings`, `2075ms`)
