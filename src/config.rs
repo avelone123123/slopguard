@@ -62,6 +62,8 @@ pub fn default_config() -> SlopConfig {
             "test/**".into(),
             "tests/**".into(),
             "src/tests.rs".into(),
+            "src/detectors/**".into(),
+            "native/**".into(),
         ],
         rules,
         max_drift_files: 12,

@@ -3132,4 +3132,32 @@ let resp = crate::mcp::handle_mcp_message(&req, root, &shared).expect("response"
 assert_eq!(resp.get("jsonrpc").and_then(|v| v.as_str()), Some("2.0"));
 let _ = std::fs::remove_file(&temp_path);
 }
+#[test]
+fn test_asm_rdtsc_monotonic_hardware_counter() {
+let c0 = crate::gui::asm_rdtsc();
+let c1 = crate::gui::asm_rdtsc();
+assert!(c1 >= c0);
+}
+#[test]
+fn test_asm_count_lines_fast_accuracy() {
+assert_eq!(crate::gui::asm_count_lines_fast(b""), 0);
+assert_eq!(crate::gui::asm_count_lines_fast(b"fn main() {}"), 1);
+assert_eq!(crate::gui::asm_count_lines_fast(b"line1\nline2\nline3"), 3);
+}
+#[test]
+fn test_native_gui_audit_state_initialization() {
+let mut st = crate::gui::GuiAuditState::new(std::path::PathBuf::from("."));
+assert!(st.summary.score <= 100);
+assert!(!st.mode_label.is_empty());
+assert_eq!(crate::gui::GUIDE_EN.len(), 8);
+assert_eq!(crate::gui::GUIDE_RU.len(), 8);
+assert_eq!(crate::gui::GUIDE_ZH.len(), 8);
+st.open_guide(Some(1));
+assert_eq!(st.active_tab, 2);
+assert_eq!(st.guide_lang, 1);
+assert_eq!(st.active_row_count(), 8);
+assert_eq!(st.current_guide()[0].step, "01. НАЗНАЧЕНИЕ");
+st.open_guide(Some(2));
+assert_eq!(st.current_guide()[0].step, "01. 核心用途");
+}
 }

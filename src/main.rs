@@ -3,6 +3,7 @@ mod dashboard;
 mod detectors;
 mod fixers;
 mod git;
+mod gui;
 mod mcp;
 mod monitor;
 mod reporters;
@@ -15,6 +16,7 @@ use crate::dashboard::{open_browser, start_dashboard_server};
 use crate::detectors::{compute_summary, run_all_content_detectors, run_all_diff_detectors};
 use crate::fixers::sanitize_file;
 use crate::git::{get_diff_output, get_git_root, get_untracked_files, is_git_repo, parse_unified_diff};
+use crate::gui::run_native_gui;
 use crate::mcp::start_mcp_server;
 use crate::reporters::{format_github_actions_report, format_json_report, format_terminal_report, generate_badge_svg};
 use crate::telemetry::create_shared_telemetry;
@@ -119,7 +121,7 @@ fn run_watch_loop(target_root: &Path) {
 fn main() {
     let args: Vec<String> = env::args().collect();
     let is_interactive = args.len() <= 1;
-    let command = args.get(1).map(|s| s.as_str()).unwrap_or("check");
+    let command = args.get(1).map(|s| s.as_str()).unwrap_or("gui");
     let is_json = args.iter().any(|a| a == "--json");
     let is_github = args.iter().any(|a| a == "--github");
     let cwd = env::current_dir().unwrap_or_else(|_| Path::new(".").to_path_buf());
@@ -136,15 +138,15 @@ fn main() {
         crate::monitor::run_interactive_monitor(&target_root);
         return;
     }
-    if command == "dashboard" || command == "ui" || is_interactive {
+    if command == "gui" || command == "ui" || is_interactive {
+        run_native_gui(target_root);
+        return;
+    }
+    if command == "dashboard" || command == "web" {
         let shared = create_shared_telemetry();
         let port = 4545;
         let url = format!("http://127.0.0.1:{port}");
-        println!("\x1b[36m┌──────────────────────────────────────────────────────────────────────────────┐\x1b[0m");
-        println!("\x1b[36m│\x1b[0m  \x1b[1mSLOPGUARD AI DEFENSE PLATFORM - LIVE DASHBOARD\x1b[0m                             \x1b[36m│\x1b[0m");
-        println!("\x1b[36m└──────────────────────────────────────────────────────────────────────────────┘\x1b[0m");
-        println!("Web Dashboard: \x1b[32m\x1b[1m{url}\x1b[0m");
-        println!("Opening live dashboard in default browser...");
+        println!("SlopGuard Enterprise Web Console: {url}");
         open_browser(&url);
         start_dashboard_server(port, target_root, shared);
         return;
@@ -200,7 +202,8 @@ fn main() {
     }
     if command == "fix" {
         let config = load_config(&target_root);
-        let target = if let Some(p) = args.get(2) { target_root.join(p) } else { target_root.clone() };
+        let pos_arg = args.iter().skip(2).find(|a| !a.starts_with('-'));
+        let target = if let Some(p) = pos_arg { target_root.join(p) } else { target_root.clone() };
         let mut fixed_count = 0;
         if target.is_file() {
             if sanitize_file(&target) {
@@ -220,7 +223,8 @@ fn main() {
     if command == "all" {
         let config = load_config(&target_root);
         let start = Instant::now();
-        let target = if let Some(p) = args.get(2) { target_root.join(p) } else { target_root.clone() };
+        let pos_arg = args.iter().skip(2).find(|a| !a.starts_with('-'));
+        let target = if let Some(p) = pos_arg { target_root.join(p) } else { target_root.clone() };
         let all_files = scan_directory_recursively(&target, &target_root, &config.ignore);
         let mut all_findings: Vec<SlopFinding> = Vec::new();
         for file_path in &all_files {
@@ -245,5 +249,5 @@ fn main() {
         }
         return;
     }
-    println!("Usage: slopguard [monitor|check|dashboard|watch|all|fix|init|badge|ci|hook install|mcp] [--json] [--github]");
+    println!("Usage: slopguard [gui|monitor|check|web|watch|all|fix|init|badge|ci|hook install|mcp] [--json] [--github]");
 }
