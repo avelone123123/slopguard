@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #2 — Core Rust AST Engine & Deep Hallucination Shields (2026-11-05 22:33 UTC)
-- **Intercepted Case Study**: `Hallucinated Non-Standard Cipher & Hash Names` via `SLOP-065 (no-hallucinated-crypto-algorithm)`
-- **Threat Model**: We are given a seed rule SLOP-065 which is about no-hallucinated-crypto-algorithm. The vulnerable pattern uses non-standard crypto algorithm names ('aes-256-turbo', 'sha256-fast') and the safe remediation uses standard names ('aes-256-gcm', 'sha256'). The task is to write a concise 2-sentence deep engineering threat analysis explaining: 1. Why LLMs generate 
-- **Live Repository Audit**: Score `100/100` across `12` files (`0 errors, 0 warnings`, `2152ms`)
-
 ### Sprint #3 — Core Rust AST Engine & Deep Hallucination Shields (2026-11-05 22:34 UTC)
 - **Intercepted Case Study**: `Unvalidated Hostname Interpolation in HTTP Clients (SSRF)` via `SLOP-066 (no-speculative-ssrf-interpolation)`
 - **Threat Model**: AI models hallucinate this pattern because they prioritize syntactic plausibility over semantic security checks, generating code that mirrors common but insecure interpolation idioms. SlopGuard's AST firewall detects the unvalidated host interpolation in the request expression and enforces the ALLOWED_ORIGINS whitelist before the request is issued, completing the block in under
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-076` (`no-async-iterator-unclosed-break-v76`, CWE-775) — `Async Generator Break Without Stream Disposal`
 - **Threat Model**: Breaking out of a for-await-of stream loop without a try/finally block or stream.destroy() leaks underlying file descriptors and database cursors.
 - **Verification Suite**: `269/269` unit tests passed, `76` active AST rules, repo score `100/100` (`2064ms`)
+
+### Sprint #10 — v3.5.11 (2026-11-06 11:05 UTC)
+- **New AST Shield**: `SLOP-077` (`no-compound-namespace-slopsquat-v77`, CWE-829) — `Compound Namespace Package Manifest Slopsquatting`
+- **Threat Model**: 1.  **Analyze the Request:** *   **Rule Name:** compound-namespace-slopsquat (Compound Namespace Package Manifest Slopsquatting, CWE-829). *   **Blocked Code:** `flask-bcrypt-auth>=1.0`, `tokio-redis-pro = "1.0.0"` (namespaced slop packages with hyphens/similarities to real ones). *   **Enforced Fix:** `flask-login==0.6.3`, `redis = "0.27.5"` (the correct, w
+- **Verification Suite**: `270/270` unit tests passed, `77` active AST rules, repo score `100/100` (`2117ms`)
