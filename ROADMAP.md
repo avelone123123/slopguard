@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #1 — Core Rust AST Engine & Deep Hallucination Shields (2026-11-06 10:21 UTC)
-- **Intercepted Case Study**: `TOCTOU File Existence Race Before Write` via `SLOP-064 (no-speculative-file-race-toctou)`
-- **Threat Model**: AI coding assistants routinely generate fs.existsSync(p) followed by fs.writeFileSync(p), creating a CWE-367 Time-of-Check Time-of-Use race window exploitable via symlink swapping.
-- **Live Repository Audit**: Score `100/100` across `12` files (`0 errors, 0 warnings`, `2028ms`)
-
 ### Sprint #2 — Web Playground, Live Audits & Interactive UX (2026-11-06 10:25 UTC)
 - **Intercepted Case Study**: `Hallucinated Non-Standard Cipher & Hash Names` via `SLOP-065 (no-hallucinated-crypto-algorithm)`
 - **Threat Model**: LLMs invent non-existent cipher strings such as aes-256-turbo or sha256-fast in OpenSSL and Node crypto calls, causing runtime panics or silent fallback to weak encryption.
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-079` (`no-non-atomic-toctou-fs-mutation-v79`, CWE-367) — `Non-Atomic TOCTOU File Existence Check Before Write`
 - **Threat Model**: AI models routinely generate fs.existsSync(p) followed by fs.writeFileSync(p), creating a CWE-367 Time-of-Check Time-of-Use race window exploitable via symlink swapping.
 - **Verification Suite**: `272/272` unit tests passed, `79` active AST rules, repo score `100/100` (`2037ms`)
+
+### Sprint #13 — v3.5.14 (2026-11-06 11:11 UTC)
+- **New AST Shield**: `SLOP-080` (`no-hallucinated-cipher-primitive-v80`, CWE-327) — `Hallucinated Non-Standard Cryptographic Cipher Names`
+- **Threat Model**: LLMs invent non-existent cipher strings such as aes-256-turbo or sha256-fast in OpenSSL and Node crypto calls, causing runtime panics or silent fallback to weak encryption.
+- **Verification Suite**: `273/273` unit tests passed, `80` active AST rules, repo score `100/100` (`2185ms`)
