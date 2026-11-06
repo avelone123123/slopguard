@@ -177,6 +177,7 @@ AstDetectorDefinition { id: "SLOP-071", name: "no-shell-template-subprocess-exec
 AstDetectorDefinition { id: "SLOP-072", name: "no-loop-scoped-event-listener-leak-v72", severity: SlopSeverity::Error, category: "async-concurrency", cwe: "CWE-400", description: "Event listener attachment inside loop body without removal or AbortSignal", recommendation: "Register event listeners outside loop bodies or attach once/AbortSignal" },
 AstDetectorDefinition { id: "SLOP-073", name: "no-phantom-ai-sdk-slopsquatting-v73", severity: SlopSeverity::Error, category: "supply-chain", cwe: "CWE-1357", description: "Hallucinated AI wrapper packages in package manifests enabling slopsquatting", recommendation: "Pin verified official AI SDK packages (@anthropic-ai/sdk, openai, google-genai)" },
 AstDetectorDefinition { id: "SLOP-074", name: "no-unbounded-mpsc-queue-sprawl-v74", severity: SlopSeverity::Error, category: "async-concurrency", cwe: "CWE-400", description: "Unbounded channel or async queue allocation lacking backpressure capacity", recommendation: "Replace unbounded_channel with bounded mpsc::channel(N) to enforce backpressure" },
+AstDetectorDefinition { id: "SLOP-075", name: "no-truncated-hex-entropy-keygen-v75", severity: SlopSeverity::Error, category: "crypto-auth", cwe: "CWE-326", description: "Truncated hex buffer slicing or Math.random key generation reducing entropy", recommendation: "Use full 32-byte CSPRNG buffers or Argon2id/HKDF key derivation" },
 ];
 #[allow(dead_code)]
 pub static ACTIVE_CONTRACTS: &[crate::types::AstDetectorContract] = &[

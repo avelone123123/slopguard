@@ -102,3 +102,8 @@
 - **New AST Shield**: `SLOP-074` (`no-unbounded-mpsc-queue-sprawl-v74`, CWE-400) — `Unbounded MPSC & Asyncio Queue Memory Exhaustion`
 - **Threat Model**: AI concurrency scaffolding defaults to tokio::sync::mpsc::unbounded_channel() and unbuffered asyncio.Queue(), removing backpressure and causing OOM kills under traffic spikes.
 - **Verification Suite**: `267/267` unit tests passed, `74` active AST rules, repo score `100/100` (`2064ms`)
+
+### Sprint #8 — v3.5.9 (2026-11-06 11:01 UTC)
+- **New AST Shield**: `SLOP-075` (`no-truncated-hex-entropy-keygen-v75`, CWE-326) — `Truncated Hex Slice & Weak PRNG Key Derivation`
+- **Threat Model**: 1.  **Analyze the Request:** *   **Rule context:** CWE-326 (Weak PRNG/Entropy), specifically "truncated-hex-entropy-keygen". The original code uses `crypto.randomBytes(32).toString('hex').slice(0, 16)` which converts a strong 32-byte random key into a weak 32-bit hex string and truncates it, losing most entropy. The fixed code uses `crypto.randomBytes(32)` d
+- **Verification Suite**: `268/268` unit tests passed, `75` active AST rules, repo score `100/100` (`2092ms`)
