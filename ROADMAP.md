@@ -97,3 +97,8 @@
 - **New AST Shield**: `SLOP-073` (`no-phantom-ai-sdk-slopsquatting-v73`, CWE-1357) — `Phantom AI SDK Wrapper Package Slopsquatting`
 - **Threat Model**: 1.  **Analyze the Request:** *   **Rule context:** Phantom AI SDK Wrapper Package Slopsquatting (CWE-1357). This refers to a malicious package (named "phantom-ai-sdk-slopsquatting") that likely mimics official AI SDKs to trick developers into using typosquatting versions that exfiltrate data or compromise environments. *   **Blocked code:** `"@anthropic/tool
 - **Verification Suite**: `266/266` unit tests passed, `73` active AST rules, repo score `100/100` (`2145ms`)
+
+### Sprint #7 — v3.5.8 (2026-11-06 10:58 UTC)
+- **New AST Shield**: `SLOP-074` (`no-unbounded-mpsc-queue-sprawl-v74`, CWE-400) — `Unbounded MPSC & Asyncio Queue Memory Exhaustion`
+- **Threat Model**: AI concurrency scaffolding defaults to tokio::sync::mpsc::unbounded_channel() and unbuffered asyncio.Queue(), removing backpressure and causing OOM kills under traffic spikes.
+- **Verification Suite**: `267/267` unit tests passed, `74` active AST rules, repo score `100/100` (`2064ms`)
