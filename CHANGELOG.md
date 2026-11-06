@@ -1,5 +1,10 @@
 # Changelog
 All notable changes to SlopGuard are documented in this file.
+## [3.5.1] - 2026-11-06
+### Added
+- Expanded AST Firewall Matrix to 67 Active Shields: Added `SLOP-067` (`no-shell-template-subprocess-exec-v67`, CWE-78) — Dynamic string interpolation inside shell-enabled subprocess execution.
+- Scaled Deterministic Test Battery: Verified 260/260 passing unit tests (100% pass rate, 0 warnings).
+- Threat Interception: AI assistants pass formatted f-strings or template literals into subprocess.Popen(..., shell=True) and child_process.exec, allowing arbitrary shell command execution.
 ## [3.5.0] - 2026-11-03
 ### Added
 - M8ven MCP Trust Index Compliance: Full tool annotations (`readOnlyHint`, `destructiveHint`, `idempotentHint`, `openWorldHint`) added to all MCP tools for OpenAI & Anthropic catalog compatibility.

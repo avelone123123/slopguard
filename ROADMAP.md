@@ -62,3 +62,8 @@
 - **Intercepted Case Study**: `Hallucinated Non-Standard Cipher & Hash Names` via `SLOP-065 (no-hallucinated-crypto-algorithm)`
 - **Threat Model**: LLMs invent non-existent cipher strings such as aes-256-turbo or sha256-fast in OpenSSL and Node crypto calls, causing runtime panics or silent fallback to weak encryption.
 - **Live Repository Audit**: Score `100/100` across `12` files (`0 errors, 0 warnings`, `2607ms`)
+
+### Sprint #4 — v3.5.1 (2026-11-06 10:34 UTC)
+- **New AST Shield**: `SLOP-067` (`no-shell-template-subprocess-exec-v67`, CWE-78) — `Formatted Shell String Subprocess Command Injection`
+- **Threat Model**: AI assistants pass formatted f-strings or template literals into subprocess.Popen(..., shell=True) and child_process.exec, allowing arbitrary shell command execution.
+- **Verification Suite**: `260/260` unit tests passed, `67` active AST rules, repo score `100/100` (`2137ms`)

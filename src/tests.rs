@@ -2373,7 +2373,8 @@ assert!(elapsed.as_millis() < 250, "v300 microbenchmark exceeded budget: {:?}", 
 }
 #[test]
 fn test_v350_ast_66_detector_matrix_integrity() {
-assert_eq!(crate::detectors::AST_DETECTOR_DEFINITIONS.len(), 66);
+let total_rules = crate::detectors::AST_DETECTOR_DEFINITIONS.len();
+assert!(total_rules >= 66);
 let mut ids = std::collections::HashSet::new();
 for def in crate::detectors::AST_DETECTOR_DEFINITIONS {
 assert!(ids.insert(def.id), "Duplicate rule id: {}", def.id);
@@ -2383,7 +2384,7 @@ assert!(!def.cwe.is_empty());
 assert!(!def.description.is_empty());
 assert!(!def.recommendation.is_empty());
 }
-for i in 1..=66 {
+for i in 1..=total_rules {
 let expected_id = format!("SLOP-{:03}", i);
 assert!(ids.contains(expected_id.as_str()), "Missing rule: {}", expected_id);
 }
@@ -3159,5 +3160,15 @@ assert_eq!(st.active_row_count(), 8);
 assert_eq!(st.current_guide()[0].step, "01. НАЗНАЧЕНИЕ");
 st.open_guide(Some(2));
 assert_eq!(st.current_guide()[0].step, "01. 核心用途");
+}
+#[test]
+fn test_council_slop_067_shell_template_subprocess_exec() {
+let def = crate::detectors::AST_DETECTOR_DEFINITIONS.iter().find(|d| d.id == "SLOP-067").unwrap();
+assert_eq!(def.name, "no-shell-template-subprocess-exec-v67");
+assert_eq!(def.cwe, "CWE-78");
+let findings = crate::detectors::command_injection::detect_speculative_subprocess_injection_in_content("app.py", "subprocess.Popen(f\"cat {filename}\", shell=True)");
+assert!(!findings.is_empty());
+let safe_findings = crate::detectors::command_injection::detect_speculative_subprocess_injection_in_content("safe.py", "subprocess.run(['ls', '-la'], check=True)");
+assert_eq!(safe_findings.len(), 0);
 }
 }
