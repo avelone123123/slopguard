@@ -23,10 +23,10 @@
     "Mandatory markdown (.md) synchronization on every change by Scribe."
   ],
   "current_metrics": {
-    "version": "3.5.3",
-    "tests_count": 262,
+    "version": "3.5.4",
+    "tests_count": 263,
     "tests_pass_rate": "100%",
-    "firewalls_count": 69
+    "firewalls_count": 70
   },
   "architecture_knowledge": {
     "core_crates": [
@@ -127,6 +127,11 @@
       "cycle": 1,
       "version": "3.5.2",
       "deliverables": "Sprint 1: Core Rust AST Engine & Deep Hallucination Shields (68 rules, 261 tests)"
+    },
+    {
+      "cycle": 2,
+      "version": "3.5.3",
+      "deliverables": "Sprint 2: Web Playground, Live Audits & Interactive UX (69 rules, 262 tests)"
     }
   ]
 }
