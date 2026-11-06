@@ -57,3 +57,8 @@
 - **Intercepted Case Study**: `TOCTOU File Existence Race Before Write` via `SLOP-064 (no-speculative-file-race-toctou)`
 - **Threat Model**: AI coding assistants routinely generate fs.existsSync(p) followed by fs.writeFileSync(p), creating a CWE-367 Time-of-Check Time-of-Use race window exploitable via symlink swapping.
 - **Live Repository Audit**: Score `100/100` across `12` files (`0 errors, 0 warnings`, `2028ms`)
+
+### Sprint #2 — Web Playground, Live Audits & Interactive UX (2026-11-06 10:25 UTC)
+- **Intercepted Case Study**: `Hallucinated Non-Standard Cipher & Hash Names` via `SLOP-065 (no-hallucinated-crypto-algorithm)`
+- **Threat Model**: LLMs invent non-existent cipher strings such as aes-256-turbo or sha256-fast in OpenSSL and Node crypto calls, causing runtime panics or silent fallback to weak encryption.
+- **Live Repository Audit**: Score `100/100` across `12` files (`0 errors, 0 warnings`, `2607ms`)

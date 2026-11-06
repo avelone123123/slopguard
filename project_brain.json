@@ -112,6 +112,11 @@
       "cycle": 1,
       "version": "3.5.0",
       "deliverables": "Sprint 1: Core Rust AST Engine & Deep Hallucination Shields"
+    },
+    {
+      "cycle": 2,
+      "version": "3.5.0",
+      "deliverables": "Sprint 2: Web Playground, Live Audits & Interactive UX"
     }
   ]
 }
