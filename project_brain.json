@@ -23,10 +23,10 @@
     "Mandatory markdown (.md) synchronization on every change by Scribe."
   ],
   "current_metrics": {
-    "version": "3.5.1",
-    "tests_count": 260,
+    "version": "3.5.2",
+    "tests_count": 261,
     "tests_pass_rate": "100%",
-    "firewalls_count": 67
+    "firewalls_count": 68
   },
   "architecture_knowledge": {
     "core_crates": [
