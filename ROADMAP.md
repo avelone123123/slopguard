@@ -72,3 +72,8 @@
 - **New AST Shield**: `SLOP-068` (`no-unvalidated-ssrf-redirect-chain-v68`, CWE-918) — `Unvalidated SSRF Host Interpolation & Redirect Bypass`
 - **Threat Model**: AI coding assistants interpolate user-controlled host variables directly into axios.get or requests.get URLs, enabling Server-Side Request Forgery against cloud metadata endpoints.
 - **Verification Suite**: `261/261` unit tests passed, `68` active AST rules, repo score `100/100` (`2197ms`)
+
+### Sprint #2 — v3.5.3 (2026-11-06 10:47 UTC)
+- **New AST Shield**: `SLOP-069` (`no-non-atomic-toctou-fs-mutation-v69`, CWE-367) — `Non-Atomic TOCTOU File Existence Check Before Write`
+- **Threat Model**: AI models routinely generate fs.existsSync(p) followed by fs.writeFileSync(p), creating a CWE-367 Time-of-Check Time-of-Use race window exploitable via symlink swapping.
+- **Verification Suite**: `262/262` unit tests passed, `69` active AST rules, repo score `100/100` (`2068ms`)
