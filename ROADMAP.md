@@ -52,3 +52,8 @@
 - **Intercepted Case Study**: `TOCTOU File Existence Race Before Write` via `SLOP-064 (no-speculative-file-race-toctou)`
 - **Threat Model**: AI models hallucinate the exists‑then‑write pattern because they learn from insecure code snippets and lack semantic awareness of race conditions, so they reproduce the unsafe idiom without
 - **Live Repository Audit**: Score `100/100` across `12` files (`0 errors, 0 warnings`, `2075ms`)
+
+### Sprint #1 — Core Rust AST Engine & Deep Hallucination Shields (2026-11-06 10:21 UTC)
+- **Intercepted Case Study**: `TOCTOU File Existence Race Before Write` via `SLOP-064 (no-speculative-file-race-toctou)`
+- **Threat Model**: AI coding assistants routinely generate fs.existsSync(p) followed by fs.writeFileSync(p), creating a CWE-367 Time-of-Check Time-of-Use race window exploitable via symlink swapping.
+- **Live Repository Audit**: Score `100/100` across `12` files (`0 errors, 0 warnings`, `2028ms`)
