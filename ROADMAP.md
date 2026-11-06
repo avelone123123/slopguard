@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #3 — Core Rust AST Engine & Deep Hallucination Shields (2026-11-05 22:34 UTC)
-- **Intercepted Case Study**: `Unvalidated Hostname Interpolation in HTTP Clients (SSRF)` via `SLOP-066 (no-speculative-ssrf-interpolation)`
-- **Threat Model**: AI models hallucinate this pattern because they prioritize syntactic plausibility over semantic security checks, generating code that mirrors common but insecure interpolation idioms. SlopGuard's AST firewall detects the unvalidated host interpolation in the request expression and enforces the ALLOWED_ORIGINS whitelist before the request is issued, completing the block in under
-- **Live Repository Audit**: Score `100/100` across `12` files (`0 errors, 0 warnings`, `2258ms`)
-
 ### Sprint #1 — Core Rust AST Engine & Deep Hallucination Shields (2026-11-05 22:40 UTC)
 - **Intercepted Case Study**: `TOCTOU File Existence Race Before Write` via `SLOP-064 (no-speculative-file-race-toctou)`
 - **Threat Model**: AI models hallucinate the exists‑then‑write pattern because they learn from insecure code snippets and lack semantic awareness of race conditions, so they reproduce the unsafe idiom without
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-077` (`no-compound-namespace-slopsquat-v77`, CWE-829) — `Compound Namespace Package Manifest Slopsquatting`
 - **Threat Model**: 1.  **Analyze the Request:** *   **Rule Name:** compound-namespace-slopsquat (Compound Namespace Package Manifest Slopsquatting, CWE-829). *   **Blocked Code:** `flask-bcrypt-auth>=1.0`, `tokio-redis-pro = "1.0.0"` (namespaced slop packages with hyphens/similarities to real ones). *   **Enforced Fix:** `flask-login==0.6.3`, `redis = "0.27.5"` (the correct, w
 - **Verification Suite**: `270/270` unit tests passed, `77` active AST rules, repo score `100/100` (`2117ms`)
+
+### Sprint #11 — v3.5.12 (2026-11-06 11:07 UTC)
+- **New AST Shield**: `SLOP-078` (`no-unvalidated-ssrf-redirect-chain-v78`, CWE-918) — `Unvalidated SSRF Host Interpolation & Redirect Bypass`
+- **Threat Model**: AI coding assistants interpolate user-controlled host variables directly into axios.get or requests.get URLs, enabling Server-Side Request Forgery against cloud metadata endpoints.
+- **Verification Suite**: `271/271` unit tests passed, `78` active AST rules, repo score `100/100` (`2062ms`)
