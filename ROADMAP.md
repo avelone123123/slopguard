@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #1 — Core Rust AST Engine & Deep Hallucination Shields (2026-11-05 22:32 UTC)
-- **Intercepted Case Study**: `...` via `SLOP-06X (...)`
-- **Threat Model**: 2 concise technical sentences
-- **Live Repository Audit**: Score `100/100` across `12` files (`0 errors, 0 warnings`, `2131ms`)
-
 ### Sprint #2 — Core Rust AST Engine & Deep Hallucination Shields (2026-11-05 22:33 UTC)
 - **Intercepted Case Study**: `Hallucinated Non-Standard Cipher & Hash Names` via `SLOP-065 (no-hallucinated-crypto-algorithm)`
 - **Threat Model**: We are given a seed rule SLOP-065 which is about no-hallucinated-crypto-algorithm. The vulnerable pattern uses non-standard crypto algorithm names ('aes-256-turbo', 'sha256-fast') and the safe remediation uses standard names ('aes-256-gcm', 'sha256'). The task is to write a concise 2-sentence deep engineering threat analysis explaining: 1. Why LLMs generate 
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-075` (`no-truncated-hex-entropy-keygen-v75`, CWE-326) — `Truncated Hex Slice & Weak PRNG Key Derivation`
 - **Threat Model**: 1.  **Analyze the Request:** *   **Rule context:** CWE-326 (Weak PRNG/Entropy), specifically "truncated-hex-entropy-keygen". The original code uses `crypto.randomBytes(32).toString('hex').slice(0, 16)` which converts a strong 32-byte random key into a weak 32-bit hex string and truncates it, losing most entropy. The fixed code uses `crypto.randomBytes(32)` d
 - **Verification Suite**: `268/268` unit tests passed, `75` active AST rules, repo score `100/100` (`2092ms`)
+
+### Sprint #9 — v3.5.10 (2026-11-06 11:03 UTC)
+- **New AST Shield**: `SLOP-076` (`no-async-iterator-unclosed-break-v76`, CWE-775) — `Async Generator Break Without Stream Disposal`
+- **Threat Model**: Breaking out of a for-await-of stream loop without a try/finally block or stream.destroy() leaks underlying file descriptors and database cursors.
+- **Verification Suite**: `269/269` unit tests passed, `76` active AST rules, repo score `100/100` (`2064ms`)
