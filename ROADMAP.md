@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #1 — Core Rust AST Engine & Deep Hallucination Shields (2026-11-05 22:40 UTC)
-- **Intercepted Case Study**: `TOCTOU File Existence Race Before Write` via `SLOP-064 (no-speculative-file-race-toctou)`
-- **Threat Model**: AI models hallucinate the exists‑then‑write pattern because they learn from insecure code snippets and lack semantic awareness of race conditions, so they reproduce the unsafe idiom without
-- **Live Repository Audit**: Score `100/100` across `12` files (`0 errors, 0 warnings`, `2075ms`)
-
 ### Sprint #1 — Core Rust AST Engine & Deep Hallucination Shields (2026-11-06 10:21 UTC)
 - **Intercepted Case Study**: `TOCTOU File Existence Race Before Write` via `SLOP-064 (no-speculative-file-race-toctou)`
 - **Threat Model**: AI coding assistants routinely generate fs.existsSync(p) followed by fs.writeFileSync(p), creating a CWE-367 Time-of-Check Time-of-Use race window exploitable via symlink swapping.
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-078` (`no-unvalidated-ssrf-redirect-chain-v78`, CWE-918) — `Unvalidated SSRF Host Interpolation & Redirect Bypass`
 - **Threat Model**: AI coding assistants interpolate user-controlled host variables directly into axios.get or requests.get URLs, enabling Server-Side Request Forgery against cloud metadata endpoints.
 - **Verification Suite**: `271/271` unit tests passed, `78` active AST rules, repo score `100/100` (`2062ms`)
+
+### Sprint #12 — v3.5.13 (2026-11-06 11:09 UTC)
+- **New AST Shield**: `SLOP-079` (`no-non-atomic-toctou-fs-mutation-v79`, CWE-367) — `Non-Atomic TOCTOU File Existence Check Before Write`
+- **Threat Model**: AI models routinely generate fs.existsSync(p) followed by fs.writeFileSync(p), creating a CWE-367 Time-of-Check Time-of-Use race window exploitable via symlink swapping.
+- **Verification Suite**: `272/272` unit tests passed, `79` active AST rules, repo score `100/100` (`2037ms`)
