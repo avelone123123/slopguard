@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #181 — v3.5.195 (2026-11-07 17:46 UTC)
-- **New AST Shield**: `SLOP-261` (`no-unvalidated-ssrf-redirect-chain-v261`, CWE-918) — `Unvalidated SSRF Host Interpolation & Redirect Bypass`
-- **Threat Model**: AI coding assistants interpolate user-controlled host variables directly into axios.get or requests.get URLs, enabling Server-Side Request Forgery against cloud metadata endpoints.
-- **Verification Suite**: `454/454` unit tests passed, `261` active AST rules, repo score `100/100` (`2174ms`)
-
 ### Sprint #182 — v3.5.196 (2026-11-07 17:49 UTC)
 - **New AST Shield**: `SLOP-262` (`no-non-atomic-toctou-fs-mutation-v262`, CWE-367) — `Non-Atomic TOCTOU File Existence Check Before Write`
 - **Threat Model**: AI models routinely generate fs.existsSync(p) followed by fs.writeFileSync(p), creating a CWE-367 Time-of-Check Time-of-Use race window exploitable via symlink swapping.
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-275` (`no-loop-scoped-event-listener-leak-v275`, CWE-400) — `Unbounded Event Listener Registration Inside Loops`
 - **Threat Model**: AI-generated stream handlers attach emitter.on('data', ...) inside for/while loops without cleanup, exhausting V8 heap memory and triggering MaxListenersExceededWarning.
 - **Verification Suite**: `468/468` unit tests passed, `275` active AST rules, repo score `100/100` (`2090ms`)
+
+### Sprint #196 — v3.5.210 (2026-11-07 18:30 UTC)
+- **New AST Shield**: `SLOP-276` (`no-phantom-ai-sdk-slopsquatting-v276`, CWE-1357) — `Phantom AI SDK Wrapper Package Slopsquatting`
+- **Threat Model**: 1.  **Analyze the Request:** *   **Rule:** phantom-ai-sdk-slopsquatting (Phantom AI SDK Wrapper Package Slopsquatting, CWE-1357). This implies a package name confusion/sneaky replacement where a malicious or vulnerable package is named similarly to a legitimate one to trick developers. *   **Blocked Code:** `"@anthropic/tools-pro": "^1.0.0", "openai-streamin
+- **Verification Suite**: `469/469` unit tests passed, `276` active AST rules, repo score `100/100` (`2214ms`)
