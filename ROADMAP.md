@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #32 — v3.5.46 (2026-11-07 11:38 UTC)
-- **New AST Shield**: `SLOP-112` (`no-non-atomic-toctou-fs-mutation-v112`, CWE-367) — `Non-Atomic TOCTOU File Existence Check Before Write`
-- **Threat Model**: AI models routinely generate fs.existsSync(p) followed by fs.writeFileSync(p), creating a CWE-367 Time-of-Check Time-of-Use race window exploitable via symlink swapping.
-- **Verification Suite**: `305/305` unit tests passed, `112` active AST rules, repo score `100/100` (`2023ms`)
-
 ### Sprint #33 — v3.5.47 (2026-11-07 11:41 UTC)
 - **New AST Shield**: `SLOP-113` (`no-hallucinated-cipher-primitive-v113`, CWE-327) — `Hallucinated Non-Standard Cryptographic Cipher Names`
 - **Threat Model**: 1.  **Analyze the Request:** *   **Rule:** `hallucinated-cipher-primitive` (CWE-327). The block list contains `aes-256-turbo` and `sha256-fast`. *   **Enforced fix:** Use `aes-256-gcm` instead of `aes-256-turbo`, and `hashlib.sha256` instead of `new sha256-fast` (assuming it meant `sha256-fast` hash function, which doesn't exist; the corrected line is `hashl
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-126` (`no-phantom-ai-sdk-slopsquatting-v126`, CWE-1357) — `Phantom AI SDK Wrapper Package Slopsquatting`
 - **Threat Model**: 1.  **Analyze the Request:** *   **Rule:** phantom-ai-sdk-slopsquatting (CWE-1357 - Slopsquatting). *   **Blocked Code:** `@anthropic/tools-pro: "^1.0.0"`, `openai-streaming-helper: "^2.1.0"` (These look like typo-squatted package names, likely intended to be `@anthropic-ai/sdk` and `openai`, or similar, but specifically requested to explain the *why* AI mod
 - **Verification Suite**: `319/319` unit tests passed, `126` active AST rules, repo score `100/100` (`2066ms`)
+
+### Sprint #47 — v3.5.61 (2026-11-07 12:11 UTC)
+- **New AST Shield**: `SLOP-127` (`no-unbounded-mpsc-queue-sprawl-v127`, CWE-400) — `Unbounded MPSC & Asyncio Queue Memory Exhaustion`
+- **Threat Model**: 1.  **Analyze the Request:** *   **Rule/Vulnerability:** unbounded-mpsc-queue-sprawl (Unbounded MPSC & Asyncio Queue Memory Exhaustion, CWE-400). *   **Blocked Code:** `tokio::sync::mpsc::unbounded_channel::<Job>()` *   **Enforced Fix:** `tokio::sync::mpsc::channel::<Job>(1024)` (bounded channel with capacity 1024). *   **Task:** Write exactly 2 technical se
+- **Verification Suite**: `320/320` unit tests passed, `127` active AST rules, repo score `100/100` (`2111ms`)
