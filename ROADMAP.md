@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #21 — v3.5.35 (2026-11-07 11:14 UTC)
-- **New AST Shield**: `SLOP-101` (`no-unvalidated-ssrf-redirect-chain-v101`, CWE-918) — `Unvalidated SSRF Host Interpolation & Redirect Bypass`
-- **Threat Model**: AI coding assistants interpolate user-controlled host variables directly into axios.get or requests.get URLs, enabling Server-Side Request Forgery against cloud metadata endpoints.
-- **Verification Suite**: `294/294` unit tests passed, `101` active AST rules, repo score `100/100` (`2241ms`)
-
 ### Sprint #22 — v3.5.36 (2026-11-07 11:16 UTC)
 - **New AST Shield**: `SLOP-102` (`no-non-atomic-toctou-fs-mutation-v102`, CWE-367) — `Non-Atomic TOCTOU File Existence Check Before Write`
 - **Threat Model**: AI models routinely generate fs.existsSync(p) followed by fs.writeFileSync(p), creating a CWE-367 Time-of-Check Time-of-Use race window exploitable via symlink swapping.
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-115` (`no-loop-scoped-event-listener-leak-v115`, CWE-400) — `Unbounded Event Listener Registration Inside Loops`
 - **Threat Model**: AI-generated stream handlers attach emitter.on('data', ...) inside for/while loops without cleanup, exhausting V8 heap memory and triggering MaxListenersExceededWarning.
 - **Verification Suite**: `308/308` unit tests passed, `115` active AST rules, repo score `100/100` (`2077ms`)
+
+### Sprint #36 — v3.5.50 (2026-11-07 11:48 UTC)
+- **New AST Shield**: `SLOP-116` (`no-phantom-ai-sdk-slopsquatting-v116`, CWE-1357) — `Phantom AI SDK Wrapper Package Slopsquatting`
+- **Threat Model**: 1.  **Analyze the Request:** *   **Rule:** phantom-ai-sdk-slopsquatting (Phantom AI SDK Wrapper Package Slopsquatting, CWE-1357). *   **Blocked Code:** `"@anthropic/tools-pro": "^1.0.0", "openai-streaming-helper": "^2.1.0"` (Sounds like slopsquatting names like "tools-pro" and "openai-streaming-helper" which are plausible but maliciously crafted names that l
+- **Verification Suite**: `309/309` unit tests passed, `116` active AST rules, repo score `100/100` (`2079ms`)
