@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #22 — v3.5.36 (2026-11-07 11:16 UTC)
-- **New AST Shield**: `SLOP-102` (`no-non-atomic-toctou-fs-mutation-v102`, CWE-367) — `Non-Atomic TOCTOU File Existence Check Before Write`
-- **Threat Model**: AI models routinely generate fs.existsSync(p) followed by fs.writeFileSync(p), creating a CWE-367 Time-of-Check Time-of-Use race window exploitable via symlink swapping.
-- **Verification Suite**: `295/295` unit tests passed, `102` active AST rules, repo score `100/100` (`2092ms`)
-
 ### Sprint #23 — v3.5.37 (2026-11-07 11:19 UTC)
 - **New AST Shield**: `SLOP-103` (`no-hallucinated-cipher-primitive-v103`, CWE-327) — `Hallucinated Non-Standard Cryptographic Cipher Names`
 - **Threat Model**: LLMs invent non-existent cipher strings such as aes-256-turbo or sha256-fast in OpenSSL and Node crypto calls, causing runtime panics or silent fallback to weak encryption.
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-116` (`no-phantom-ai-sdk-slopsquatting-v116`, CWE-1357) — `Phantom AI SDK Wrapper Package Slopsquatting`
 - **Threat Model**: 1.  **Analyze the Request:** *   **Rule:** phantom-ai-sdk-slopsquatting (Phantom AI SDK Wrapper Package Slopsquatting, CWE-1357). *   **Blocked Code:** `"@anthropic/tools-pro": "^1.0.0", "openai-streaming-helper": "^2.1.0"` (Sounds like slopsquatting names like "tools-pro" and "openai-streaming-helper" which are plausible but maliciously crafted names that l
 - **Verification Suite**: `309/309` unit tests passed, `116` active AST rules, repo score `100/100` (`2079ms`)
+
+### Sprint #37 — v3.5.51 (2026-11-07 11:50 UTC)
+- **New AST Shield**: `SLOP-117` (`no-unbounded-mpsc-queue-sprawl-v117`, CWE-400) — `Unbounded MPSC & Asyncio Queue Memory Exhaustion`
+- **Threat Model**: AI concurrency scaffolding defaults to tokio::sync::mpsc::unbounded_channel() and unbuffered asyncio.Queue(), removing backpressure and causing OOM kills under traffic spikes.
+- **Verification Suite**: `310/310` unit tests passed, `117` active AST rules, repo score `100/100` (`2206ms`)
