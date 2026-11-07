@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #60 — v3.5.74 (2026-11-07 12:39 UTC)
-- **New AST Shield**: `SLOP-140` (`no-compound-namespace-slopsquat-v140`, CWE-829) — `Compound Namespace Package Manifest Slopsquatting`
-- **Threat Model**: AI assistants synthesize plausible compound package names such as flask-bcrypt-auth or tokio-redis-pro that attackers register on PyPI/crates.io/npm for RCE.
-- **Verification Suite**: `333/333` unit tests passed, `140` active AST rules, repo score `100/100` (`2205ms`)
-
 ### Sprint #61 — v3.5.75 (2026-11-07 12:42 UTC)
 - **New AST Shield**: `SLOP-141` (`no-unvalidated-ssrf-redirect-chain-v141`, CWE-918) — `Unvalidated SSRF Host Interpolation & Redirect Bypass`
 - **Threat Model**: AI coding assistants interpolate user-controlled host variables directly into axios.get or requests.get URLs, enabling Server-Side Request Forgery against cloud metadata endpoints.
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-154` (`no-shell-template-subprocess-exec-v154`, CWE-78) — `Formatted Shell String Subprocess Command Injection`
 - **Threat Model**: AI assistants pass formatted f-strings or template literals into subprocess.Popen(..., shell=True) and child_process.exec, allowing arbitrary shell command execution.
 - **Verification Suite**: `347/347` unit tests passed, `154` active AST rules, repo score `100/100` (`2051ms`)
+
+### Sprint #75 — v3.5.89 (2026-11-07 13:13 UTC)
+- **New AST Shield**: `SLOP-155` (`no-loop-scoped-event-listener-leak-v155`, CWE-400) — `Unbounded Event Listener Registration Inside Loops`
+- **Threat Model**: 1.  **Analyze the Request:** *   **Rule:** `loop-scoped-event-listener-leak` (Unbounded Event Listener Registration Inside Loops) - CWE-400. *   **Blocked Code:** A loop that registers an event listener on a socket for every item in `items`. *   **Enforced Fix:** Moving the listener registration out of the loop, into a batched handler (`handleBatch`). *   **
+- **Verification Suite**: `348/348` unit tests passed, `155` active AST rules, repo score `100/100` (`2066ms`)
