@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #4 — v3.5.5 (2026-11-06 10:51 UTC)
-- **New AST Shield**: `SLOP-071` (`no-shell-template-subprocess-exec-v71`, CWE-78) — `Formatted Shell String Subprocess Command Injection`
-- **Threat Model**: AI assistants pass formatted f-strings or template literals into subprocess.Popen(..., shell=True) and child_process.exec, allowing arbitrary shell command execution.
-- **Verification Suite**: `264/264` unit tests passed, `71` active AST rules, repo score `100/100` (`2047ms`)
-
 ### Sprint #5 — v3.5.6 (2026-11-06 10:54 UTC)
 - **New AST Shield**: `SLOP-072` (`no-loop-scoped-event-listener-leak-v72`, CWE-400) — `Unbounded Event Listener Registration Inside Loops`
 - **Threat Model**: 1.  **Analyze the Request:** *   **Rule:** `loop-scoped-event-listener-leak` (Unbounded Event Listener Registration Inside Loops, CWE-400). *   **Blocked code:** `for (const chunk of items) { socket.on('data', (buf) => handle(buf)); }` (registers an event listener per iteration of the loop, causing a memory leak as 'data' listeners accumulate). *   **Enforce
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-085` (`no-loop-scoped-event-listener-leak-v85`, CWE-400) — `Unbounded Event Listener Registration Inside Loops`
 - **Threat Model**: We need to output exactly 2 technical sentences, no intro, no extra text. Sentences should explain why AI models hallucinate this pattern (i.e., they generate code with unbounded listeners inside loops) and how SlopGuard's AST firewall blocks it in <0.35ms. We must ensure exactly 2 sentences, each separated by a period (or appropriate punctuation). No extra 
 - **Verification Suite**: `278/278` unit tests passed, `85` active AST rules, repo score `100/100` (`2193ms`)
+
+### Sprint #6 — v3.5.20 (2026-11-07 10:39 UTC)
+- **New AST Shield**: `SLOP-086` (`no-phantom-ai-sdk-slopsquatting-v86`, CWE-1357) — `Phantom AI SDK Wrapper Package Slopsquatting`
+- **Threat Model**: AI models hallucinate this pattern because they are trained on extensive package ecosystems where name collisions and misleading version ranges are prevalent, leading them to generate plausible yet unsafe dependency specifications. SlopGuard’s AST firewall inspects the dependency declaration’s abstract syntax tree in real time, matching prohibited identifier
+- **Verification Suite**: `279/279` unit tests passed, `86` active AST rules, repo score `100/100` (`2116ms`)
