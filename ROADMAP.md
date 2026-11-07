@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #113 — v3.5.127 (2026-11-07 14:38 UTC)
-- **New AST Shield**: `SLOP-193` (`no-hallucinated-cipher-primitive-v193`, CWE-327) — `Hallucinated Non-Standard Cryptographic Cipher Names`
-- **Threat Model**: 1.  **Analyze the Request:** *   **Rule Context:** "hallucinated-cipher-primitive" (Non-standard cryptographic cipher names, CWE-327). *   **Blocked Code Example:** `crypto.createCipheriv('aes-256-turbo', key, iv);` and `hashlib.new('sha256-fast')`. *   **Enforced Fix:** `crypto.createCipheriv('aes-256-gcm', key, iv);` and `hashlib.sha256(data)`. *   **Task:
-- **Verification Suite**: `386/386` unit tests passed, `193` active AST rules, repo score `100/100` (`2037ms`)
-
 ### Sprint #114 — v3.5.128 (2026-11-07 14:41 UTC)
 - **New AST Shield**: `SLOP-194` (`no-shell-template-subprocess-exec-v194`, CWE-78) — `Formatted Shell String Subprocess Command Injection`
 - **Threat Model**: AI assistants pass formatted f-strings or template literals into subprocess.Popen(..., shell=True) and child_process.exec, allowing arbitrary shell command execution.
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-207` (`no-unbounded-mpsc-queue-sprawl-v207`, CWE-400) — `Unbounded MPSC & Asyncio Queue Memory Exhaustion`
 - **Threat Model**: AI concurrency scaffolding defaults to tokio::sync::mpsc::unbounded_channel() and unbuffered asyncio.Queue(), removing backpressure and causing OOM kills under traffic spikes.
 - **Verification Suite**: `400/400` unit tests passed, `207` active AST rules, repo score `100/100` (`2108ms`)
+
+### Sprint #128 — v3.5.142 (2026-11-07 15:12 UTC)
+- **New AST Shield**: `SLOP-208` (`no-truncated-hex-entropy-keygen-v208`, CWE-326) — `Truncated Hex Slice & Weak PRNG Key Derivation`
+- **Threat Model**: AI models frequently slice hex-encoded random bytes to 16 chars (reducing 128-bit entropy to 64 bits) or use Math.random().toString(36) for AES/JWT secret keys.
+- **Verification Suite**: `401/401` unit tests passed, `208` active AST rules, repo score `100/100` (`2031ms`)
