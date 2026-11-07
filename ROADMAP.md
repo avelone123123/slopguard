@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #143 — v3.5.157 (2026-11-07 15:52 UTC)
-- **New AST Shield**: `SLOP-223` (`no-hallucinated-cipher-primitive-v223`, CWE-327) — `Hallucinated Non-Standard Cryptographic Cipher Names`
-- **Threat Model**: 1.  **Analyze the Request:** *   **Rule Name:** hallucinated-cipher-primitive (CWE-327). *   **Blocked Code:** `const cipher = crypto.createCipheriv('aes-256-turbo', key, iv);` and `hashlib.new('sha256-fast')`. *   **Enforced Fix:** `const cipher = crypto.createCipheriv('aes-256-gcm', key, iv);` and `hashlib.sha256(data)`. *   **Task:** Write exactly 2 techn
-- **Verification Suite**: `416/416` unit tests passed, `223` active AST rules, repo score `100/100` (`2034ms`)
-
 ### Sprint #144 — v3.5.158 (2026-11-07 15:55 UTC)
 - **New AST Shield**: `SLOP-224` (`no-shell-template-subprocess-exec-v224`, CWE-78) — `Formatted Shell String Subprocess Command Injection`
 - **Threat Model**: AI assistants pass formatted f-strings or template literals into subprocess.Popen(..., shell=True) and child_process.exec, allowing arbitrary shell command execution.
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-237` (`no-unbounded-mpsc-queue-sprawl-v237`, CWE-400) — `Unbounded MPSC & Asyncio Queue Memory Exhaustion`
 - **Threat Model**: 1.  **Analyze the Request:** *   **Rule/CWE:** unbounded-mpsc-queue-sprawl (Unbounded MPSC & Asyncio Queue Memory Exhaustion). *   **Blocked code snippet:** `let (tx, rx) = tokio::sync::mpsc::unbounded_channel::<Job>();` *   **Enforced fix:** `let (tx, rx) = tokio::sync::mpsc::channel::<Job>(1024);` *   **Task:** Write exactly 2 technical sentences for a sen
 - **Verification Suite**: `430/430` unit tests passed, `237` active AST rules, repo score `100/100` (`2126ms`)
+
+### Sprint #158 — v3.5.172 (2026-11-07 16:39 UTC)
+- **New AST Shield**: `SLOP-238` (`no-truncated-hex-entropy-keygen-v238`, CWE-326) — `Truncated Hex Slice & Weak PRNG Key Derivation`
+- **Threat Model**: AI models frequently slice hex-encoded random bytes to 16 chars (reducing 128-bit entropy to 64 bits) or use Math.random().toString(36) for AES/JWT secret keys.
+- **Verification Suite**: `431/431` unit tests passed, `238` active AST rules, repo score `100/100` (`2116ms`)
