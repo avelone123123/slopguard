@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #125 — v3.5.139 (2026-11-07 15:06 UTC)
-- **New AST Shield**: `SLOP-205` (`no-loop-scoped-event-listener-leak-v205`, CWE-400) — `Unbounded Event Listener Registration Inside Loops`
-- **Threat Model**: 1.  **Analyze the Request:** *   **Rule:** loop-scoped-event-listener-leak (Unbounded Event Listener Registration Inside Loops, CWE-400). *   **Blocked Code:** `for (const chunk of items) { socket.on('data', (buf) => handle(buf)); }` *   **Enforced Fix:** `socket.on('data', (buf) => handleBatch(buf));` *   **Task:** Write exactly 2 technical sentences for a 
-- **Verification Suite**: `398/398` unit tests passed, `205` active AST rules, repo score `100/100` (`2048ms`)
-
 ### Sprint #126 — v3.5.140 (2026-11-07 15:08 UTC)
 - **New AST Shield**: `SLOP-206` (`no-phantom-ai-sdk-slopsquatting-v206`, CWE-1357) — `Phantom AI SDK Wrapper Package Slopsquatting`
 - **Threat Model**: 1.  **Analyze the Request:** *   **Rule/Topic:** Phantom AI SDK Wrapper Package Slopsquatting (CWE-1357). *   **Blocked Code:** `"@anthropic/tools-pro": "^1.0.0"`, `"openai-streaming-helper": "^2.1.0"` (These look like maliciously named packages attempting to squat on legitimate SDK names). *   **Enforced Fix:** `"@anthropic-ai/sdk": "^0.27.0"`, `"openai": "
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-219` (`no-async-iterator-unclosed-break-v219`, CWE-775) — `Async Generator Break Without Stream Disposal`
 - **Threat Model**: Breaking out of a for-await-of stream loop without a try/finally block or stream.destroy() leaks underlying file descriptors and database cursors.
 - **Verification Suite**: `412/412` unit tests passed, `219` active AST rules, repo score `100/100` (`2034ms`)
+
+### Sprint #140 — v3.5.154 (2026-11-07 15:42 UTC)
+- **New AST Shield**: `SLOP-220` (`no-compound-namespace-slopsquat-v220`, CWE-829) — `Compound Namespace Package Manifest Slopsquatting`
+- **Threat Model**: 1.  **Analyze the Request:** *   **Rule/Name:** compound-namespace-slopsquatting (CWE-829). *   **Blocked Code (Examples of slopsquat):** `flask-bcrypt-auth>=1.0`, `tokio-redis-pro = "1.0.0"`. *   **Enforced Fix (Correct versions):** `flask-login==0.6.3`, `redis = "0.27.5"`. *   **Task:** Write exactly 2 technical sentences for a senior security engineer exp
+- **Verification Suite**: `413/413` unit tests passed, `220` active AST rules, repo score `100/100` (`2076ms`)

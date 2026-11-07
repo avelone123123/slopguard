@@ -4691,4 +4691,14 @@ assert!(!findings.is_empty());
 let safe_findings = crate::detectors::async_loop_traps::detect_async_generator_unhandled_break_in_content("safe.ts", "try {\n  for await (const chunk of stream) {\n    if (done) break;\n  }\n} finally {\n  stream.destroy();\n}\n");
 assert_eq!(safe_findings.len(), 0);
 }
+#[test]
+fn test_council_slop_220_compound_namespace_slopsquat() {
+let def = crate::detectors::AST_DETECTOR_DEFINITIONS.iter().find(|d| d.id == "SLOP-220").unwrap();
+assert_eq!(def.name, "no-compound-namespace-slopsquat-v220");
+assert_eq!(def.cwe, "CWE-829");
+let findings = crate::detectors::package_hallucinations::detect_compound_slopsquat_in_content("Cargo.toml", "[dependencies]\ntokio-redis-pro = \"1.0.0\"\n");
+assert!(!findings.is_empty());
+let safe_findings = crate::detectors::package_hallucinations::detect_compound_slopsquat_in_content("Cargo.toml", "[dependencies]\ntokio = \"1.0\"\n");
+assert_eq!(safe_findings.len(), 0);
+}
 }
