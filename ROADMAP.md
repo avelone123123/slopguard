@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #83 — v3.5.97 (2026-11-07 13:30 UTC)
-- **New AST Shield**: `SLOP-163` (`no-hallucinated-cipher-primitive-v163`, CWE-327) — `Hallucinated Non-Standard Cryptographic Cipher Names`
-- **Threat Model**: LLMs invent non-existent cipher strings such as aes-256-turbo or sha256-fast in OpenSSL and Node crypto calls, causing runtime panics or silent fallback to weak encryption.
-- **Verification Suite**: `356/356` unit tests passed, `163` active AST rules, repo score `100/100` (`2189ms`)
-
 ### Sprint #84 — v3.5.98 (2026-11-07 13:33 UTC)
 - **New AST Shield**: `SLOP-164` (`no-shell-template-subprocess-exec-v164`, CWE-78) — `Formatted Shell String Subprocess Command Injection`
 - **Threat Model**: AI assistants pass formatted f-strings or template literals into subprocess.Popen(..., shell=True) and child_process.exec, allowing arbitrary shell command execution.
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-177` (`no-unbounded-mpsc-queue-sprawl-v177`, CWE-400) — `Unbounded MPSC & Asyncio Queue Memory Exhaustion`
 - **Threat Model**: AI models frequently hallucinate the unbounded mpsc channel pattern because they default to the most common API surface without considering resource exhaustion risks, while SlopGuard's static AST analysis detects the `unbounded_channel` call and rejects it in under 350 microseconds by intercepting the call site before
 - **Verification Suite**: `370/370` unit tests passed, `177` active AST rules, repo score `100/100` (`2095ms`)
+
+### Sprint #98 — v3.5.112 (2026-11-07 14:06 UTC)
+- **New AST Shield**: `SLOP-178` (`no-truncated-hex-entropy-keygen-v178`, CWE-326) — `Truncated Hex Slice & Weak PRNG Key Derivation`
+- **Threat Model**: AI models frequently slice hex-encoded random bytes to 16 chars (reducing 128-bit entropy to 64 bits) or use Math.random().toString(36) for AES/JWT secret keys.
+- **Verification Suite**: `371/371` unit tests passed, `178` active AST rules, repo score `100/100` (`2110ms`)
