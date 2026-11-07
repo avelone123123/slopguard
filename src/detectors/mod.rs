@@ -318,6 +318,7 @@ AstDetectorDefinition { id: "SLOP-212", name: "no-non-atomic-toctou-fs-mutation-
 AstDetectorDefinition { id: "SLOP-213", name: "no-hallucinated-cipher-primitive-v213", severity: SlopSeverity::Error, category: "crypto-auth", cwe: "CWE-327", description: "Fictional or non-standard cipher algorithm strings passed to crypto APIs", recommendation: "Enforce NIST/IETF verified cipher primitives such as aes-256-gcm or sha256" },
 AstDetectorDefinition { id: "SLOP-214", name: "no-shell-template-subprocess-exec-v214", severity: SlopSeverity::Error, category: "path-injection", cwe: "CWE-78", description: "Dynamic string interpolation inside shell-enabled subprocess execution", recommendation: "Pass discrete argument arrays to subprocesses with shell execution disabled" },
 AstDetectorDefinition { id: "SLOP-215", name: "no-loop-scoped-event-listener-leak-v215", severity: SlopSeverity::Error, category: "async-concurrency", cwe: "CWE-400", description: "Event listener attachment inside loop body without removal or AbortSignal", recommendation: "Register event listeners outside loop bodies or attach once/AbortSignal" },
+AstDetectorDefinition { id: "SLOP-216", name: "no-phantom-ai-sdk-slopsquatting-v216", severity: SlopSeverity::Error, category: "supply-chain", cwe: "CWE-1357", description: "Hallucinated AI wrapper packages in package manifests enabling slopsquatting", recommendation: "Pin verified official AI SDK packages (@anthropic-ai/sdk, openai, google-genai)" },
 ];
 #[allow(dead_code)]
 pub static ACTIVE_CONTRACTS: &[crate::types::AstDetectorContract] = &[
