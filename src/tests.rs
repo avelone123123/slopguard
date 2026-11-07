@@ -4051,4 +4051,14 @@ assert!(!findings.is_empty());
 let safe_findings = crate::detectors::async_loop_traps::detect_unbounded_event_listener_loop_in_content("safe.js", "for (const item of items) { emitter.once('data', handler); }");
 assert_eq!(safe_findings.len(), 0);
 }
+#[test]
+fn test_council_slop_156_phantom_ai_sdk_slopsquatting() {
+let def = crate::detectors::AST_DETECTOR_DEFINITIONS.iter().find(|d| d.id == "SLOP-156").unwrap();
+assert_eq!(def.name, "no-phantom-ai-sdk-slopsquatting-v156");
+assert_eq!(def.cwe, "CWE-1357");
+let findings = crate::detectors::package_hallucinations::detect_phantom_ai_wrappers_in_content("requirements.txt", "llama-index-rust-bindings==0.1.0\nlangchain-turbo-retriever>=1.0.0");
+assert!(!findings.is_empty());
+let safe_findings = crate::detectors::package_hallucinations::detect_phantom_ai_wrappers_in_content("requirements.txt", "openai==1.50.0");
+assert_eq!(safe_findings.len(), 0);
+}
 }
