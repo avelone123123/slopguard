@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #4 — v3.5.1 (2026-11-06 10:34 UTC)
-- **New AST Shield**: `SLOP-067` (`no-shell-template-subprocess-exec-v67`, CWE-78) — `Formatted Shell String Subprocess Command Injection`
-- **Threat Model**: AI assistants pass formatted f-strings or template literals into subprocess.Popen(..., shell=True) and child_process.exec, allowing arbitrary shell command execution.
-- **Verification Suite**: `260/260` unit tests passed, `67` active AST rules, repo score `100/100` (`2137ms`)
-
 ### Sprint #1 — v3.5.2 (2026-11-06 10:45 UTC)
 - **New AST Shield**: `SLOP-068` (`no-unvalidated-ssrf-redirect-chain-v68`, CWE-918) — `Unvalidated SSRF Host Interpolation & Redirect Bypass`
 - **Threat Model**: AI coding assistants interpolate user-controlled host variables directly into axios.get or requests.get URLs, enabling Server-Side Request Forgery against cloud metadata endpoints.
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-081` (`no-unvalidated-ssrf-redirect-chain-v81`, CWE-918) — `Unvalidated SSRF Host Interpolation & Redirect Bypass`
 - **Threat Model**: We need exactly 2 technical sentences, no intro, no extra text. Must explain why AI models hallucinate this pattern and how SlopGuard's AST firewall blocks it in <0.35ms. Sentence 1: Why AI models hallucinate this pattern. Possibly because they rely on training data patterns and may misinterpret templating, leading to insecure interpolation. Sentence 2: How 
 - **Verification Suite**: `274/274` unit tests passed, `81` active AST rules, repo score `100/100` (`2208ms`)
+
+### Sprint #2 — v3.5.16 (2026-11-07 10:30 UTC)
+- **New AST Shield**: `SLOP-082` (`no-non-atomic-toctou-fs-mutation-v82`, CWE-367) — `Non-Atomic TOCTOU File Existence Check Before Write`
+- **Threat Model**: AI models hallucinate the non‑atomic TOCTOU check
+- **Verification Suite**: `275/275` unit tests passed, `82` active AST rules, repo score `100/100` (`2456ms`)
