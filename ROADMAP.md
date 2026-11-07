@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #157 — v3.5.171 (2026-11-07 16:37 UTC)
-- **New AST Shield**: `SLOP-237` (`no-unbounded-mpsc-queue-sprawl-v237`, CWE-400) — `Unbounded MPSC & Asyncio Queue Memory Exhaustion`
-- **Threat Model**: 1.  **Analyze the Request:** *   **Rule/CWE:** unbounded-mpsc-queue-sprawl (Unbounded MPSC & Asyncio Queue Memory Exhaustion). *   **Blocked code snippet:** `let (tx, rx) = tokio::sync::mpsc::unbounded_channel::<Job>();` *   **Enforced fix:** `let (tx, rx) = tokio::sync::mpsc::channel::<Job>(1024);` *   **Task:** Write exactly 2 technical sentences for a sen
-- **Verification Suite**: `430/430` unit tests passed, `237` active AST rules, repo score `100/100` (`2126ms`)
-
 ### Sprint #158 — v3.5.172 (2026-11-07 16:39 UTC)
 - **New AST Shield**: `SLOP-238` (`no-truncated-hex-entropy-keygen-v238`, CWE-326) — `Truncated Hex Slice & Weak PRNG Key Derivation`
 - **Threat Model**: AI models frequently slice hex-encoded random bytes to 16 chars (reducing 128-bit entropy to 64 bits) or use Math.random().toString(36) for AES/JWT secret keys.
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-251` (`no-unvalidated-ssrf-redirect-chain-v251`, CWE-918) — `Unvalidated SSRF Host Interpolation & Redirect Bypass`
 - **Threat Model**: We need answer two sentences only, no intro. Need understand rule, blocked, enforced, CWE-918. Senior security engineer explaining why AI models hallucinate this pattern and how SlopGuard's AST firewall blocks it in <0.35ms. Output exactly 2 technical sentences. Need be concise technical. Why AI models hallucinate? Because they exploit known prompt patterns 
 - **Verification Suite**: `444/444` unit tests passed, `251` active AST rules, repo score `100/100` (`2090ms`)
+
+### Sprint #172 — v3.5.186 (2026-11-07 17:21 UTC)
+- **New AST Shield**: `SLOP-252` (`no-non-atomic-toctou-fs-mutation-v252`, CWE-367) — `Non-Atomic TOCTOU File Existence Check Before Write`
+- **Threat Model**: AI models routinely generate fs.existsSync(p) followed by fs.writeFileSync(p), creating a CWE-367 Time-of-Check Time-of-Use race window exploitable via symlink swapping.
+- **Verification Suite**: `445/445` unit tests passed, `252` active AST rules, repo score `100/100` (`2120ms`)
