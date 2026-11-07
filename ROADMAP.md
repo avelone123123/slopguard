@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #74 — v3.5.88 (2026-11-07 13:11 UTC)
-- **New AST Shield**: `SLOP-154` (`no-shell-template-subprocess-exec-v154`, CWE-78) — `Formatted Shell String Subprocess Command Injection`
-- **Threat Model**: AI assistants pass formatted f-strings or template literals into subprocess.Popen(..., shell=True) and child_process.exec, allowing arbitrary shell command execution.
-- **Verification Suite**: `347/347` unit tests passed, `154` active AST rules, repo score `100/100` (`2051ms`)
-
 ### Sprint #75 — v3.5.89 (2026-11-07 13:13 UTC)
 - **New AST Shield**: `SLOP-155` (`no-loop-scoped-event-listener-leak-v155`, CWE-400) — `Unbounded Event Listener Registration Inside Loops`
 - **Threat Model**: 1.  **Analyze the Request:** *   **Rule:** `loop-scoped-event-listener-leak` (Unbounded Event Listener Registration Inside Loops) - CWE-400. *   **Blocked Code:** A loop that registers an event listener on a socket for every item in `items`. *   **Enforced Fix:** Moving the listener registration out of the loop, into a batched handler (`handleBatch`). *   **
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-168` (`no-truncated-hex-entropy-keygen-v168`, CWE-326) — `Truncated Hex Slice & Weak PRNG Key Derivation`
 - **Threat Model**: AI models frequently slice hex-encoded random bytes to 16 chars (reducing 128-bit entropy to 64 bits) or use Math.random().toString(36) for AES/JWT secret keys.
 - **Verification Suite**: `361/361` unit tests passed, `168` active AST rules, repo score `100/100` (`2087ms`)
+
+### Sprint #89 — v3.5.103 (2026-11-07 13:44 UTC)
+- **New AST Shield**: `SLOP-169` (`no-async-iterator-unclosed-break-v169`, CWE-775) — `Async Generator Break Without Stream Disposal`
+- **Threat Model**: Breaking out of a for-await-of stream loop without a try/finally block or stream.destroy() leaks underlying file descriptors and database cursors.
+- **Verification Suite**: `362/362` unit tests passed, `169` active AST rules, repo score `100/100` (`2049ms`)
