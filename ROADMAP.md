@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #140 — v3.5.154 (2026-11-07 15:42 UTC)
-- **New AST Shield**: `SLOP-220` (`no-compound-namespace-slopsquat-v220`, CWE-829) — `Compound Namespace Package Manifest Slopsquatting`
-- **Threat Model**: 1.  **Analyze the Request:** *   **Rule/Name:** compound-namespace-slopsquatting (CWE-829). *   **Blocked Code (Examples of slopsquat):** `flask-bcrypt-auth>=1.0`, `tokio-redis-pro = "1.0.0"`. *   **Enforced Fix (Correct versions):** `flask-login==0.6.3`, `redis = "0.27.5"`. *   **Task:** Write exactly 2 technical sentences for a senior security engineer exp
-- **Verification Suite**: `413/413` unit tests passed, `220` active AST rules, repo score `100/100` (`2076ms`)
-
 ### Sprint #141 — v3.5.155 (2026-11-07 15:45 UTC)
 - **New AST Shield**: `SLOP-221` (`no-unvalidated-ssrf-redirect-chain-v221`, CWE-918) — `Unvalidated SSRF Host Interpolation & Redirect Bypass`
 - **Threat Model**: AI coding assistants interpolate user-controlled host variables directly into axios.get or requests.get URLs, enabling Server-Side Request Forgery against cloud metadata endpoints.
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-234` (`no-shell-template-subprocess-exec-v234`, CWE-78) — `Formatted Shell String Subprocess Command Injection`
 - **Threat Model**: AI assistants pass formatted f-strings or template literals into subprocess.Popen(..., shell=True) and child_process.exec, allowing arbitrary shell command execution.
 - **Verification Suite**: `427/427` unit tests passed, `234` active AST rules, repo score `100/100` (`2114ms`)
+
+### Sprint #155 — v3.5.169 (2026-11-07 16:30 UTC)
+- **New AST Shield**: `SLOP-235` (`no-loop-scoped-event-listener-leak-v235`, CWE-400) — `Unbounded Event Listener Registration Inside Loops`
+- **Threat Model**: AI-generated stream handlers attach emitter.on('data', ...) inside for/while loops without cleanup, exhausting V8 heap memory and triggering MaxListenersExceededWarning.
+- **Verification Suite**: `428/428` unit tests passed, `235` active AST rules, repo score `100/100` (`2128ms`)
