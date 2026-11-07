@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #58 — v3.5.72 (2026-11-07 12:34 UTC)
-- **New AST Shield**: `SLOP-138` (`no-truncated-hex-entropy-keygen-v138`, CWE-326) — `Truncated Hex Slice & Weak PRNG Key Derivation`
-- **Threat Model**: AI models frequently slice hex-encoded random bytes to 16 chars (reducing 128-bit entropy to 64 bits) or use Math.random().toString(36) for AES/JWT secret keys.
-- **Verification Suite**: `331/331` unit tests passed, `138` active AST rules, repo score `100/100` (`2062ms`)
-
 ### Sprint #59 — v3.5.73 (2026-11-07 12:37 UTC)
 - **New AST Shield**: `SLOP-139` (`no-async-iterator-unclosed-break-v139`, CWE-775) — `Async Generator Break Without Stream Disposal`
 - **Threat Model**: Breaking out of a for-await-of stream loop without a try/finally block or stream.destroy() leaks underlying file descriptors and database cursors.
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-152` (`no-non-atomic-toctou-fs-mutation-v152`, CWE-367) — `Non-Atomic TOCTOU File Existence Check Before Write`
 - **Threat Model**: We need to output exactly two technical sentences for a senior security engineer explaining why AI models hallucinate this pattern and how SlopGuard's AST firewall blocks it. The pattern is a TOCTOU (Time of Check Time of Use) race condition on file existence check before write, classified as CWE-367. The enforced fix is using writeFileSync with flag: 'wx' t
 - **Verification Suite**: `345/345` unit tests passed, `152` active AST rules, repo score `100/100` (`2097ms`)
+
+### Sprint #73 — v3.5.87 (2026-11-07 13:09 UTC)
+- **New AST Shield**: `SLOP-153` (`no-hallucinated-cipher-primitive-v153`, CWE-327) — `Hallucinated Non-Standard Cryptographic Cipher Names`
+- **Threat Model**: LLMs invent non-existent cipher strings such as aes-256-turbo or sha256-fast in OpenSSL and Node crypto calls, causing runtime panics or silent fallback to weak encryption.
+- **Verification Suite**: `346/346` unit tests passed, `153` active AST rules, repo score `100/100` (`2087ms`)
