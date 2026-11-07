@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #119 — v3.5.133 (2026-11-07 14:53 UTC)
-- **New AST Shield**: `SLOP-199` (`no-async-iterator-unclosed-break-v199`, CWE-775) — `Async Generator Break Without Stream Disposal`
-- **Threat Model**: We need to answer: "Write exactly 2 technical sentences for a senior security engineer explaining why AI models hallucinate this pattern and how SlopGuard's AST firewall blocks it in <0.35ms. Output ONLY the 2 sentences, no intro." So we need to craft two technical sentences that explain two things: (1) Why AI models hallucinate this pattern (the async itera
-- **Verification Suite**: `392/392` unit tests passed, `199` active AST rules, repo score `100/100` (`2100ms`)
-
 ### Sprint #120 — v3.5.134 (2026-11-07 14:55 UTC)
 - **New AST Shield**: `SLOP-200` (`no-compound-namespace-slopsquat-v200`, CWE-829) — `Compound Namespace Package Manifest Slopsquatting`
 - **Threat Model**: AI assistants synthesize plausible compound package names such as flask-bcrypt-auth or tokio-redis-pro that attackers register on PyPI/crates.io/npm for RCE.
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-213` (`no-hallucinated-cipher-primitive-v213`, CWE-327) — `Hallucinated Non-Standard Cryptographic Cipher Names`
 - **Threat Model**: 1.  **Analyze the Request:** *   **Rule:** hallucinated-cipher-primitive (Non-standard cipher names/hashes like 'aes-256-turbo', 'sha256-fast'). *   **Blocked code:** `crypto.createCipheriv('aes-256-turbo', key, iv)`, `hashlib.new('sha256-fast')` *   **Enforced fix:** `crypto.createCipheriv('aes-256-gcm', key, iv)`, `hashlib.sha256(data)` *   **Task:** Write
 - **Verification Suite**: `406/406` unit tests passed, `213` active AST rules, repo score `100/100` (`2068ms`)
+
+### Sprint #134 — v3.5.148 (2026-11-07 15:26 UTC)
+- **New AST Shield**: `SLOP-214` (`no-shell-template-subprocess-exec-v214`, CWE-78) — `Formatted Shell String Subprocess Command Injection`
+- **Threat Model**: AI assistants pass formatted f-strings or template literals into subprocess.Popen(..., shell=True) and child_process.exec, allowing arbitrary shell command execution.
+- **Verification Suite**: `407/407` unit tests passed, `214` active AST rules, repo score `100/100` (`2057ms`)
