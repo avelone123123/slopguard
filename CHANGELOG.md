@@ -1,5 +1,10 @@
 # Changelog
 All notable changes to SlopGuard are documented in this file.
+## [3.5.130] - 2026-11-07
+### Added
+- Expanded AST Firewall Matrix to 196 Active Shields: Added `SLOP-196` (`no-phantom-ai-sdk-slopsquatting-v196`, CWE-1357) — Hallucinated AI wrapper packages in package manifests enabling slopsquatting.
+- Scaled Deterministic Test Battery: Verified 389/389 passing unit tests (100% pass rate, 0 warnings).
+- Threat Interception: 1.  **Analyze the Request:** *   **Topic:** Slopsquatting (Naming confusion / CWE-1357) in AI SDK wrapper packages. *   **Rule/Context:** phantom-ai-sdk-slopsquatting (Phantom AI SDK Wrapper Package Slopsquatting). *   **Blocked Code:** `"@anthropic/tools-pro": "^1.0.0"`, `"openai-streaming-helper": "^2.1.0"` (looks like typos/confusion of real package names
 ## [3.5.129] - 2026-11-07
 ### Added
 - Expanded AST Firewall Matrix to 195 Active Shields: Added `SLOP-195` (`no-loop-scoped-event-listener-leak-v195`, CWE-400) — Event listener attachment inside loop body without removal or AbortSignal.
