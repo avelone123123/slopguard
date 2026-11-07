@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #141 — v3.5.155 (2026-11-07 15:45 UTC)
-- **New AST Shield**: `SLOP-221` (`no-unvalidated-ssrf-redirect-chain-v221`, CWE-918) — `Unvalidated SSRF Host Interpolation & Redirect Bypass`
-- **Threat Model**: AI coding assistants interpolate user-controlled host variables directly into axios.get or requests.get URLs, enabling Server-Side Request Forgery against cloud metadata endpoints.
-- **Verification Suite**: `414/414` unit tests passed, `221` active AST rules, repo score `100/100` (`2247ms`)
-
 ### Sprint #142 — v3.5.156 (2026-11-07 15:48 UTC)
 - **New AST Shield**: `SLOP-222` (`no-non-atomic-toctou-fs-mutation-v222`, CWE-367) — `Non-Atomic TOCTOU File Existence Check Before Write`
 - **Threat Model**: We need to write exactly 2 technical sentences for a senior security engineer explaining why AI models hallucinate this pattern and how SlopGuard's AST firewall blocks it in <0.35ms. Output ONLY the 2 sentences, no intro. The pattern is a classic TOCTOU (time-of-check to time-of-use) file existence check before writing: `if (fs.existsSync(uploadPath)) { fs.w
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-235` (`no-loop-scoped-event-listener-leak-v235`, CWE-400) — `Unbounded Event Listener Registration Inside Loops`
 - **Threat Model**: AI-generated stream handlers attach emitter.on('data', ...) inside for/while loops without cleanup, exhausting V8 heap memory and triggering MaxListenersExceededWarning.
 - **Verification Suite**: `428/428` unit tests passed, `235` active AST rules, repo score `100/100` (`2128ms`)
+
+### Sprint #156 — v3.5.170 (2026-11-07 16:33 UTC)
+- **New AST Shield**: `SLOP-236` (`no-phantom-ai-sdk-slopsquatting-v236`, CWE-1357) — `Phantom AI SDK Wrapper Package Slopsquatting`
+- **Threat Model**: 1.  **Analyze the Request:** *   **Rule/Topic:** Phantom AI SDK Wrapper Package Slopsquatting (CWE-1357). This is a specific type of typosquatting where package names are slightly altered to look like legitimate, popular packages (phantom-ai-sdk vs openai-streaming-helper/anthropic). *   **Blocked Code:** `"@anthropic/tools-pro": "^1.0.0", "openai-streaming-
+- **Verification Suite**: `429/429` unit tests passed, `236` active AST rules, repo score `100/100` (`2110ms`)
