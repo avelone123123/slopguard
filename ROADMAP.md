@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #71 — v3.5.85 (2026-11-07 13:04 UTC)
-- **New AST Shield**: `SLOP-151` (`no-unvalidated-ssrf-redirect-chain-v151`, CWE-918) — `Unvalidated SSRF Host Interpolation & Redirect Bypass`
-- **Threat Model**: AI coding assistants interpolate user-controlled host variables directly into axios.get or requests.get URLs, enabling Server-Side Request Forgery against cloud metadata endpoints.
-- **Verification Suite**: `344/344` unit tests passed, `151` active AST rules, repo score `100/100` (`2051ms`)
-
 ### Sprint #72 — v3.5.86 (2026-11-07 13:07 UTC)
 - **New AST Shield**: `SLOP-152` (`no-non-atomic-toctou-fs-mutation-v152`, CWE-367) — `Non-Atomic TOCTOU File Existence Check Before Write`
 - **Threat Model**: We need to output exactly two technical sentences for a senior security engineer explaining why AI models hallucinate this pattern and how SlopGuard's AST firewall blocks it. The pattern is a TOCTOU (Time of Check Time of Use) race condition on file existence check before write, classified as CWE-367. The enforced fix is using writeFileSync with flag: 'wx' t
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-165` (`no-loop-scoped-event-listener-leak-v165`, CWE-400) — `Unbounded Event Listener Registration Inside Loops`
 - **Threat Model**: AI-generated stream handlers attach emitter.on('data', ...) inside for/while loops without cleanup, exhausting V8 heap memory and triggering MaxListenersExceededWarning.
 - **Verification Suite**: `358/358` unit tests passed, `165` active AST rules, repo score `100/100` (`2025ms`)
+
+### Sprint #86 — v3.5.100 (2026-11-07 13:38 UTC)
+- **New AST Shield**: `SLOP-166` (`no-phantom-ai-sdk-slopsquatting-v166`, CWE-1357) — `Phantom AI SDK Wrapper Package Slopsquatting`
+- **Threat Model**: LLMs hallucinate plausible AI helper packages like @anthropic/tools-pro or openai-streaming-helper in package.json and requirements.txt, exposing builds to supply-chain hijacking.
+- **Verification Suite**: `359/359` unit tests passed, `166` active AST rules, repo score `100/100` (`2072ms`)
