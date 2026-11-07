@@ -1,5 +1,10 @@
 # Changelog
 All notable changes to SlopGuard are documented in this file.
+## [3.5.73] - 2026-11-07
+### Added
+- Expanded AST Firewall Matrix to 139 Active Shields: Added `SLOP-139` (`no-async-iterator-unclosed-break-v139`, CWE-775) — Early break or return inside for-await-of loop without stream closure.
+- Scaled Deterministic Test Battery: Verified 332/332 passing unit tests (100% pass rate, 0 warnings).
+- Threat Interception: Breaking out of a for-await-of stream loop without a try/finally block or stream.destroy() leaks underlying file descriptors and database cursors.
 ## [3.5.72] - 2026-11-07
 ### Added
 - Expanded AST Firewall Matrix to 138 Active Shields: Added `SLOP-138` (`no-truncated-hex-entropy-keygen-v138`, CWE-326) — Truncated hex buffer slicing or Math.random key generation reducing entropy.
