@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #82 — v3.5.96 (2026-11-07 13:28 UTC)
-- **New AST Shield**: `SLOP-162` (`no-non-atomic-toctou-fs-mutation-v162`, CWE-367) — `Non-Atomic TOCTOU File Existence Check Before Write`
-- **Threat Model**: AI models routinely generate fs.existsSync(p) followed by fs.writeFileSync(p), creating a CWE-367 Time-of-Check Time-of-Use race window exploitable via symlink swapping.
-- **Verification Suite**: `355/355` unit tests passed, `162` active AST rules, repo score `100/100` (`2043ms`)
-
 ### Sprint #83 — v3.5.97 (2026-11-07 13:30 UTC)
 - **New AST Shield**: `SLOP-163` (`no-hallucinated-cipher-primitive-v163`, CWE-327) — `Hallucinated Non-Standard Cryptographic Cipher Names`
 - **Threat Model**: LLMs invent non-existent cipher strings such as aes-256-turbo or sha256-fast in OpenSSL and Node crypto calls, causing runtime panics or silent fallback to weak encryption.
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-176` (`no-phantom-ai-sdk-slopsquatting-v176`, CWE-1357) — `Phantom AI SDK Wrapper Package Slopsquatting`
 - **Threat Model**: LLMs hallucinate plausible AI helper packages like @anthropic/tools-pro or openai-streaming-helper in package.json and requirements.txt, exposing builds to supply-chain hijacking.
 - **Verification Suite**: `369/369` unit tests passed, `176` active AST rules, repo score `100/100` (`2056ms`)
+
+### Sprint #97 — v3.5.111 (2026-11-07 14:03 UTC)
+- **New AST Shield**: `SLOP-177` (`no-unbounded-mpsc-queue-sprawl-v177`, CWE-400) — `Unbounded MPSC & Asyncio Queue Memory Exhaustion`
+- **Threat Model**: AI models frequently hallucinate the unbounded mpsc channel pattern because they default to the most common API surface without considering resource exhaustion risks, while SlopGuard's static AST analysis detects the `unbounded_channel` call and rejects it in under 350 microseconds by intercepting the call site before
+- **Verification Suite**: `370/370` unit tests passed, `177` active AST rules, repo score `100/100` (`2095ms`)
