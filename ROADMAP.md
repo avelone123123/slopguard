@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #170 — v3.5.184 (2026-11-07 17:14 UTC)
-- **New AST Shield**: `SLOP-250` (`no-compound-namespace-slopsquat-v250`, CWE-829) — `Compound Namespace Package Manifest Slopsquatting`
-- **Threat Model**: AI assistants synthesize plausible compound package names such as flask-bcrypt-auth or tokio-redis-pro that attackers register on PyPI/crates.io/npm for RCE.
-- **Verification Suite**: `443/443` unit tests passed, `250` active AST rules, repo score `100/100` (`2132ms`)
-
 ### Sprint #171 — v3.5.185 (2026-11-07 17:18 UTC)
 - **New AST Shield**: `SLOP-251` (`no-unvalidated-ssrf-redirect-chain-v251`, CWE-918) — `Unvalidated SSRF Host Interpolation & Redirect Bypass`
 - **Threat Model**: We need answer two sentences only, no intro. Need understand rule, blocked, enforced, CWE-918. Senior security engineer explaining why AI models hallucinate this pattern and how SlopGuard's AST firewall blocks it in <0.35ms. Output exactly 2 technical sentences. Need be concise technical. Why AI models hallucinate? Because they exploit known prompt patterns 
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-264` (`no-shell-template-subprocess-exec-v264`, CWE-78) — `Formatted Shell String Subprocess Command Injection`
 - **Threat Model**: AI assistants pass formatted f-strings or template literals into subprocess.Popen(..., shell=True) and child_process.exec, allowing arbitrary shell command execution.
 - **Verification Suite**: `457/457` unit tests passed, `264` active AST rules, repo score `100/100` (`2200ms`)
+
+### Sprint #185 — v3.5.199 (2026-11-07 17:58 UTC)
+- **New AST Shield**: `SLOP-265` (`no-loop-scoped-event-listener-leak-v265`, CWE-400) — `Unbounded Event Listener Registration Inside Loops`
+- **Threat Model**: AI-generated stream handlers attach emitter.on('data', ...) inside for/while loops without cleanup, exhausting V8 heap memory and triggering MaxListenersExceededWarning.
+- **Verification Suite**: `458/458` unit tests passed, `265` active AST rules, repo score `100/100` (`2092ms`)
