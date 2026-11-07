@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #162 — v3.5.176 (2026-11-07 16:51 UTC)
-- **New AST Shield**: `SLOP-242` (`no-non-atomic-toctou-fs-mutation-v242`, CWE-367) — `Non-Atomic TOCTOU File Existence Check Before Write`
-- **Threat Model**: AI models routinely generate fs.existsSync(p) followed by fs.writeFileSync(p), creating a CWE-367 Time-of-Check Time-of-Use race window exploitable via symlink swapping.
-- **Verification Suite**: `435/435` unit tests passed, `242` active AST rules, repo score `100/100` (`2141ms`)
-
 ### Sprint #163 — v3.5.177 (2026-11-07 16:53 UTC)
 - **New AST Shield**: `SLOP-243` (`no-hallucinated-cipher-primitive-v243`, CWE-327) — `Hallucinated Non-Standard Cryptographic Cipher Names`
 - **Threat Model**: LLMs invent non-existent cipher strings such as aes-256-turbo or sha256-fast in OpenSSL and Node crypto calls, causing runtime panics or silent fallback to weak encryption.
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-256` (`no-phantom-ai-sdk-slopsquatting-v256`, CWE-1357) — `Phantom AI SDK Wrapper Package Slopsquatting`
 - **Threat Model**: LLMs hallucinate plausible AI helper packages like @anthropic/tools-pro or openai-streaming-helper in package.json and requirements.txt, exposing builds to supply-chain hijacking.
 - **Verification Suite**: `449/449` unit tests passed, `256` active AST rules, repo score `100/100` (`2115ms`)
+
+### Sprint #177 — v3.5.191 (2026-11-07 17:35 UTC)
+- **New AST Shield**: `SLOP-257` (`no-unbounded-mpsc-queue-sprawl-v257`, CWE-400) — `Unbounded MPSC & Asyncio Queue Memory Exhaustion`
+- **Threat Model**: AI concurrency scaffolding defaults to tokio::sync::mpsc::unbounded_channel() and unbuffered asyncio.Queue(), removing backpressure and causing OOM kills under traffic spikes.
+- **Verification Suite**: `450/450` unit tests passed, `257` active AST rules, repo score `100/100` (`2091ms`)
