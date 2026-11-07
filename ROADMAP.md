@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #10 — v3.5.11 (2026-11-06 11:05 UTC)
-- **New AST Shield**: `SLOP-077` (`no-compound-namespace-slopsquat-v77`, CWE-829) — `Compound Namespace Package Manifest Slopsquatting`
-- **Threat Model**: 1.  **Analyze the Request:** *   **Rule Name:** compound-namespace-slopsquat (Compound Namespace Package Manifest Slopsquatting, CWE-829). *   **Blocked Code:** `flask-bcrypt-auth>=1.0`, `tokio-redis-pro = "1.0.0"` (namespaced slop packages with hyphens/similarities to real ones). *   **Enforced Fix:** `flask-login==0.6.3`, `redis = "0.27.5"` (the correct, w
-- **Verification Suite**: `270/270` unit tests passed, `77` active AST rules, repo score `100/100` (`2117ms`)
-
 ### Sprint #11 — v3.5.12 (2026-11-06 11:07 UTC)
 - **New AST Shield**: `SLOP-078` (`no-unvalidated-ssrf-redirect-chain-v78`, CWE-918) — `Unvalidated SSRF Host Interpolation & Redirect Bypass`
 - **Threat Model**: AI coding assistants interpolate user-controlled host variables directly into axios.get or requests.get URLs, enabling Server-Side Request Forgery against cloud metadata endpoints.
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-091` (`no-unvalidated-ssrf-redirect-chain-v91`, CWE-918) — `Unvalidated SSRF Host Interpolation & Redirect Bypass`
 - **Threat Model**: AI coding assistants interpolate user-controlled host variables directly into axios.get or requests.get URLs, enabling Server-Side Request Forgery against cloud metadata endpoints.
 - **Verification Suite**: `284/284` unit tests passed, `91` active AST rules, repo score `100/100` (`2157ms`)
+
+### Sprint #12 — v3.5.26 (2026-11-07 10:54 UTC)
+- **New AST Shield**: `SLOP-092` (`no-non-atomic-toctou-fs-mutation-v92`, CWE-367) — `Non-Atomic TOCTOU File Existence Check Before Write`
+- **Threat Model**: AI models routinely generate fs.existsSync(p) followed by fs.writeFileSync(p), creating a CWE-367 Time-of-Check Time-of-Use race window exploitable via symlink swapping.
+- **Verification Suite**: `285/285` unit tests passed, `92` active AST rules, repo score `100/100` (`2103ms`)
