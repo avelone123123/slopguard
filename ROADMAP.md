@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #112 — v3.5.126 (2026-11-07 14:37 UTC)
-- **New AST Shield**: `SLOP-192` (`no-non-atomic-toctou-fs-mutation-v192`, CWE-367) — `Non-Atomic TOCTOU File Existence Check Before Write`
-- **Threat Model**: AI models routinely generate fs.existsSync(p) followed by fs.writeFileSync(p), creating a CWE-367 Time-of-Check Time-of-Use race window exploitable via symlink swapping.
-- **Verification Suite**: `385/385` unit tests passed, `192` active AST rules, repo score `100/100` (`2064ms`)
-
 ### Sprint #113 — v3.5.127 (2026-11-07 14:38 UTC)
 - **New AST Shield**: `SLOP-193` (`no-hallucinated-cipher-primitive-v193`, CWE-327) — `Hallucinated Non-Standard Cryptographic Cipher Names`
 - **Threat Model**: 1.  **Analyze the Request:** *   **Rule Context:** "hallucinated-cipher-primitive" (Non-standard cryptographic cipher names, CWE-327). *   **Blocked Code Example:** `crypto.createCipheriv('aes-256-turbo', key, iv);` and `hashlib.new('sha256-fast')`. *   **Enforced Fix:** `crypto.createCipheriv('aes-256-gcm', key, iv);` and `hashlib.sha256(data)`. *   **Task:
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-206` (`no-phantom-ai-sdk-slopsquatting-v206`, CWE-1357) — `Phantom AI SDK Wrapper Package Slopsquatting`
 - **Threat Model**: 1.  **Analyze the Request:** *   **Rule/Topic:** Phantom AI SDK Wrapper Package Slopsquatting (CWE-1357). *   **Blocked Code:** `"@anthropic/tools-pro": "^1.0.0"`, `"openai-streaming-helper": "^2.1.0"` (These look like maliciously named packages attempting to squat on legitimate SDK names). *   **Enforced Fix:** `"@anthropic-ai/sdk": "^0.27.0"`, `"openai": "
 - **Verification Suite**: `399/399` unit tests passed, `206` active AST rules, repo score `100/100` (`2054ms`)
+
+### Sprint #127 — v3.5.141 (2026-11-07 15:10 UTC)
+- **New AST Shield**: `SLOP-207` (`no-unbounded-mpsc-queue-sprawl-v207`, CWE-400) — `Unbounded MPSC & Asyncio Queue Memory Exhaustion`
+- **Threat Model**: AI concurrency scaffolding defaults to tokio::sync::mpsc::unbounded_channel() and unbuffered asyncio.Queue(), removing backpressure and causing OOM kills under traffic spikes.
+- **Verification Suite**: `400/400` unit tests passed, `207` active AST rules, repo score `100/100` (`2108ms`)

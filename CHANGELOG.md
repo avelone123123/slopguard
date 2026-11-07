@@ -1,5 +1,10 @@
 # Changelog
 All notable changes to SlopGuard are documented in this file.
+## [3.5.141] - 2026-11-07
+### Added
+- Expanded AST Firewall Matrix to 207 Active Shields: Added `SLOP-207` (`no-unbounded-mpsc-queue-sprawl-v207`, CWE-400) — Unbounded channel or async queue allocation lacking backpressure capacity.
+- Scaled Deterministic Test Battery: Verified 400/400 passing unit tests (100% pass rate, 0 warnings).
+- Threat Interception: AI concurrency scaffolding defaults to tokio::sync::mpsc::unbounded_channel() and unbuffered asyncio.Queue(), removing backpressure and causing OOM kills under traffic spikes.
 ## [3.5.140] - 2026-11-07
 ### Added
 - Expanded AST Firewall Matrix to 206 Active Shields: Added `SLOP-206` (`no-phantom-ai-sdk-slopsquatting-v206`, CWE-1357) — Hallucinated AI wrapper packages in package manifests enabling slopsquatting.
