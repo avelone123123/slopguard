@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #29 — v3.5.43 (2026-11-07 11:32 UTC)
-- **New AST Shield**: `SLOP-109` (`no-async-iterator-unclosed-break-v109`, CWE-775) — `Async Generator Break Without Stream Disposal`
-- **Threat Model**: Breaking out of a for-await-of stream loop without a try/finally block or stream.destroy() leaks underlying file descriptors and database cursors.
-- **Verification Suite**: `302/302` unit tests passed, `109` active AST rules, repo score `100/100` (`2139ms`)
-
 ### Sprint #30 — v3.5.44 (2026-11-07 11:34 UTC)
 - **New AST Shield**: `SLOP-110` (`no-compound-namespace-slopsquat-v110`, CWE-829) — `Compound Namespace Package Manifest Slopsquatting`
 - **Threat Model**: AI assistants synthesize plausible compound package names such as flask-bcrypt-auth or tokio-redis-pro that attackers register on PyPI/crates.io/npm for RCE.
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-123` (`no-hallucinated-cipher-primitive-v123`, CWE-327) — `Hallucinated Non-Standard Cryptographic Cipher Names`
 - **Threat Model**: 1.  **Analyze the Request:** *   **Rule:** hallucinated-cipher-primitive (hallucinated non-standard cryptographic cipher names, CWE-327). *   **Blocked code:** `const cipher = crypto.createCipheriv('aes-256-turbo', key, iv);` and `hashlib.new('sha256-fast')`. *   **Enforced fix:** `const cipher = crypto.createCipheriv('aes-256-gcm', key, iv);` and `hashlib.s
 - **Verification Suite**: `316/316` unit tests passed, `123` active AST rules, repo score `100/100` (`2021ms`)
+
+### Sprint #44 — v3.5.58 (2026-11-07 12:05 UTC)
+- **New AST Shield**: `SLOP-124` (`no-shell-template-subprocess-exec-v124`, CWE-78) — `Formatted Shell String Subprocess Command Injection`
+- **Threat Model**: AI assistants pass formatted f-strings or template literals into subprocess.Popen(..., shell=True) and child_process.exec, allowing arbitrary shell command execution.
+- **Verification Suite**: `317/317` unit tests passed, `124` active AST rules, repo score `100/100` (`2062ms`)
