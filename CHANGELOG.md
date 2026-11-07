@@ -1,5 +1,10 @@
 # Changelog
 All notable changes to SlopGuard are documented in this file.
+## [3.5.119] - 2026-11-07
+### Added
+- Expanded AST Firewall Matrix to 185 Active Shields: Added `SLOP-185` (`no-loop-scoped-event-listener-leak-v185`, CWE-400) — Event listener attachment inside loop body without removal or AbortSignal.
+- Scaled Deterministic Test Battery: Verified 378/378 passing unit tests (100% pass rate, 0 warnings).
+- Threat Interception: AI-generated stream handlers attach emitter.on('data', ...) inside for/while loops without cleanup, exhausting V8 heap memory and triggering MaxListenersExceededWarning.
 ## [3.5.118] - 2026-11-07
 ### Added
 - Expanded AST Firewall Matrix to 184 Active Shields: Added `SLOP-184` (`no-shell-template-subprocess-exec-v184`, CWE-78) — Dynamic string interpolation inside shell-enabled subprocess execution.

@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #90 — v3.5.104 (2026-11-07 13:47 UTC)
-- **New AST Shield**: `SLOP-170` (`no-compound-namespace-slopsquat-v170`, CWE-829) — `Compound Namespace Package Manifest Slopsquatting`
-- **Threat Model**: AI assistants synthesize plausible compound package names such as flask-bcrypt-auth or tokio-redis-pro that attackers register on PyPI/crates.io/npm for RCE.
-- **Verification Suite**: `363/363` unit tests passed, `170` active AST rules, repo score `100/100` (`2079ms`)
-
 ### Sprint #91 — v3.5.105 (2026-11-07 13:49 UTC)
 - **New AST Shield**: `SLOP-171` (`no-unvalidated-ssrf-redirect-chain-v171`, CWE-918) — `Unvalidated SSRF Host Interpolation & Redirect Bypass`
 - **Threat Model**: 1.  **Analyze the Request:** *   **Rule:** unvalidated-ssrf-redirect-chain (CWE-918). *   **Blocked code:** `const res = await axios.get(`https://${req.query.apiHost}/v1/profile`);` (SSRF via interpolation of user input). *   **Enforced fix:** `if (!ALLOWED_ORIGINS.has(req.query.apiHost)) throw new Error('Blocked');` and a hardcoded URL `axios.get('https://a
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-184` (`no-shell-template-subprocess-exec-v184`, CWE-78) — `Formatted Shell String Subprocess Command Injection`
 - **Threat Model**: 1.  **Analyze the Request:** *   **Rule context:** Shell-template-subprocess-exec (Command Injection CWE-78). *   **Blocked code:** `subprocess.Popen(f'tar -xzf {archive_name}', shell=True)` (injection risk via formatted string). *   **Enforced fix:** `subprocess.run(['tar', '-xzf', archive_name], check=True)` (argument list, no shell=True). *   **Task:** Wr
 - **Verification Suite**: `377/377` unit tests passed, `184` active AST rules, repo score `100/100` (`2147ms`)
+
+### Sprint #105 — v3.5.119 (2026-11-07 14:21 UTC)
+- **New AST Shield**: `SLOP-185` (`no-loop-scoped-event-listener-leak-v185`, CWE-400) — `Unbounded Event Listener Registration Inside Loops`
+- **Threat Model**: AI-generated stream handlers attach emitter.on('data', ...) inside for/while loops without cleanup, exhausting V8 heap memory and triggering MaxListenersExceededWarning.
+- **Verification Suite**: `378/378` unit tests passed, `185` active AST rules, repo score `100/100` (`2069ms`)
