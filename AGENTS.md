@@ -26,5 +26,5 @@ Core      Dev       UX                    Red Team    Auditor   Manager
 5. Mandatory Documentation Synchronization: Scribe and Council must update all .md files (README, translations, CHANGELOG, ROADMAP) on every sprint. Never leave documentation stale.
 6. Deep Root-Cause Engineering: Divergent hypothesis generation, multi-angle reasoning, tool verification, and zero crutches.
 ## Active Council Milestone
-- Engine Target: SlopGuard v3.5.192 NextGen Enterprise (100% Native Rust, 451 verified unit tests, 258 active AST firewalls).
+- Engine Target: SlopGuard v3.5.193 NextGen Enterprise (100% Native Rust, 452 verified unit tests, 259 active AST firewalls).
 - Code Hygiene Gate: 0 AI comments, 0 blank lines across all touched production code files.
