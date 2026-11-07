@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #104 — v3.5.118 (2026-11-07 14:19 UTC)
-- **New AST Shield**: `SLOP-184` (`no-shell-template-subprocess-exec-v184`, CWE-78) — `Formatted Shell String Subprocess Command Injection`
-- **Threat Model**: 1.  **Analyze the Request:** *   **Rule context:** Shell-template-subprocess-exec (Command Injection CWE-78). *   **Blocked code:** `subprocess.Popen(f'tar -xzf {archive_name}', shell=True)` (injection risk via formatted string). *   **Enforced fix:** `subprocess.run(['tar', '-xzf', archive_name], check=True)` (argument list, no shell=True). *   **Task:** Wr
-- **Verification Suite**: `377/377` unit tests passed, `184` active AST rules, repo score `100/100` (`2147ms`)
-
 ### Sprint #105 — v3.5.119 (2026-11-07 14:21 UTC)
 - **New AST Shield**: `SLOP-185` (`no-loop-scoped-event-listener-leak-v185`, CWE-400) — `Unbounded Event Listener Registration Inside Loops`
 - **Threat Model**: AI-generated stream handlers attach emitter.on('data', ...) inside for/while loops without cleanup, exhausting V8 heap memory and triggering MaxListenersExceededWarning.
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-198` (`no-truncated-hex-entropy-keygen-v198`, CWE-326) — `Truncated Hex Slice & Weak PRNG Key Derivation`
 - **Threat Model**: AI models frequently slice hex-encoded random bytes to 16 chars (reducing 128-bit entropy to 64 bits) or use Math.random().toString(36) for AES/JWT secret keys.
 - **Verification Suite**: `391/391` unit tests passed, `198` active AST rules, repo score `100/100` (`2046ms`)
+
+### Sprint #119 — v3.5.133 (2026-11-07 14:53 UTC)
+- **New AST Shield**: `SLOP-199` (`no-async-iterator-unclosed-break-v199`, CWE-775) — `Async Generator Break Without Stream Disposal`
+- **Threat Model**: We need to answer: "Write exactly 2 technical sentences for a senior security engineer explaining why AI models hallucinate this pattern and how SlopGuard's AST firewall blocks it in <0.35ms. Output ONLY the 2 sentences, no intro." So we need to craft two technical sentences that explain two things: (1) Why AI models hallucinate this pattern (the async itera
+- **Verification Suite**: `392/392` unit tests passed, `199` active AST rules, repo score `100/100` (`2100ms`)
