@@ -355,6 +355,7 @@ AstDetectorDefinition { id: "SLOP-249", name: "no-async-iterator-unclosed-break-
 AstDetectorDefinition { id: "SLOP-250", name: "no-compound-namespace-slopsquat-v250", severity: SlopSeverity::Error, category: "supply-chain", cwe: "CWE-829", description: "Synthetic compound package names in dependency manifests", recommendation: "Verify package existence on canonical registry and pin exact version" },
 AstDetectorDefinition { id: "SLOP-251", name: "no-unvalidated-ssrf-redirect-chain-v251", severity: SlopSeverity::Error, category: "path-injection", cwe: "CWE-918", description: "Unvalidated dynamic host interpolation in outbound HTTP client requests", recommendation: "Validate target hostnames against strict allowlist before dispatching requests" },
 AstDetectorDefinition { id: "SLOP-252", name: "no-non-atomic-toctou-fs-mutation-v252", severity: SlopSeverity::Error, category: "path-injection", cwe: "CWE-367", description: "Non-atomic file existence check prior to destructive file write", recommendation: "Use atomic exclusive file creation flags such as wx or O_CREAT | O_EXCL" },
+AstDetectorDefinition { id: "SLOP-253", name: "no-hallucinated-cipher-primitive-v253", severity: SlopSeverity::Error, category: "crypto-auth", cwe: "CWE-327", description: "Fictional or non-standard cipher algorithm strings passed to crypto APIs", recommendation: "Enforce NIST/IETF verified cipher primitives such as aes-256-gcm or sha256" },
 ];
 #[allow(dead_code)]
 pub static ACTIVE_CONTRACTS: &[crate::types::AstDetectorContract] = &[
