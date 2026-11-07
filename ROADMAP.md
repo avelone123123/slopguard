@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #171 — v3.5.185 (2026-11-07 17:18 UTC)
-- **New AST Shield**: `SLOP-251` (`no-unvalidated-ssrf-redirect-chain-v251`, CWE-918) — `Unvalidated SSRF Host Interpolation & Redirect Bypass`
-- **Threat Model**: We need answer two sentences only, no intro. Need understand rule, blocked, enforced, CWE-918. Senior security engineer explaining why AI models hallucinate this pattern and how SlopGuard's AST firewall blocks it in <0.35ms. Output exactly 2 technical sentences. Need be concise technical. Why AI models hallucinate? Because they exploit known prompt patterns 
-- **Verification Suite**: `444/444` unit tests passed, `251` active AST rules, repo score `100/100` (`2090ms`)
-
 ### Sprint #172 — v3.5.186 (2026-11-07 17:21 UTC)
 - **New AST Shield**: `SLOP-252` (`no-non-atomic-toctou-fs-mutation-v252`, CWE-367) — `Non-Atomic TOCTOU File Existence Check Before Write`
 - **Threat Model**: AI models routinely generate fs.existsSync(p) followed by fs.writeFileSync(p), creating a CWE-367 Time-of-Check Time-of-Use race window exploitable via symlink swapping.
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-265` (`no-loop-scoped-event-listener-leak-v265`, CWE-400) — `Unbounded Event Listener Registration Inside Loops`
 - **Threat Model**: AI-generated stream handlers attach emitter.on('data', ...) inside for/while loops without cleanup, exhausting V8 heap memory and triggering MaxListenersExceededWarning.
 - **Verification Suite**: `458/458` unit tests passed, `265` active AST rules, repo score `100/100` (`2092ms`)
+
+### Sprint #186 — v3.5.200 (2026-11-07 18:01 UTC)
+- **New AST Shield**: `SLOP-266` (`no-phantom-ai-sdk-slopsquatting-v266`, CWE-1357) — `Phantom AI SDK Wrapper Package Slopsquatting`
+- **Threat Model**: LLMs hallucinate plausible AI helper packages like @anthropic/tools-pro or openai-streaming-helper in package.json and requirements.txt, exposing builds to supply-chain hijacking.
+- **Verification Suite**: `459/459` unit tests passed, `266` active AST rules, repo score `100/100` (`2147ms`)
