@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #161 — v3.5.175 (2026-11-07 16:48 UTC)
-- **New AST Shield**: `SLOP-241` (`no-unvalidated-ssrf-redirect-chain-v241`, CWE-918) — `Unvalidated SSRF Host Interpolation & Redirect Bypass`
-- **Threat Model**: 1.  **Analyze the Request:** *   **Rule:** `unvalidated-ssrf-redirect-chain` (CWE-918). *   **Blocked code example:** `const res = await axios.get(`https://${req.query.apiHost}/v1/profile`);` (SSRF via user input interpolation). *   **Enforced fix example:** Checking `apiHost` against an allowlist, then hardcoding/using a safe URL. *   **Task:** Write *exact
-- **Verification Suite**: `434/434` unit tests passed, `241` active AST rules, repo score `100/100` (`2116ms`)
-
 ### Sprint #162 — v3.5.176 (2026-11-07 16:51 UTC)
 - **New AST Shield**: `SLOP-242` (`no-non-atomic-toctou-fs-mutation-v242`, CWE-367) — `Non-Atomic TOCTOU File Existence Check Before Write`
 - **Threat Model**: AI models routinely generate fs.existsSync(p) followed by fs.writeFileSync(p), creating a CWE-367 Time-of-Check Time-of-Use race window exploitable via symlink swapping.
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-255` (`no-loop-scoped-event-listener-leak-v255`, CWE-400) — `Unbounded Event Listener Registration Inside Loops`
 - **Threat Model**: AI-generated stream handlers attach emitter.on('data', ...) inside for/while loops without cleanup, exhausting V8 heap memory and triggering MaxListenersExceededWarning.
 - **Verification Suite**: `448/448` unit tests passed, `255` active AST rules, repo score `100/100` (`2130ms`)
+
+### Sprint #176 — v3.5.190 (2026-11-07 17:32 UTC)
+- **New AST Shield**: `SLOP-256` (`no-phantom-ai-sdk-slopsquatting-v256`, CWE-1357) — `Phantom AI SDK Wrapper Package Slopsquatting`
+- **Threat Model**: LLMs hallucinate plausible AI helper packages like @anthropic/tools-pro or openai-streaming-helper in package.json and requirements.txt, exposing builds to supply-chain hijacking.
+- **Verification Suite**: `449/449` unit tests passed, `256` active AST rules, repo score `100/100` (`2115ms`)
