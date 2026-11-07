@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #13 — v3.5.14 (2026-11-06 11:11 UTC)
-- **New AST Shield**: `SLOP-080` (`no-hallucinated-cipher-primitive-v80`, CWE-327) — `Hallucinated Non-Standard Cryptographic Cipher Names`
-- **Threat Model**: LLMs invent non-existent cipher strings such as aes-256-turbo or sha256-fast in OpenSSL and Node crypto calls, causing runtime panics or silent fallback to weak encryption.
-- **Verification Suite**: `273/273` unit tests passed, `80` active AST rules, repo score `100/100` (`2185ms`)
-
 ### Sprint #1 — v3.5.15 (2026-11-07 10:27 UTC)
 - **New AST Shield**: `SLOP-081` (`no-unvalidated-ssrf-redirect-chain-v81`, CWE-918) — `Unvalidated SSRF Host Interpolation & Redirect Bypass`
 - **Threat Model**: We need exactly 2 technical sentences, no intro, no extra text. Must explain why AI models hallucinate this pattern and how SlopGuard's AST firewall blocks it in <0.35ms. Sentence 1: Why AI models hallucinate this pattern. Possibly because they rely on training data patterns and may misinterpret templating, leading to insecure interpolation. Sentence 2: How 
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-094` (`no-shell-template-subprocess-exec-v94`, CWE-78) — `Formatted Shell String Subprocess Command Injection`
 - **Threat Model**: AI assistants pass formatted f-strings or template literals into subprocess.Popen(..., shell=True) and child_process.exec, allowing arbitrary shell command execution.
 - **Verification Suite**: `287/287` unit tests passed, `94` active AST rules, repo score `100/100` (`2128ms`)
+
+### Sprint #15 — v3.5.29 (2026-11-07 11:01 UTC)
+- **New AST Shield**: `SLOP-095` (`no-loop-scoped-event-listener-leak-v95`, CWE-400) — `Unbounded Event Listener Registration Inside Loops`
+- **Threat Model**: AI-generated stream handlers attach emitter.on('data', ...) inside for/while loops without cleanup, exhausting V8 heap memory and triggering MaxListenersExceededWarning.
+- **Verification Suite**: `288/288` unit tests passed, `95` active AST rules, repo score `100/100` (`2098ms`)
