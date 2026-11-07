@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #7 — v3.5.8 (2026-11-06 10:58 UTC)
-- **New AST Shield**: `SLOP-074` (`no-unbounded-mpsc-queue-sprawl-v74`, CWE-400) — `Unbounded MPSC & Asyncio Queue Memory Exhaustion`
-- **Threat Model**: AI concurrency scaffolding defaults to tokio::sync::mpsc::unbounded_channel() and unbuffered asyncio.Queue(), removing backpressure and causing OOM kills under traffic spikes.
-- **Verification Suite**: `267/267` unit tests passed, `74` active AST rules, repo score `100/100` (`2064ms`)
-
 ### Sprint #8 — v3.5.9 (2026-11-06 11:01 UTC)
 - **New AST Shield**: `SLOP-075` (`no-truncated-hex-entropy-keygen-v75`, CWE-326) — `Truncated Hex Slice & Weak PRNG Key Derivation`
 - **Threat Model**: 1.  **Analyze the Request:** *   **Rule context:** CWE-326 (Weak PRNG/Entropy), specifically "truncated-hex-entropy-keygen". The original code uses `crypto.randomBytes(32).toString('hex').slice(0, 16)` which converts a strong 32-byte random key into a weak 32-bit hex string and truncates it, losing most entropy. The fixed code uses `crypto.randomBytes(32)` d
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-088` (`no-truncated-hex-entropy-keygen-v88`, CWE-326) — `Truncated Hex Slice & Weak PRNG Key Derivation`
 - **Threat Model**: AI models hallucinate the truncated‑hex key pattern because they frequently encounter code snippets that truncate random‑byte output for brevity, mistaken
 - **Verification Suite**: `281/281` unit tests passed, `88` active AST rules, repo score `100/100` (`2143ms`)
+
+### Sprint #9 — v3.5.23 (2026-11-07 10:47 UTC)
+- **New AST Shield**: `SLOP-089` (`no-async-iterator-unclosed-break-v89`, CWE-775) — `Async Generator Break Without Stream Disposal`
+- **Threat Model**: Breaking out of a for-await-of stream loop without a try/finally block or stream.destroy() leaks underlying file descriptors and database cursors.
+- **Verification Suite**: `282/282` unit tests passed, `89` active AST rules, repo score `100/100` (`2108ms`)
