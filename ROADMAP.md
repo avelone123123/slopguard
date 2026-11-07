@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #46 — v3.5.60 (2026-11-07 12:09 UTC)
-- **New AST Shield**: `SLOP-126` (`no-phantom-ai-sdk-slopsquatting-v126`, CWE-1357) — `Phantom AI SDK Wrapper Package Slopsquatting`
-- **Threat Model**: 1.  **Analyze the Request:** *   **Rule:** phantom-ai-sdk-slopsquatting (CWE-1357 - Slopsquatting). *   **Blocked Code:** `@anthropic/tools-pro: "^1.0.0"`, `openai-streaming-helper: "^2.1.0"` (These look like typo-squatted package names, likely intended to be `@anthropic-ai/sdk` and `openai`, or similar, but specifically requested to explain the *why* AI mod
-- **Verification Suite**: `319/319` unit tests passed, `126` active AST rules, repo score `100/100` (`2066ms`)
-
 ### Sprint #47 — v3.5.61 (2026-11-07 12:11 UTC)
 - **New AST Shield**: `SLOP-127` (`no-unbounded-mpsc-queue-sprawl-v127`, CWE-400) — `Unbounded MPSC & Asyncio Queue Memory Exhaustion`
 - **Threat Model**: 1.  **Analyze the Request:** *   **Rule/Vulnerability:** unbounded-mpsc-queue-sprawl (Unbounded MPSC & Asyncio Queue Memory Exhaustion, CWE-400). *   **Blocked Code:** `tokio::sync::mpsc::unbounded_channel::<Job>()` *   **Enforced Fix:** `tokio::sync::mpsc::channel::<Job>(1024)` (bounded channel with capacity 1024). *   **Task:** Write exactly 2 technical se
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-140` (`no-compound-namespace-slopsquat-v140`, CWE-829) — `Compound Namespace Package Manifest Slopsquatting`
 - **Threat Model**: AI assistants synthesize plausible compound package names such as flask-bcrypt-auth or tokio-redis-pro that attackers register on PyPI/crates.io/npm for RCE.
 - **Verification Suite**: `333/333` unit tests passed, `140` active AST rules, repo score `100/100` (`2205ms`)
+
+### Sprint #61 — v3.5.75 (2026-11-07 12:42 UTC)
+- **New AST Shield**: `SLOP-141` (`no-unvalidated-ssrf-redirect-chain-v141`, CWE-918) — `Unvalidated SSRF Host Interpolation & Redirect Bypass`
+- **Threat Model**: AI coding assistants interpolate user-controlled host variables directly into axios.get or requests.get URLs, enabling Server-Side Request Forgery against cloud metadata endpoints.
+- **Verification Suite**: `334/334` unit tests passed, `141` active AST rules, repo score `100/100` (`2046ms`)
