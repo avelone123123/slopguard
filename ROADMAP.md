@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #192 — v3.5.206 (2026-11-07 18:18 UTC)
-- **New AST Shield**: `SLOP-272` (`no-non-atomic-toctou-fs-mutation-v272`, CWE-367) — `Non-Atomic TOCTOU File Existence Check Before Write`
-- **Threat Model**: AI models routinely generate fs.existsSync(p) followed by fs.writeFileSync(p), creating a CWE-367 Time-of-Check Time-of-Use race window exploitable via symlink swapping.
-- **Verification Suite**: `465/465` unit tests passed, `272` active AST rules, repo score `100/100` (`2133ms`)
-
 ### Sprint #193 — v3.5.207 (2026-11-07 18:21 UTC)
 - **New AST Shield**: `SLOP-273` (`no-hallucinated-cipher-primitive-v273`, CWE-327) — `Hallucinated Non-Standard Cryptographic Cipher Names`
 - **Threat Model**: 1.  **Analyze the Request:** *   **Rule Name:** hallucinated-cipher-primitive (CWE-327). This means AI models are hallucinating non-standard, broken, or invalid cryptographic primitives/cipher names (e.g., 'aes-256-turbo', 'sha256-fast') and replacing them with standard ones ('aes-256-gcm', 'sha256'). *   **Blocked Code:** `crypto.createCipheriv('aes-256-tur
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-286` (`no-phantom-ai-sdk-slopsquatting-v286`, CWE-1357) — `Phantom AI SDK Wrapper Package Slopsquatting`
 - **Threat Model**: LLMs hallucinate plausible AI helper packages like @anthropic/tools-pro or openai-streaming-helper in package.json and requirements.txt, exposing builds to supply-chain hijacking.
 - **Verification Suite**: `479/479` unit tests passed, `286` active AST rules, repo score `100/100` (`2258ms`)
+
+### Sprint #207 — v3.5.221 (2026-11-07 19:03 UTC)
+- **New AST Shield**: `SLOP-287` (`no-unbounded-mpsc-queue-sprawl-v287`, CWE-400) — `Unbounded MPSC & Asyncio Queue Memory Exhaustion`
+- **Threat Model**: AI concurrency scaffolding defaults to tokio::sync::mpsc::unbounded_channel() and unbuffered asyncio.Queue(), removing backpressure and causing OOM kills under traffic spikes.
+- **Verification Suite**: `480/480` unit tests passed, `287` active AST rules, repo score `100/100` (`2154ms`)
