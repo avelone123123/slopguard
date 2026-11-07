@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #156 — v3.5.170 (2026-11-07 16:33 UTC)
-- **New AST Shield**: `SLOP-236` (`no-phantom-ai-sdk-slopsquatting-v236`, CWE-1357) — `Phantom AI SDK Wrapper Package Slopsquatting`
-- **Threat Model**: 1.  **Analyze the Request:** *   **Rule/Topic:** Phantom AI SDK Wrapper Package Slopsquatting (CWE-1357). This is a specific type of typosquatting where package names are slightly altered to look like legitimate, popular packages (phantom-ai-sdk vs openai-streaming-helper/anthropic). *   **Blocked Code:** `"@anthropic/tools-pro": "^1.0.0", "openai-streaming-
-- **Verification Suite**: `429/429` unit tests passed, `236` active AST rules, repo score `100/100` (`2110ms`)
-
 ### Sprint #157 — v3.5.171 (2026-11-07 16:37 UTC)
 - **New AST Shield**: `SLOP-237` (`no-unbounded-mpsc-queue-sprawl-v237`, CWE-400) — `Unbounded MPSC & Asyncio Queue Memory Exhaustion`
 - **Threat Model**: 1.  **Analyze the Request:** *   **Rule/CWE:** unbounded-mpsc-queue-sprawl (Unbounded MPSC & Asyncio Queue Memory Exhaustion). *   **Blocked code snippet:** `let (tx, rx) = tokio::sync::mpsc::unbounded_channel::<Job>();` *   **Enforced fix:** `let (tx, rx) = tokio::sync::mpsc::channel::<Job>(1024);` *   **Task:** Write exactly 2 technical sentences for a sen
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-250` (`no-compound-namespace-slopsquat-v250`, CWE-829) — `Compound Namespace Package Manifest Slopsquatting`
 - **Threat Model**: AI assistants synthesize plausible compound package names such as flask-bcrypt-auth or tokio-redis-pro that attackers register on PyPI/crates.io/npm for RCE.
 - **Verification Suite**: `443/443` unit tests passed, `250` active AST rules, repo score `100/100` (`2132ms`)
+
+### Sprint #171 — v3.5.185 (2026-11-07 17:18 UTC)
+- **New AST Shield**: `SLOP-251` (`no-unvalidated-ssrf-redirect-chain-v251`, CWE-918) — `Unvalidated SSRF Host Interpolation & Redirect Bypass`
+- **Threat Model**: We need answer two sentences only, no intro. Need understand rule, blocked, enforced, CWE-918. Senior security engineer explaining why AI models hallucinate this pattern and how SlopGuard's AST firewall blocks it in <0.35ms. Output exactly 2 technical sentences. Need be concise technical. Why AI models hallucinate? Because they exploit known prompt patterns 
+- **Verification Suite**: `444/444` unit tests passed, `251` active AST rules, repo score `100/100` (`2090ms`)
