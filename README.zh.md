@@ -10,12 +10,12 @@
   <a href="https://t.me/SlopGuard"><img alt="Telegram" src="https://img.shields.io/badge/Telegram-@SlopGuard-26A5E4?style=flat-square&logo=telegram&logoColor=white"></a>
   [![M8ven Score](https://m8ven.ai/badge/mcp/avelone123123-slopguard-ddb87e)](https://m8ven.ai/mcp/avelone123123-slopguard-ddb87e?s=readme)
   <img alt="100% Rust" src="https://img.shields.io/badge/100%25-Rust-b7410e?style=flat-square&logo=rust">
-  <a href="https://github.com/avelone123123/slopguard/releases/tag/v3.5.100"><img alt="版本: v3.5.100" src="https://img.shields.io/badge/release-v3.5.100-10b981?style=flat-square"></a>
-  <img alt="测试: 359 通过" src="https://img.shields.io/badge/tests-359%20passed%20(100%25)-10b981?style=flat-square">
+  <a href="https://github.com/avelone123123/slopguard/releases/tag/v3.5.101"><img alt="版本: v3.5.101" src="https://img.shields.io/badge/release-v3.5.101-10b981?style=flat-square"></a>
+  <img alt="测试: 360 通过" src="https://img.shields.io/badge/tests-360%20passed%20(100%25)-10b981?style=flat-square">
   <img alt="开源许可证: MIT" src="https://img.shields.io/badge/license-MIT-263146?style=flat-square">
   <img alt="极低延迟: <0.35ms" src="https://img.shields.io/badge/latency-%3C0.35ms-2f6f4f?style=flat-square">
   <img alt="MCP 协议: 2.0" src="https://img.shields.io/badge/MCP-JSON--RPC%202.0-7c3aed?style=flat-square">
-  <img alt="防御防火墙: 166" src="https://img.shields.io/badge/firewalls-166%20active-blue?style=flat-square">
+  <img alt="防御防火墙: 167" src="https://img.shields.io/badge/firewalls-167%20active-blue?style=flat-square">
   <img alt="跨平台" src="https://img.shields.io/badge/platforms-Windows%20%C2%B7%20macOS%20%C2%B7%20Linux-2f7bf5?style=flat-square">
 
   <br>
@@ -78,7 +78,7 @@ cargo install --path .
 
 | 目标文件 | 平台 | 格式 | SHA-256 校验哈希 |
 | :--- | :--- | :--- | :--- |
-| `slopguard-v3.5.100-windows-x64.exe` | Windows x86_64 | Native PE Standalone | `A6F0345EF99300C19653F6232BA134A2B71118D5B85265FA1B9A69E9F5101B06` |
+| `slopguard-v3.5.101-windows-x64.exe` | Windows x86_64 | Native PE Standalone | `A6F0345EF99300C19653F6232BA134A2B71118D5B85265FA1B9A69E9F5101B06` |
 
 或从源码构建：
 
@@ -303,7 +303,7 @@ SlopGuard 将全部 66 个活跃 AST 防火墙映射到 16 个战略级 AI 代�
 
 | 评估工具 | 冷启动耗时 | 扫描耗时 (10k 行 Diff) | 内存峰值 |
 | :--- | :--- | :--- | :--- |
-| **SlopGuard (Rust v3.5.100)** | **< 2.5ms** | **< 0.35ms / 10k LOC** | **< 5.8 MB** |
+| **SlopGuard (Rust v3.5.101)** | **< 2.5ms** | **< 0.35ms / 10k LOC** | **< 5.8 MB** |
 | Biome | ~45ms | ~30ms | ~28 MB |
 | ESLint | ~620ms | ~480ms | ~140 MB |
 | SonarQube Scanner | ~4,200ms | ~3,100ms | ~600 MB |
