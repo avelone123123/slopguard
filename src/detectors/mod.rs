@@ -252,6 +252,7 @@ AstDetectorDefinition { id: "SLOP-146", name: "no-phantom-ai-sdk-slopsquatting-v
 AstDetectorDefinition { id: "SLOP-147", name: "no-unbounded-mpsc-queue-sprawl-v147", severity: SlopSeverity::Error, category: "async-concurrency", cwe: "CWE-400", description: "Unbounded channel or async queue allocation lacking backpressure capacity", recommendation: "Replace unbounded_channel with bounded mpsc::channel(N) to enforce backpressure" },
 AstDetectorDefinition { id: "SLOP-148", name: "no-truncated-hex-entropy-keygen-v148", severity: SlopSeverity::Error, category: "crypto-auth", cwe: "CWE-326", description: "Truncated hex buffer slicing or Math.random key generation reducing entropy", recommendation: "Use full 32-byte CSPRNG buffers or Argon2id/HKDF key derivation" },
 AstDetectorDefinition { id: "SLOP-149", name: "no-async-iterator-unclosed-break-v149", severity: SlopSeverity::Error, category: "async-concurrency", cwe: "CWE-775", description: "Early break or return inside for-await-of loop without stream closure", recommendation: "Wrap async stream iteration in try/finally and call stream.destroy()" },
+AstDetectorDefinition { id: "SLOP-150", name: "no-compound-namespace-slopsquat-v150", severity: SlopSeverity::Error, category: "supply-chain", cwe: "CWE-829", description: "Synthetic compound package names in dependency manifests", recommendation: "Verify package existence on canonical registry and pin exact version" },
 ];
 #[allow(dead_code)]
 pub static ACTIVE_CONTRACTS: &[crate::types::AstDetectorContract] = &[
