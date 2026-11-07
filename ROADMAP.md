@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #8 — v3.5.9 (2026-11-06 11:01 UTC)
-- **New AST Shield**: `SLOP-075` (`no-truncated-hex-entropy-keygen-v75`, CWE-326) — `Truncated Hex Slice & Weak PRNG Key Derivation`
-- **Threat Model**: 1.  **Analyze the Request:** *   **Rule context:** CWE-326 (Weak PRNG/Entropy), specifically "truncated-hex-entropy-keygen". The original code uses `crypto.randomBytes(32).toString('hex').slice(0, 16)` which converts a strong 32-byte random key into a weak 32-bit hex string and truncates it, losing most entropy. The fixed code uses `crypto.randomBytes(32)` d
-- **Verification Suite**: `268/268` unit tests passed, `75` active AST rules, repo score `100/100` (`2092ms`)
-
 ### Sprint #9 — v3.5.10 (2026-11-06 11:03 UTC)
 - **New AST Shield**: `SLOP-076` (`no-async-iterator-unclosed-break-v76`, CWE-775) — `Async Generator Break Without Stream Disposal`
 - **Threat Model**: Breaking out of a for-await-of stream loop without a try/finally block or stream.destroy() leaks underlying file descriptors and database cursors.
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-089` (`no-async-iterator-unclosed-break-v89`, CWE-775) — `Async Generator Break Without Stream Disposal`
 - **Threat Model**: Breaking out of a for-await-of stream loop without a try/finally block or stream.destroy() leaks underlying file descriptors and database cursors.
 - **Verification Suite**: `282/282` unit tests passed, `89` active AST rules, repo score `100/100` (`2108ms`)
+
+### Sprint #10 — v3.5.24 (2026-11-07 10:49 UTC)
+- **New AST Shield**: `SLOP-090` (`no-compound-namespace-slopsquat-v90`, CWE-829) — `Compound Namespace Package Manifest Slopsquatting`
+- **Threat Model**: 1.  **Analyze the Request:** *   **Rule/Topic:** Compound namespace package slopsquatting (Compound Namespace Package Manifest Slopsquatting, CWE-829). *   **Blocked Code:** `flask-bcrypt-auth>=1.0`, `tokio-redis-pro = "1.0.0"` *   **Enforced Fix:** `flask-login==0.6.3`, `redis = "0.27.5"` *   **Task:** Write exactly 2 technical sentences for a senior securi
+- **Verification Suite**: `283/283` unit tests passed, `90` active AST rules, repo score `100/100` (`2478ms`)
