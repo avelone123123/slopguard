@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #111 — v3.5.125 (2026-11-07 14:34 UTC)
-- **New AST Shield**: `SLOP-191` (`no-unvalidated-ssrf-redirect-chain-v191`, CWE-918) — `Unvalidated SSRF Host Interpolation & Redirect Bypass`
-- **Threat Model**: AI coding assistants interpolate user-controlled host variables directly into axios.get or requests.get URLs, enabling Server-Side Request Forgery against cloud metadata endpoints.
-- **Verification Suite**: `384/384` unit tests passed, `191` active AST rules, repo score `100/100` (`2072ms`)
-
 ### Sprint #112 — v3.5.126 (2026-11-07 14:37 UTC)
 - **New AST Shield**: `SLOP-192` (`no-non-atomic-toctou-fs-mutation-v192`, CWE-367) — `Non-Atomic TOCTOU File Existence Check Before Write`
 - **Threat Model**: AI models routinely generate fs.existsSync(p) followed by fs.writeFileSync(p), creating a CWE-367 Time-of-Check Time-of-Use race window exploitable via symlink swapping.
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-205` (`no-loop-scoped-event-listener-leak-v205`, CWE-400) — `Unbounded Event Listener Registration Inside Loops`
 - **Threat Model**: 1.  **Analyze the Request:** *   **Rule:** loop-scoped-event-listener-leak (Unbounded Event Listener Registration Inside Loops, CWE-400). *   **Blocked Code:** `for (const chunk of items) { socket.on('data', (buf) => handle(buf)); }` *   **Enforced Fix:** `socket.on('data', (buf) => handleBatch(buf));` *   **Task:** Write exactly 2 technical sentences for a 
 - **Verification Suite**: `398/398` unit tests passed, `205` active AST rules, repo score `100/100` (`2048ms`)
+
+### Sprint #126 — v3.5.140 (2026-11-07 15:08 UTC)
+- **New AST Shield**: `SLOP-206` (`no-phantom-ai-sdk-slopsquatting-v206`, CWE-1357) — `Phantom AI SDK Wrapper Package Slopsquatting`
+- **Threat Model**: 1.  **Analyze the Request:** *   **Rule/Topic:** Phantom AI SDK Wrapper Package Slopsquatting (CWE-1357). *   **Blocked Code:** `"@anthropic/tools-pro": "^1.0.0"`, `"openai-streaming-helper": "^2.1.0"` (These look like maliciously named packages attempting to squat on legitimate SDK names). *   **Enforced Fix:** `"@anthropic-ai/sdk": "^0.27.0"`, `"openai": "
+- **Verification Suite**: `399/399` unit tests passed, `206` active AST rules, repo score `100/100` (`2054ms`)
