@@ -299,7 +299,7 @@ static void RenderWindow(HDC hdc, int w, int h) {
     DrawTxt(hdc, L"OpenRouter Free Tier Only (Zero Agy)", x4 + 16, cy1 + 68, x4 + cw4 - 10, cy2 - 8, cMuted, fMono, DT_LEFT | DT_SINGLELINE);
     int tabY = 172;
     DrawFramedBox(hdc, 18, tabY, 270, tabY + 28, g_state.activeTab == 1 ? cCard : cBg, g_state.activeTab == 1 ? cBlue : cBorder);
-    DrawTxt(hdc, L"AST Firewall Catalog (129 Rules)", 18, tabY, 270, tabY + 28, g_state.activeTab == 1 ? cText : cMuted, fBold, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
+    DrawTxt(hdc, L"AST Firewall Catalog (130 Rules)", 18, tabY, 270, tabY + 28, g_state.activeTab == 1 ? cText : cMuted, fBold, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
     DrawFramedBox(hdc, 278, tabY, 558, tabY + 28, g_state.activeTab == 2 ? cCard : cBg, g_state.activeTab == 2 ? cBlue : cBorder);
     DrawTxt(hdc, L"User Guide / Гайд / 指南 (EN·RU·ZH)", 278, tabY, 558, tabY + 28, g_state.activeTab == 2 ? cText : cMuted, fBold, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
     const wchar_t* langLabels[3] = { L"[ EN ]", L"[ RU ]", L"[ 中文 ]" };
@@ -531,8 +531,8 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE, PWSTR, int nCmdShow) {
     g_state.totalIssues = 0;
     g_state.errors = 0;
     g_state.warnings = 0;
-    g_state.activeRules = 129;
-    g_state.passedTests = 322;
+    g_state.activeRules = 130;
+    g_state.passedTests = 323;
     g_state.activeTab = 1;
     g_state.selectedRow = 0;
     g_state.scrollOffset = 0;

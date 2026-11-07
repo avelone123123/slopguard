@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #35 — v3.5.49 (2026-11-07 11:45 UTC)
-- **New AST Shield**: `SLOP-115` (`no-loop-scoped-event-listener-leak-v115`, CWE-400) — `Unbounded Event Listener Registration Inside Loops`
-- **Threat Model**: AI-generated stream handlers attach emitter.on('data', ...) inside for/while loops without cleanup, exhausting V8 heap memory and triggering MaxListenersExceededWarning.
-- **Verification Suite**: `308/308` unit tests passed, `115` active AST rules, repo score `100/100` (`2077ms`)
-
 ### Sprint #36 — v3.5.50 (2026-11-07 11:48 UTC)
 - **New AST Shield**: `SLOP-116` (`no-phantom-ai-sdk-slopsquatting-v116`, CWE-1357) — `Phantom AI SDK Wrapper Package Slopsquatting`
 - **Threat Model**: 1.  **Analyze the Request:** *   **Rule:** phantom-ai-sdk-slopsquatting (Phantom AI SDK Wrapper Package Slopsquatting, CWE-1357). *   **Blocked Code:** `"@anthropic/tools-pro": "^1.0.0", "openai-streaming-helper": "^2.1.0"` (Sounds like slopsquatting names like "tools-pro" and "openai-streaming-helper" which are plausible but maliciously crafted names that l
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-129` (`no-async-iterator-unclosed-break-v129`, CWE-775) — `Async Generator Break Without Stream Disposal`
 - **Threat Model**: Breaking out of a for-await-of stream loop without a try/finally block or stream.destroy() leaks underlying file descriptors and database cursors.
 - **Verification Suite**: `322/322` unit tests passed, `129` active AST rules, repo score `100/100` (`2067ms`)
+
+### Sprint #50 — v3.5.64 (2026-11-07 12:18 UTC)
+- **New AST Shield**: `SLOP-130` (`no-compound-namespace-slopsquat-v130`, CWE-829) — `Compound Namespace Package Manifest Slopsquatting`
+- **Threat Model**: AI assistants synthesize plausible compound package names such as flask-bcrypt-auth or tokio-redis-pro that attackers register on PyPI/crates.io/npm for RCE.
+- **Verification Suite**: `323/323` unit tests passed, `130` active AST rules, repo score `100/100` (`2023ms`)
