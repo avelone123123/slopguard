@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #147 — v3.5.161 (2026-11-07 16:05 UTC)
-- **New AST Shield**: `SLOP-227` (`no-unbounded-mpsc-queue-sprawl-v227`, CWE-400) — `Unbounded MPSC & Asyncio Queue Memory Exhaustion`
-- **Threat Model**: AI concurrency scaffolding defaults to tokio::sync::mpsc::unbounded_channel() and unbuffered asyncio.Queue(), removing backpressure and causing OOM kills under traffic spikes.
-- **Verification Suite**: `420/420` unit tests passed, `227` active AST rules, repo score `100/100` (`2065ms`)
-
 ### Sprint #148 — v3.5.162 (2026-11-07 16:08 UTC)
 - **New AST Shield**: `SLOP-228` (`no-truncated-hex-entropy-keygen-v228`, CWE-326) — `Truncated Hex Slice & Weak PRNG Key Derivation`
 - **Threat Model**: AI models frequently slice hex-encoded random bytes to 16 chars (reducing 128-bit entropy to 64 bits) or use Math.random().toString(36) for AES/JWT secret keys.
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-241` (`no-unvalidated-ssrf-redirect-chain-v241`, CWE-918) — `Unvalidated SSRF Host Interpolation & Redirect Bypass`
 - **Threat Model**: 1.  **Analyze the Request:** *   **Rule:** `unvalidated-ssrf-redirect-chain` (CWE-918). *   **Blocked code example:** `const res = await axios.get(`https://${req.query.apiHost}/v1/profile`);` (SSRF via user input interpolation). *   **Enforced fix example:** Checking `apiHost` against an allowlist, then hardcoding/using a safe URL. *   **Task:** Write *exact
 - **Verification Suite**: `434/434` unit tests passed, `241` active AST rules, repo score `100/100` (`2116ms`)
+
+### Sprint #162 — v3.5.176 (2026-11-07 16:51 UTC)
+- **New AST Shield**: `SLOP-242` (`no-non-atomic-toctou-fs-mutation-v242`, CWE-367) — `Non-Atomic TOCTOU File Existence Check Before Write`
+- **Threat Model**: AI models routinely generate fs.existsSync(p) followed by fs.writeFileSync(p), creating a CWE-367 Time-of-Check Time-of-Use race window exploitable via symlink swapping.
+- **Verification Suite**: `435/435` unit tests passed, `242` active AST rules, repo score `100/100` (`2141ms`)

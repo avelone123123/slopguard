@@ -4911,4 +4911,14 @@ assert!(!findings.is_empty());
 let safe_findings = crate::detectors::command_injection::detect_speculative_ssrf_interpolation_in_content("safe.js", "axios.get(\"https://api.verified.com/v1\")");
 assert_eq!(safe_findings.len(), 0);
 }
+#[test]
+fn test_council_slop_242_non_atomic_toctou_fs_mutation() {
+let def = crate::detectors::AST_DETECTOR_DEFINITIONS.iter().find(|d| d.id == "SLOP-242").unwrap();
+assert_eq!(def.name, "no-non-atomic-toctou-fs-mutation-v242");
+assert_eq!(def.cwe, "CWE-367");
+let findings = crate::detectors::path_traversal::detect_speculative_file_race_toctou_in_content("race.js", "fs.existsSync(p); fs.writeFileSync(p, data);");
+assert!(!findings.is_empty());
+let safe_findings = crate::detectors::path_traversal::detect_speculative_file_race_toctou_in_content("safe.js", "fs.writeFileSync(p, data, { flag: \"wx\" });");
+assert_eq!(safe_findings.len(), 0);
+}
 }
