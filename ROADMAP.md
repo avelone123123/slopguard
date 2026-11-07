@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #5 — v3.5.6 (2026-11-06 10:54 UTC)
-- **New AST Shield**: `SLOP-072` (`no-loop-scoped-event-listener-leak-v72`, CWE-400) — `Unbounded Event Listener Registration Inside Loops`
-- **Threat Model**: 1.  **Analyze the Request:** *   **Rule:** `loop-scoped-event-listener-leak` (Unbounded Event Listener Registration Inside Loops, CWE-400). *   **Blocked code:** `for (const chunk of items) { socket.on('data', (buf) => handle(buf)); }` (registers an event listener per iteration of the loop, causing a memory leak as 'data' listeners accumulate). *   **Enforce
-- **Verification Suite**: `265/265` unit tests passed, `72` active AST rules, repo score `100/100` (`2106ms`)
-
 ### Sprint #6 — v3.5.7 (2026-11-06 10:56 UTC)
 - **New AST Shield**: `SLOP-073` (`no-phantom-ai-sdk-slopsquatting-v73`, CWE-1357) — `Phantom AI SDK Wrapper Package Slopsquatting`
 - **Threat Model**: 1.  **Analyze the Request:** *   **Rule context:** Phantom AI SDK Wrapper Package Slopsquatting (CWE-1357). This refers to a malicious package (named "phantom-ai-sdk-slopsquatting") that likely mimics official AI SDKs to trick developers into using typosquatting versions that exfiltrate data or compromise environments. *   **Blocked code:** `"@anthropic/tool
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-086` (`no-phantom-ai-sdk-slopsquatting-v86`, CWE-1357) — `Phantom AI SDK Wrapper Package Slopsquatting`
 - **Threat Model**: AI models hallucinate this pattern because they are trained on extensive package ecosystems where name collisions and misleading version ranges are prevalent, leading them to generate plausible yet unsafe dependency specifications. SlopGuard’s AST firewall inspects the dependency declaration’s abstract syntax tree in real time, matching prohibited identifier
 - **Verification Suite**: `279/279` unit tests passed, `86` active AST rules, repo score `100/100` (`2116ms`)
+
+### Sprint #7 — v3.5.21 (2026-11-07 10:42 UTC)
+- **New AST Shield**: `SLOP-087` (`no-unbounded-mpsc-queue-sprawl-v87`, CWE-400) — `Unbounded MPSC & Asyncio Queue Memory Exhaustion`
+- **Threat Model**: AI models often overfit to common async patterns and ignore resource‑exhaustion risks, leading them to suggest unbounded mpsc channels
+- **Verification Suite**: `280/280` unit tests passed, `87` active AST rules, repo score `100/100` (`2219ms`)
