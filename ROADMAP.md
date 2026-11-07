@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #105 — v3.5.119 (2026-11-07 14:21 UTC)
-- **New AST Shield**: `SLOP-185` (`no-loop-scoped-event-listener-leak-v185`, CWE-400) — `Unbounded Event Listener Registration Inside Loops`
-- **Threat Model**: AI-generated stream handlers attach emitter.on('data', ...) inside for/while loops without cleanup, exhausting V8 heap memory and triggering MaxListenersExceededWarning.
-- **Verification Suite**: `378/378` unit tests passed, `185` active AST rules, repo score `100/100` (`2069ms`)
-
 ### Sprint #106 — v3.5.120 (2026-11-07 14:24 UTC)
 - **New AST Shield**: `SLOP-186` (`no-phantom-ai-sdk-slopsquatting-v186`, CWE-1357) — `Phantom AI SDK Wrapper Package Slopsquatting`
 - **Threat Model**: LLMs hallucinate plausible AI helper packages like @anthropic/tools-pro or openai-streaming-helper in package.json and requirements.txt, exposing builds to supply-chain hijacking.
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-199` (`no-async-iterator-unclosed-break-v199`, CWE-775) — `Async Generator Break Without Stream Disposal`
 - **Threat Model**: We need to answer: "Write exactly 2 technical sentences for a senior security engineer explaining why AI models hallucinate this pattern and how SlopGuard's AST firewall blocks it in <0.35ms. Output ONLY the 2 sentences, no intro." So we need to craft two technical sentences that explain two things: (1) Why AI models hallucinate this pattern (the async itera
 - **Verification Suite**: `392/392` unit tests passed, `199` active AST rules, repo score `100/100` (`2100ms`)
+
+### Sprint #120 — v3.5.134 (2026-11-07 14:55 UTC)
+- **New AST Shield**: `SLOP-200` (`no-compound-namespace-slopsquat-v200`, CWE-829) — `Compound Namespace Package Manifest Slopsquatting`
+- **Threat Model**: AI assistants synthesize plausible compound package names such as flask-bcrypt-auth or tokio-redis-pro that attackers register on PyPI/crates.io/npm for RCE.
+- **Verification Suite**: `393/393` unit tests passed, `200` active AST rules, repo score `100/100` (`2079ms`)
