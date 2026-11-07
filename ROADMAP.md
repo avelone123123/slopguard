@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #93 — v3.5.107 (2026-11-07 13:54 UTC)
-- **New AST Shield**: `SLOP-173` (`no-hallucinated-cipher-primitive-v173`, CWE-327) — `Hallucinated Non-Standard Cryptographic Cipher Names`
-- **Threat Model**: LLMs invent non-existent cipher strings such as aes-256-turbo or sha256-fast in OpenSSL and Node crypto calls, causing runtime panics or silent fallback to weak encryption.
-- **Verification Suite**: `366/366` unit tests passed, `173` active AST rules, repo score `100/100` (`2093ms`)
-
 ### Sprint #94 — v3.5.108 (2026-11-07 13:57 UTC)
 - **New AST Shield**: `SLOP-174` (`no-shell-template-subprocess-exec-v174`, CWE-78) — `Formatted Shell String Subprocess Command Injection`
 - **Threat Model**: AI assistants pass formatted f-strings or template literals into subprocess.Popen(..., shell=True) and child_process.exec, allowing arbitrary shell command execution.
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-187` (`no-unbounded-mpsc-queue-sprawl-v187`, CWE-400) — `Unbounded MPSC & Asyncio Queue Memory Exhaustion`
 - **Threat Model**: AI concurrency scaffolding defaults to tokio::sync::mpsc::unbounded_channel() and unbuffered asyncio.Queue(), removing backpressure and causing OOM kills under traffic spikes.
 - **Verification Suite**: `380/380` unit tests passed, `187` active AST rules, repo score `100/100` (`2070ms`)
+
+### Sprint #108 — v3.5.122 (2026-11-07 14:28 UTC)
+- **New AST Shield**: `SLOP-188` (`no-truncated-hex-entropy-keygen-v188`, CWE-326) — `Truncated Hex Slice & Weak PRNG Key Derivation`
+- **Threat Model**: AI models frequently slice hex-encoded random bytes to 16 chars (reducing 128-bit entropy to 64 bits) or use Math.random().toString(36) for AES/JWT secret keys.
+- **Verification Suite**: `381/381` unit tests passed, `188` active AST rules, repo score `100/100` (`2081ms`)
