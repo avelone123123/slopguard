@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #65 — v3.5.79 (2026-11-07 12:51 UTC)
-- **New AST Shield**: `SLOP-145` (`no-loop-scoped-event-listener-leak-v145`, CWE-400) — `Unbounded Event Listener Registration Inside Loops`
-- **Threat Model**: AI-generated stream handlers attach emitter.on('data', ...) inside for/while loops without cleanup, exhausting V8 heap memory and triggering MaxListenersExceededWarning.
-- **Verification Suite**: `338/338` unit tests passed, `145` active AST rules, repo score `100/100` (`2034ms`)
-
 ### Sprint #66 — v3.5.80 (2026-11-07 12:53 UTC)
 - **New AST Shield**: `SLOP-146` (`no-phantom-ai-sdk-slopsquatting-v146`, CWE-1357) — `Phantom AI SDK Wrapper Package Slopsquatting`
 - **Threat Model**: LLMs hallucinate plausible AI helper packages like @anthropic/tools-pro or openai-streaming-helper in package.json and requirements.txt, exposing builds to supply-chain hijacking.
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-159` (`no-async-iterator-unclosed-break-v159`, CWE-775) — `Async Generator Break Without Stream Disposal`
 - **Threat Model**: Breaking out of a for-await-of stream loop without a try/finally block or stream.destroy() leaks underlying file descriptors and database cursors.
 - **Verification Suite**: `352/352` unit tests passed, `159` active AST rules, repo score `100/100` (`2058ms`)
+
+### Sprint #80 — v3.5.94 (2026-11-07 13:25 UTC)
+- **New AST Shield**: `SLOP-160` (`no-compound-namespace-slopsquat-v160`, CWE-829) — `Compound Namespace Package Manifest Slopsquatting`
+- **Threat Model**: 1.  **Analyze the Request:** *   **Rule Name:** compound-namespace-slopsquatting (Compound Namespace Package Manifest Slopsquatting, CWE-829). *   **Blocked Code:** flask-bcrypt-auth>=1.0, tokio-redis-pro = "1.0.0" (These look like AI hallucinated or artificially created package names that mimic real libraries but are malicious/unsafe). *   **Enforced Fix:**
+- **Verification Suite**: `353/353` unit tests passed, `160` active AST rules, repo score `100/100` (`2044ms`)
