@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #42 — v3.5.56 (2026-11-07 12:01 UTC)
-- **New AST Shield**: `SLOP-122` (`no-non-atomic-toctou-fs-mutation-v122`, CWE-367) — `Non-Atomic TOCTOU File Existence Check Before Write`
-- **Threat Model**: 1.  **Analyze the Request:** *   **Rule/Topic:** Non-Atomic TOCTOU File Existence Check Before Write (CWE-367). *   **Blocked Code:** `if (fs.existsSync(uploadPath)) { fs.writeFileSync(uploadPath, payload); }` *   **Enforced Fix:** `fs.writeFileSync(uploadPath, payload, { flag: 'wx' });` *   **Output Requirements:** Exactly 2 technical sentences. *   **Audie
-- **Verification Suite**: `315/315` unit tests passed, `122` active AST rules, repo score `100/100` (`2097ms`)
-
 ### Sprint #43 — v3.5.57 (2026-11-07 12:03 UTC)
 - **New AST Shield**: `SLOP-123` (`no-hallucinated-cipher-primitive-v123`, CWE-327) — `Hallucinated Non-Standard Cryptographic Cipher Names`
 - **Threat Model**: 1.  **Analyze the Request:** *   **Rule:** hallucinated-cipher-primitive (hallucinated non-standard cryptographic cipher names, CWE-327). *   **Blocked code:** `const cipher = crypto.createCipheriv('aes-256-turbo', key, iv);` and `hashlib.new('sha256-fast')`. *   **Enforced fix:** `const cipher = crypto.createCipheriv('aes-256-gcm', key, iv);` and `hashlib.s
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-136` (`no-phantom-ai-sdk-slopsquatting-v136`, CWE-1357) — `Phantom AI SDK Wrapper Package Slopsquatting`
 - **Threat Model**: LLMs hallucinate plausible AI helper packages like @anthropic/tools-pro or openai-streaming-helper in package.json and requirements.txt, exposing builds to supply-chain hijacking.
 - **Verification Suite**: `329/329` unit tests passed, `136` active AST rules, repo score `100/100` (`2098ms`)
+
+### Sprint #57 — v3.5.71 (2026-11-07 12:33 UTC)
+- **New AST Shield**: `SLOP-137` (`no-unbounded-mpsc-queue-sprawl-v137`, CWE-400) — `Unbounded MPSC & Asyncio Queue Memory Exhaustion`
+- **Threat Model**: AI concurrency scaffolding defaults to tokio::sync::mpsc::unbounded_channel() and unbuffered asyncio.Queue(), removing backpressure and causing OOM kills under traffic spikes.
+- **Verification Suite**: `330/330` unit tests passed, `137` active AST rules, repo score `100/100` (`2076ms`)
