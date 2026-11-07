@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #128 — v3.5.142 (2026-11-07 15:12 UTC)
-- **New AST Shield**: `SLOP-208` (`no-truncated-hex-entropy-keygen-v208`, CWE-326) — `Truncated Hex Slice & Weak PRNG Key Derivation`
-- **Threat Model**: AI models frequently slice hex-encoded random bytes to 16 chars (reducing 128-bit entropy to 64 bits) or use Math.random().toString(36) for AES/JWT secret keys.
-- **Verification Suite**: `401/401` unit tests passed, `208` active AST rules, repo score `100/100` (`2031ms`)
-
 ### Sprint #129 — v3.5.143 (2026-11-07 15:15 UTC)
 - **New AST Shield**: `SLOP-209` (`no-async-iterator-unclosed-break-v209`, CWE-775) — `Async Generator Break Without Stream Disposal`
 - **Threat Model**: Breaking out of a for-await-of stream loop without a try/finally block or stream.destroy() leaks underlying file descriptors and database cursors.
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-222` (`no-non-atomic-toctou-fs-mutation-v222`, CWE-367) — `Non-Atomic TOCTOU File Existence Check Before Write`
 - **Threat Model**: We need to write exactly 2 technical sentences for a senior security engineer explaining why AI models hallucinate this pattern and how SlopGuard's AST firewall blocks it in <0.35ms. Output ONLY the 2 sentences, no intro. The pattern is a classic TOCTOU (time-of-check to time-of-use) file existence check before writing: `if (fs.existsSync(uploadPath)) { fs.w
 - **Verification Suite**: `415/415` unit tests passed, `222` active AST rules, repo score `100/100` (`2101ms`)
+
+### Sprint #143 — v3.5.157 (2026-11-07 15:52 UTC)
+- **New AST Shield**: `SLOP-223` (`no-hallucinated-cipher-primitive-v223`, CWE-327) — `Hallucinated Non-Standard Cryptographic Cipher Names`
+- **Threat Model**: 1.  **Analyze the Request:** *   **Rule Name:** hallucinated-cipher-primitive (CWE-327). *   **Blocked Code:** `const cipher = crypto.createCipheriv('aes-256-turbo', key, iv);` and `hashlib.new('sha256-fast')`. *   **Enforced Fix:** `const cipher = crypto.createCipheriv('aes-256-gcm', key, iv);` and `hashlib.sha256(data)`. *   **Task:** Write exactly 2 techn
+- **Verification Suite**: `416/416` unit tests passed, `223` active AST rules, repo score `100/100` (`2034ms`)

@@ -1,5 +1,10 @@
 # Changelog
 All notable changes to SlopGuard are documented in this file.
+## [3.5.157] - 2026-11-07
+### Added
+- Expanded AST Firewall Matrix to 223 Active Shields: Added `SLOP-223` (`no-hallucinated-cipher-primitive-v223`, CWE-327) — Fictional or non-standard cipher algorithm strings passed to crypto APIs.
+- Scaled Deterministic Test Battery: Verified 416/416 passing unit tests (100% pass rate, 0 warnings).
+- Threat Interception: 1.  **Analyze the Request:** *   **Rule Name:** hallucinated-cipher-primitive (CWE-327). *   **Blocked Code:** `const cipher = crypto.createCipheriv('aes-256-turbo', key, iv);` and `hashlib.new('sha256-fast')`. *   **Enforced Fix:** `const cipher = crypto.createCipheriv('aes-256-gcm', key, iv);` and `hashlib.sha256(data)`. *   **Task:** Write exactly 2 techn
 ## [3.5.156] - 2026-11-07
 ### Added
 - Expanded AST Firewall Matrix to 222 Active Shields: Added `SLOP-222` (`no-non-atomic-toctou-fs-mutation-v222`, CWE-367) — Non-atomic file existence check prior to destructive file write.
