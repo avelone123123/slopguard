@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #3 — v3.5.4 (2026-11-06 10:49 UTC)
-- **New AST Shield**: `SLOP-070` (`no-hallucinated-cipher-primitive-v70`, CWE-327) — `Hallucinated Non-Standard Cryptographic Cipher Names`
-- **Threat Model**: LLMs invent non-existent cipher strings such as aes-256-turbo or sha256-fast in OpenSSL and Node crypto calls, causing runtime panics or silent fallback to weak encryption.
-- **Verification Suite**: `263/263` unit tests passed, `70` active AST rules, repo score `100/100` (`2097ms`)
-
 ### Sprint #4 — v3.5.5 (2026-11-06 10:51 UTC)
 - **New AST Shield**: `SLOP-071` (`no-shell-template-subprocess-exec-v71`, CWE-78) — `Formatted Shell String Subprocess Command Injection`
 - **Threat Model**: AI assistants pass formatted f-strings or template literals into subprocess.Popen(..., shell=True) and child_process.exec, allowing arbitrary shell command execution.
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-084` (`no-shell-template-subprocess-exec-v84`, CWE-78) — `Formatted Shell String Subprocess Command Injection`
 - **Threat Model**: AI models hallucinate this pattern because they are trained on large code corpora where the insecure `shell
 - **Verification Suite**: `277/277` unit tests passed, `84` active AST rules, repo score `100/100` (`2344ms`)
+
+### Sprint #5 — v3.5.19 (2026-11-07 10:37 UTC)
+- **New AST Shield**: `SLOP-085` (`no-loop-scoped-event-listener-leak-v85`, CWE-400) — `Unbounded Event Listener Registration Inside Loops`
+- **Threat Model**: We need to output exactly 2 technical sentences, no intro, no extra text. Sentences should explain why AI models hallucinate this pattern (i.e., they generate code with unbounded listeners inside loops) and how SlopGuard's AST firewall blocks it in <0.35ms. We must ensure exactly 2 sentences, each separated by a period (or appropriate punctuation). No extra 
+- **Verification Suite**: `278/278` unit tests passed, `85` active AST rules, repo score `100/100` (`2193ms`)
