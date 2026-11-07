@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #136 — v3.5.150 (2026-11-07 15:31 UTC)
-- **New AST Shield**: `SLOP-216` (`no-phantom-ai-sdk-slopsquatting-v216`, CWE-1357) — `Phantom AI SDK Wrapper Package Slopsquatting`
-- **Threat Model**: LLMs hallucinate plausible AI helper packages like @anthropic/tools-pro or openai-streaming-helper in package.json and requirements.txt, exposing builds to supply-chain hijacking.
-- **Verification Suite**: `409/409` unit tests passed, `216` active AST rules, repo score `100/100` (`2081ms`)
-
 ### Sprint #137 — v3.5.151 (2026-11-07 15:34 UTC)
 - **New AST Shield**: `SLOP-217` (`no-unbounded-mpsc-queue-sprawl-v217`, CWE-400) — `Unbounded MPSC & Asyncio Queue Memory Exhaustion`
 - **Threat Model**: AI concurrency scaffolding defaults to tokio::sync::mpsc::unbounded_channel() and unbuffered asyncio.Queue(), removing backpressure and causing OOM kills under traffic spikes.
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-230` (`no-compound-namespace-slopsquat-v230`, CWE-829) — `Compound Namespace Package Manifest Slopsquatting`
 - **Threat Model**: AI assistants synthesize plausible compound package names such as flask-bcrypt-auth or tokio-redis-pro that attackers register on PyPI/crates.io/npm for RCE.
 - **Verification Suite**: `423/423` unit tests passed, `230` active AST rules, repo score `100/100` (`2090ms`)
+
+### Sprint #151 — v3.5.165 (2026-11-07 16:17 UTC)
+- **New AST Shield**: `SLOP-231` (`no-unvalidated-ssrf-redirect-chain-v231`, CWE-918) — `Unvalidated SSRF Host Interpolation & Redirect Bypass`
+- **Threat Model**: 1.  **Analyze the Request:** *   **Rule:** unvalidated-ssrf-redirect-chain (CWE-918). *   **Blocked Code:** `const res = await axios.get(`https://${req.query.apiHost}/v1/profile`);` (interpolates user input directly into an SSRF URL). *   **Enforced Fix:** Checks if `req.query.apiHost` is in an allowlist (`ALLOWED_ORIGINS`), throws an error if not, then uses
+- **Verification Suite**: `424/424` unit tests passed, `231` active AST rules, repo score `100/100` (`2072ms`)
