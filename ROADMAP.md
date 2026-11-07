@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #3 — v3.5.17 (2026-11-07 10:32 UTC)
-- **New AST Shield**: `SLOP-083` (`no-hallucinated-cipher-primitive-v83`, CWE-327) — `Hallucinated Non-Standard Cryptographic Cipher Names`
-- **Threat Model**: AI models hallucinate non‑standard cipher names like “aes-
-- **Verification Suite**: `276/276` unit tests passed, `83` active AST rules, repo score `100/100` (`2498ms`)
-
 ### Sprint #4 — v3.5.18 (2026-11-07 10:35 UTC)
 - **New AST Shield**: `SLOP-084` (`no-shell-template-subprocess-exec-v84`, CWE-78) — `Formatted Shell String Subprocess Command Injection`
 - **Threat Model**: AI models hallucinate this pattern because they are trained on large code corpora where the insecure `shell
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-097` (`no-unbounded-mpsc-queue-sprawl-v97`, CWE-400) — `Unbounded MPSC & Asyncio Queue Memory Exhaustion`
 - **Threat Model**: AI concurrency scaffolding defaults to tokio::sync::mpsc::unbounded_channel() and unbuffered asyncio.Queue(), removing backpressure and causing OOM kills under traffic spikes.
 - **Verification Suite**: `290/290` unit tests passed, `97` active AST rules, repo score `100/100` (`2138ms`)
+
+### Sprint #18 — v3.5.32 (2026-11-07 11:08 UTC)
+- **New AST Shield**: `SLOP-098` (`no-truncated-hex-entropy-keygen-v98`, CWE-326) — `Truncated Hex Slice & Weak PRNG Key Derivation`
+- **Threat Model**: AI models frequently slice hex-encoded random bytes to 16 chars (reducing 128-bit entropy to 64 bits) or use Math.random().toString(36) for AES/JWT secret keys.
+- **Verification Suite**: `291/291` unit tests passed, `98` active AST rules, repo score `100/100` (`2089ms`)
