@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #142 — v3.5.156 (2026-11-07 15:48 UTC)
-- **New AST Shield**: `SLOP-222` (`no-non-atomic-toctou-fs-mutation-v222`, CWE-367) — `Non-Atomic TOCTOU File Existence Check Before Write`
-- **Threat Model**: We need to write exactly 2 technical sentences for a senior security engineer explaining why AI models hallucinate this pattern and how SlopGuard's AST firewall blocks it in <0.35ms. Output ONLY the 2 sentences, no intro. The pattern is a classic TOCTOU (time-of-check to time-of-use) file existence check before writing: `if (fs.existsSync(uploadPath)) { fs.w
-- **Verification Suite**: `415/415` unit tests passed, `222` active AST rules, repo score `100/100` (`2101ms`)
-
 ### Sprint #143 — v3.5.157 (2026-11-07 15:52 UTC)
 - **New AST Shield**: `SLOP-223` (`no-hallucinated-cipher-primitive-v223`, CWE-327) — `Hallucinated Non-Standard Cryptographic Cipher Names`
 - **Threat Model**: 1.  **Analyze the Request:** *   **Rule Name:** hallucinated-cipher-primitive (CWE-327). *   **Blocked Code:** `const cipher = crypto.createCipheriv('aes-256-turbo', key, iv);` and `hashlib.new('sha256-fast')`. *   **Enforced Fix:** `const cipher = crypto.createCipheriv('aes-256-gcm', key, iv);` and `hashlib.sha256(data)`. *   **Task:** Write exactly 2 techn
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-236` (`no-phantom-ai-sdk-slopsquatting-v236`, CWE-1357) — `Phantom AI SDK Wrapper Package Slopsquatting`
 - **Threat Model**: 1.  **Analyze the Request:** *   **Rule/Topic:** Phantom AI SDK Wrapper Package Slopsquatting (CWE-1357). This is a specific type of typosquatting where package names are slightly altered to look like legitimate, popular packages (phantom-ai-sdk vs openai-streaming-helper/anthropic). *   **Blocked Code:** `"@anthropic/tools-pro": "^1.0.0", "openai-streaming-
 - **Verification Suite**: `429/429` unit tests passed, `236` active AST rules, repo score `100/100` (`2110ms`)
+
+### Sprint #157 — v3.5.171 (2026-11-07 16:37 UTC)
+- **New AST Shield**: `SLOP-237` (`no-unbounded-mpsc-queue-sprawl-v237`, CWE-400) — `Unbounded MPSC & Asyncio Queue Memory Exhaustion`
+- **Threat Model**: 1.  **Analyze the Request:** *   **Rule/CWE:** unbounded-mpsc-queue-sprawl (Unbounded MPSC & Asyncio Queue Memory Exhaustion). *   **Blocked code snippet:** `let (tx, rx) = tokio::sync::mpsc::unbounded_channel::<Job>();` *   **Enforced fix:** `let (tx, rx) = tokio::sync::mpsc::channel::<Job>(1024);` *   **Task:** Write exactly 2 technical sentences for a sen
+- **Verification Suite**: `430/430` unit tests passed, `237` active AST rules, repo score `100/100` (`2126ms`)
