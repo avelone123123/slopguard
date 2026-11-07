@@ -5481,4 +5481,14 @@ assert!(!findings.is_empty());
 let safe_findings = crate::detectors::insecure_crypto::detect_insecure_direct_crypto_keygen_in_content("safe.ts", "const key = crypto.randomBytes(32);");
 assert_eq!(safe_findings.len(), 0);
 }
+#[test]
+fn test_council_slop_299_async_iterator_unclosed_break() {
+let def = crate::detectors::AST_DETECTOR_DEFINITIONS.iter().find(|d| d.id == "SLOP-299").unwrap();
+assert_eq!(def.name, "no-async-iterator-unclosed-break-v299");
+assert_eq!(def.cwe, "CWE-775");
+let findings = crate::detectors::async_loop_traps::detect_async_generator_unhandled_break_in_content("stream.ts", "for await (const chunk of stream) {\n  if (done) break;\n}\n");
+assert!(!findings.is_empty());
+let safe_findings = crate::detectors::async_loop_traps::detect_async_generator_unhandled_break_in_content("safe.ts", "try {\n  for await (const chunk of stream) {\n    if (done) break;\n  }\n} finally {\n  stream.destroy();\n}\n");
+assert_eq!(safe_findings.len(), 0);
+}
 }
