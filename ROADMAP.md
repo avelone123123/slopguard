@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #203 — v3.5.217 (2026-11-07 18:51 UTC)
-- **New AST Shield**: `SLOP-283` (`no-hallucinated-cipher-primitive-v283`, CWE-327) — `Hallucinated Non-Standard Cryptographic Cipher Names`
-- **Threat Model**: LLMs invent non-existent cipher strings such as aes-256-turbo or sha256-fast in OpenSSL and Node crypto calls, causing runtime panics or silent fallback to weak encryption.
-- **Verification Suite**: `476/476` unit tests passed, `283` active AST rules, repo score `100/100` (`2122ms`)
-
 ### Sprint #204 — v3.5.218 (2026-11-07 18:54 UTC)
 - **New AST Shield**: `SLOP-284` (`no-shell-template-subprocess-exec-v284`, CWE-78) — `Formatted Shell String Subprocess Command Injection`
 - **Threat Model**: 1.  **Analyze the Request:** *   **Rule:** Shell-template-subprocess-exec (CWE-78 Formatted Shell String Subprocess Command Injection). *   **Blocked code:** `subprocess.Popen(f'tar -xzf {archive_name}', shell=True)` (f-string + shell=True = command injection). *   **Enforced fix:** `subprocess.run(['tar', '-xzf', archive_name], check=True)` (list args, no s
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-297` (`no-unbounded-mpsc-queue-sprawl-v297`, CWE-400) — `Unbounded MPSC & Asyncio Queue Memory Exhaustion`
 - **Threat Model**: AI concurrency scaffolding defaults to tokio::sync::mpsc::unbounded_channel() and unbuffered asyncio.Queue(), removing backpressure and causing OOM kills under traffic spikes.
 - **Verification Suite**: `490/490` unit tests passed, `297` active AST rules, repo score `100/100` (`2110ms`)
+
+### Sprint #218 — v3.5.232 (2026-11-07 19:36 UTC)
+- **New AST Shield**: `SLOP-298` (`no-truncated-hex-entropy-keygen-v298`, CWE-326) — `Truncated Hex Slice & Weak PRNG Key Derivation`
+- **Threat Model**: AI models frequently slice hex-encoded random bytes to 16 chars (reducing 128-bit entropy to 64 bits) or use Math.random().toString(36) for AES/JWT secret keys.
+- **Verification Suite**: `491/491` unit tests passed, `298` active AST rules, repo score `100/100` (`2086ms`)
