@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #126 — v3.5.140 (2026-11-07 15:08 UTC)
-- **New AST Shield**: `SLOP-206` (`no-phantom-ai-sdk-slopsquatting-v206`, CWE-1357) — `Phantom AI SDK Wrapper Package Slopsquatting`
-- **Threat Model**: 1.  **Analyze the Request:** *   **Rule/Topic:** Phantom AI SDK Wrapper Package Slopsquatting (CWE-1357). *   **Blocked Code:** `"@anthropic/tools-pro": "^1.0.0"`, `"openai-streaming-helper": "^2.1.0"` (These look like maliciously named packages attempting to squat on legitimate SDK names). *   **Enforced Fix:** `"@anthropic-ai/sdk": "^0.27.0"`, `"openai": "
-- **Verification Suite**: `399/399` unit tests passed, `206` active AST rules, repo score `100/100` (`2054ms`)
-
 ### Sprint #127 — v3.5.141 (2026-11-07 15:10 UTC)
 - **New AST Shield**: `SLOP-207` (`no-unbounded-mpsc-queue-sprawl-v207`, CWE-400) — `Unbounded MPSC & Asyncio Queue Memory Exhaustion`
 - **Threat Model**: AI concurrency scaffolding defaults to tokio::sync::mpsc::unbounded_channel() and unbuffered asyncio.Queue(), removing backpressure and causing OOM kills under traffic spikes.
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-220` (`no-compound-namespace-slopsquat-v220`, CWE-829) — `Compound Namespace Package Manifest Slopsquatting`
 - **Threat Model**: 1.  **Analyze the Request:** *   **Rule/Name:** compound-namespace-slopsquatting (CWE-829). *   **Blocked Code (Examples of slopsquat):** `flask-bcrypt-auth>=1.0`, `tokio-redis-pro = "1.0.0"`. *   **Enforced Fix (Correct versions):** `flask-login==0.6.3`, `redis = "0.27.5"`. *   **Task:** Write exactly 2 technical sentences for a senior security engineer exp
 - **Verification Suite**: `413/413` unit tests passed, `220` active AST rules, repo score `100/100` (`2076ms`)
+
+### Sprint #141 — v3.5.155 (2026-11-07 15:45 UTC)
+- **New AST Shield**: `SLOP-221` (`no-unvalidated-ssrf-redirect-chain-v221`, CWE-918) — `Unvalidated SSRF Host Interpolation & Redirect Bypass`
+- **Threat Model**: AI coding assistants interpolate user-controlled host variables directly into axios.get or requests.get URLs, enabling Server-Side Request Forgery against cloud metadata endpoints.
+- **Verification Suite**: `414/414` unit tests passed, `221` active AST rules, repo score `100/100` (`2247ms`)
