@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #2 — Web Playground, Live Audits & Interactive UX (2026-11-06 10:25 UTC)
-- **Intercepted Case Study**: `Hallucinated Non-Standard Cipher & Hash Names` via `SLOP-065 (no-hallucinated-crypto-algorithm)`
-- **Threat Model**: LLMs invent non-existent cipher strings such as aes-256-turbo or sha256-fast in OpenSSL and Node crypto calls, causing runtime panics or silent fallback to weak encryption.
-- **Live Repository Audit**: Score `100/100` across `12` files (`0 errors, 0 warnings`, `2607ms`)
-
 ### Sprint #4 — v3.5.1 (2026-11-06 10:34 UTC)
 - **New AST Shield**: `SLOP-067` (`no-shell-template-subprocess-exec-v67`, CWE-78) — `Formatted Shell String Subprocess Command Injection`
 - **Threat Model**: AI assistants pass formatted f-strings or template literals into subprocess.Popen(..., shell=True) and child_process.exec, allowing arbitrary shell command execution.
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-080` (`no-hallucinated-cipher-primitive-v80`, CWE-327) — `Hallucinated Non-Standard Cryptographic Cipher Names`
 - **Threat Model**: LLMs invent non-existent cipher strings such as aes-256-turbo or sha256-fast in OpenSSL and Node crypto calls, causing runtime panics or silent fallback to weak encryption.
 - **Verification Suite**: `273/273` unit tests passed, `80` active AST rules, repo score `100/100` (`2185ms`)
+
+### Sprint #1 — v3.5.15 (2026-11-07 10:27 UTC)
+- **New AST Shield**: `SLOP-081` (`no-unvalidated-ssrf-redirect-chain-v81`, CWE-918) — `Unvalidated SSRF Host Interpolation & Redirect Bypass`
+- **Threat Model**: We need exactly 2 technical sentences, no intro, no extra text. Must explain why AI models hallucinate this pattern and how SlopGuard's AST firewall blocks it in <0.35ms. Sentence 1: Why AI models hallucinate this pattern. Possibly because they rely on training data patterns and may misinterpret templating, leading to insecure interpolation. Sentence 2: How 
+- **Verification Suite**: `274/274` unit tests passed, `81` active AST rules, repo score `100/100` (`2208ms`)

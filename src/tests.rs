@@ -3301,4 +3301,14 @@ assert!(!findings.is_empty());
 let safe_findings = crate::detectors::insecure_crypto::detect_hallucinated_crypto_algorithm_in_content("safe.js", "crypto.createCipheriv(\"aes-256-gcm\", key, iv);");
 assert_eq!(safe_findings.len(), 0);
 }
+#[test]
+fn test_council_slop_081_unvalidated_ssrf_redirect_chain() {
+let def = crate::detectors::AST_DETECTOR_DEFINITIONS.iter().find(|d| d.id == "SLOP-081").unwrap();
+assert_eq!(def.name, "no-unvalidated-ssrf-redirect-chain-v81");
+assert_eq!(def.cwe, "CWE-918");
+let findings = crate::detectors::command_injection::detect_speculative_ssrf_interpolation_in_content("client.js", "axios.get(`https://${targetHost}/api/data`)");
+assert!(!findings.is_empty());
+let safe_findings = crate::detectors::command_injection::detect_speculative_ssrf_interpolation_in_content("safe.js", "axios.get(\"https://api.verified.com/v1\")");
+assert_eq!(safe_findings.len(), 0);
+}
 }
