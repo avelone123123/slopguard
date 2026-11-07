@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #195 — v3.5.209 (2026-11-07 18:27 UTC)
-- **New AST Shield**: `SLOP-275` (`no-loop-scoped-event-listener-leak-v275`, CWE-400) — `Unbounded Event Listener Registration Inside Loops`
-- **Threat Model**: AI-generated stream handlers attach emitter.on('data', ...) inside for/while loops without cleanup, exhausting V8 heap memory and triggering MaxListenersExceededWarning.
-- **Verification Suite**: `468/468` unit tests passed, `275` active AST rules, repo score `100/100` (`2090ms`)
-
 ### Sprint #196 — v3.5.210 (2026-11-07 18:30 UTC)
 - **New AST Shield**: `SLOP-276` (`no-phantom-ai-sdk-slopsquatting-v276`, CWE-1357) — `Phantom AI SDK Wrapper Package Slopsquatting`
 - **Threat Model**: 1.  **Analyze the Request:** *   **Rule:** phantom-ai-sdk-slopsquatting (Phantom AI SDK Wrapper Package Slopsquatting, CWE-1357). This implies a package name confusion/sneaky replacement where a malicious or vulnerable package is named similarly to a legitimate one to trick developers. *   **Blocked Code:** `"@anthropic/tools-pro": "^1.0.0", "openai-streamin
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-289` (`no-async-iterator-unclosed-break-v289`, CWE-775) — `Async Generator Break Without Stream Disposal`
 - **Threat Model**: Breaking out of a for-await-of stream loop without a try/finally block or stream.destroy() leaks underlying file descriptors and database cursors.
 - **Verification Suite**: `482/482` unit tests passed, `289` active AST rules, repo score `100/100` (`2119ms`)
+
+### Sprint #210 — v3.5.224 (2026-11-07 19:11 UTC)
+- **New AST Shield**: `SLOP-290` (`no-compound-namespace-slopsquat-v290`, CWE-829) — `Compound Namespace Package Manifest Slopsquatting`
+- **Threat Model**: AI assistants synthesize plausible compound package names such as flask-bcrypt-auth or tokio-redis-pro that attackers register on PyPI/crates.io/npm for RCE.
+- **Verification Suite**: `483/483` unit tests passed, `290` active AST rules, repo score `100/100` (`2145ms`)
