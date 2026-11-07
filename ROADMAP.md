@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #12 — v3.5.13 (2026-11-06 11:09 UTC)
-- **New AST Shield**: `SLOP-079` (`no-non-atomic-toctou-fs-mutation-v79`, CWE-367) — `Non-Atomic TOCTOU File Existence Check Before Write`
-- **Threat Model**: AI models routinely generate fs.existsSync(p) followed by fs.writeFileSync(p), creating a CWE-367 Time-of-Check Time-of-Use race window exploitable via symlink swapping.
-- **Verification Suite**: `272/272` unit tests passed, `79` active AST rules, repo score `100/100` (`2037ms`)
-
 ### Sprint #13 — v3.5.14 (2026-11-06 11:11 UTC)
 - **New AST Shield**: `SLOP-080` (`no-hallucinated-cipher-primitive-v80`, CWE-327) — `Hallucinated Non-Standard Cryptographic Cipher Names`
 - **Threat Model**: LLMs invent non-existent cipher strings such as aes-256-turbo or sha256-fast in OpenSSL and Node crypto calls, causing runtime panics or silent fallback to weak encryption.
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-093` (`no-hallucinated-cipher-primitive-v93`, CWE-327) — `Hallucinated Non-Standard Cryptographic Cipher Names`
 - **Threat Model**: LLMs invent non-existent cipher strings such as aes-256-turbo or sha256-fast in OpenSSL and Node crypto calls, causing runtime panics or silent fallback to weak encryption.
 - **Verification Suite**: `286/286` unit tests passed, `93` active AST rules, repo score `100/100` (`2223ms`)
+
+### Sprint #14 — v3.5.28 (2026-11-07 10:59 UTC)
+- **New AST Shield**: `SLOP-094` (`no-shell-template-subprocess-exec-v94`, CWE-78) — `Formatted Shell String Subprocess Command Injection`
+- **Threat Model**: AI assistants pass formatted f-strings or template literals into subprocess.Popen(..., shell=True) and child_process.exec, allowing arbitrary shell command execution.
+- **Verification Suite**: `287/287` unit tests passed, `94` active AST rules, repo score `100/100` (`2128ms`)
