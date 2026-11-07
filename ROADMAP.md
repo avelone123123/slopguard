@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #69 — v3.5.83 (2026-11-07 13:01 UTC)
-- **New AST Shield**: `SLOP-149` (`no-async-iterator-unclosed-break-v149`, CWE-775) — `Async Generator Break Without Stream Disposal`
-- **Threat Model**: Breaking out of a for-await-of stream loop without a try/finally block or stream.destroy() leaks underlying file descriptors and database cursors.
-- **Verification Suite**: `342/342` unit tests passed, `149` active AST rules, repo score `100/100` (`2091ms`)
-
 ### Sprint #70 — v3.5.84 (2026-11-07 13:02 UTC)
 - **New AST Shield**: `SLOP-150` (`no-compound-namespace-slopsquat-v150`, CWE-829) — `Compound Namespace Package Manifest Slopsquatting`
 - **Threat Model**: AI assistants synthesize plausible compound package names such as flask-bcrypt-auth or tokio-redis-pro that attackers register on PyPI/crates.io/npm for RCE.
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-163` (`no-hallucinated-cipher-primitive-v163`, CWE-327) — `Hallucinated Non-Standard Cryptographic Cipher Names`
 - **Threat Model**: LLMs invent non-existent cipher strings such as aes-256-turbo or sha256-fast in OpenSSL and Node crypto calls, causing runtime panics or silent fallback to weak encryption.
 - **Verification Suite**: `356/356` unit tests passed, `163` active AST rules, repo score `100/100` (`2189ms`)
+
+### Sprint #84 — v3.5.98 (2026-11-07 13:33 UTC)
+- **New AST Shield**: `SLOP-164` (`no-shell-template-subprocess-exec-v164`, CWE-78) — `Formatted Shell String Subprocess Command Injection`
+- **Threat Model**: AI assistants pass formatted f-strings or template literals into subprocess.Popen(..., shell=True) and child_process.exec, allowing arbitrary shell command execution.
+- **Verification Suite**: `357/357` unit tests passed, `164` active AST rules, repo score `100/100` (`2063ms`)
