@@ -1,5 +1,10 @@
 # Changelog
 All notable changes to SlopGuard are documented in this file.
+## [3.5.68] - 2026-11-07
+### Added
+- Expanded AST Firewall Matrix to 134 Active Shields: Added `SLOP-134` (`no-shell-template-subprocess-exec-v134`, CWE-78) — Dynamic string interpolation inside shell-enabled subprocess execution.
+- Scaled Deterministic Test Battery: Verified 327/327 passing unit tests (100% pass rate, 0 warnings).
+- Threat Interception: AI assistants pass formatted f-strings or template literals into subprocess.Popen(..., shell=True) and child_process.exec, allowing arbitrary shell command execution.
 ## [3.5.67] - 2026-11-07
 ### Added
 - Expanded AST Firewall Matrix to 133 Active Shields: Added `SLOP-133` (`no-hallucinated-cipher-primitive-v133`, CWE-327) — Fictional or non-standard cipher algorithm strings passed to crypto APIs.
