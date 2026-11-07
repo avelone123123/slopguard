@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #1 — v3.5.2 (2026-11-06 10:45 UTC)
-- **New AST Shield**: `SLOP-068` (`no-unvalidated-ssrf-redirect-chain-v68`, CWE-918) — `Unvalidated SSRF Host Interpolation & Redirect Bypass`
-- **Threat Model**: AI coding assistants interpolate user-controlled host variables directly into axios.get or requests.get URLs, enabling Server-Side Request Forgery against cloud metadata endpoints.
-- **Verification Suite**: `261/261` unit tests passed, `68` active AST rules, repo score `100/100` (`2197ms`)
-
 ### Sprint #2 — v3.5.3 (2026-11-06 10:47 UTC)
 - **New AST Shield**: `SLOP-069` (`no-non-atomic-toctou-fs-mutation-v69`, CWE-367) — `Non-Atomic TOCTOU File Existence Check Before Write`
 - **Threat Model**: AI models routinely generate fs.existsSync(p) followed by fs.writeFileSync(p), creating a CWE-367 Time-of-Check Time-of-Use race window exploitable via symlink swapping.
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-082` (`no-non-atomic-toctou-fs-mutation-v82`, CWE-367) — `Non-Atomic TOCTOU File Existence Check Before Write`
 - **Threat Model**: AI models hallucinate the non‑atomic TOCTOU check
 - **Verification Suite**: `275/275` unit tests passed, `82` active AST rules, repo score `100/100` (`2456ms`)
+
+### Sprint #3 — v3.5.17 (2026-11-07 10:32 UTC)
+- **New AST Shield**: `SLOP-083` (`no-hallucinated-cipher-primitive-v83`, CWE-327) — `Hallucinated Non-Standard Cryptographic Cipher Names`
+- **Threat Model**: AI models hallucinate non‑standard cipher names like “aes-
+- **Verification Suite**: `276/276` unit tests passed, `83` active AST rules, repo score `100/100` (`2498ms`)
