@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #1 — v3.5.15 (2026-11-07 10:27 UTC)
-- **New AST Shield**: `SLOP-081` (`no-unvalidated-ssrf-redirect-chain-v81`, CWE-918) — `Unvalidated SSRF Host Interpolation & Redirect Bypass`
-- **Threat Model**: We need exactly 2 technical sentences, no intro, no extra text. Must explain why AI models hallucinate this pattern and how SlopGuard's AST firewall blocks it in <0.35ms. Sentence 1: Why AI models hallucinate this pattern. Possibly because they rely on training data patterns and may misinterpret templating, leading to insecure interpolation. Sentence 2: How 
-- **Verification Suite**: `274/274` unit tests passed, `81` active AST rules, repo score `100/100` (`2208ms`)
-
 ### Sprint #2 — v3.5.16 (2026-11-07 10:30 UTC)
 - **New AST Shield**: `SLOP-082` (`no-non-atomic-toctou-fs-mutation-v82`, CWE-367) — `Non-Atomic TOCTOU File Existence Check Before Write`
 - **Threat Model**: AI models hallucinate the non‑atomic TOCTOU check
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-095` (`no-loop-scoped-event-listener-leak-v95`, CWE-400) — `Unbounded Event Listener Registration Inside Loops`
 - **Threat Model**: AI-generated stream handlers attach emitter.on('data', ...) inside for/while loops without cleanup, exhausting V8 heap memory and triggering MaxListenersExceededWarning.
 - **Verification Suite**: `288/288` unit tests passed, `95` active AST rules, repo score `100/100` (`2098ms`)
+
+### Sprint #16 — v3.5.30 (2026-11-07 11:03 UTC)
+- **New AST Shield**: `SLOP-096` (`no-phantom-ai-sdk-slopsquatting-v96`, CWE-1357) — `Phantom AI SDK Wrapper Package Slopsquatting`
+- **Threat Model**: LLMs hallucinate plausible AI helper packages like @anthropic/tools-pro or openai-streaming-helper in package.json and requirements.txt, exposing builds to supply-chain hijacking.
+- **Verification Suite**: `289/289` unit tests passed, `96` active AST rules, repo score `100/100` (`2246ms`)
