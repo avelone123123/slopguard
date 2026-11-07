@@ -3621,4 +3621,14 @@ assert!(!findings.is_empty());
 let safe_findings = crate::detectors::path_traversal::detect_speculative_file_race_toctou_in_content("safe.js", "fs.writeFileSync(p, data, { flag: \"wx\" });");
 assert_eq!(safe_findings.len(), 0);
 }
+#[test]
+fn test_council_slop_113_hallucinated_cipher_primitive() {
+let def = crate::detectors::AST_DETECTOR_DEFINITIONS.iter().find(|d| d.id == "SLOP-113").unwrap();
+assert_eq!(def.name, "no-hallucinated-cipher-primitive-v113");
+assert_eq!(def.cwe, "CWE-327");
+let findings = crate::detectors::insecure_crypto::detect_hallucinated_crypto_algorithm_in_content("crypto.js", "crypto.createCipheriv(\"aes-256-turbo\", key, iv);");
+assert!(!findings.is_empty());
+let safe_findings = crate::detectors::insecure_crypto::detect_hallucinated_crypto_algorithm_in_content("safe.js", "crypto.createCipheriv(\"aes-256-gcm\", key, iv);");
+assert_eq!(safe_findings.len(), 0);
+}
 }
