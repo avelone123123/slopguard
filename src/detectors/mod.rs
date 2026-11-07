@@ -391,6 +391,7 @@ AstDetectorDefinition { id: "SLOP-285", name: "no-loop-scoped-event-listener-lea
 AstDetectorDefinition { id: "SLOP-286", name: "no-phantom-ai-sdk-slopsquatting-v286", severity: SlopSeverity::Error, category: "supply-chain", cwe: "CWE-1357", description: "Hallucinated AI wrapper packages in package manifests enabling slopsquatting", recommendation: "Pin verified official AI SDK packages (@anthropic-ai/sdk, openai, google-genai)" },
 AstDetectorDefinition { id: "SLOP-287", name: "no-unbounded-mpsc-queue-sprawl-v287", severity: SlopSeverity::Error, category: "async-concurrency", cwe: "CWE-400", description: "Unbounded channel or async queue allocation lacking backpressure capacity", recommendation: "Replace unbounded_channel with bounded mpsc::channel(N) to enforce backpressure" },
 AstDetectorDefinition { id: "SLOP-288", name: "no-truncated-hex-entropy-keygen-v288", severity: SlopSeverity::Error, category: "crypto-auth", cwe: "CWE-326", description: "Truncated hex buffer slicing or Math.random key generation reducing entropy", recommendation: "Use full 32-byte CSPRNG buffers or Argon2id/HKDF key derivation" },
+AstDetectorDefinition { id: "SLOP-289", name: "no-async-iterator-unclosed-break-v289", severity: SlopSeverity::Error, category: "async-concurrency", cwe: "CWE-775", description: "Early break or return inside for-await-of loop without stream closure", recommendation: "Wrap async stream iteration in try/finally and call stream.destroy()" },
 ];
 #[allow(dead_code)]
 pub static ACTIVE_CONTRACTS: &[crate::types::AstDetectorContract] = &[
