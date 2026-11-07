@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #5 — v3.5.19 (2026-11-07 10:37 UTC)
-- **New AST Shield**: `SLOP-085` (`no-loop-scoped-event-listener-leak-v85`, CWE-400) — `Unbounded Event Listener Registration Inside Loops`
-- **Threat Model**: We need to output exactly 2 technical sentences, no intro, no extra text. Sentences should explain why AI models hallucinate this pattern (i.e., they generate code with unbounded listeners inside loops) and how SlopGuard's AST firewall blocks it in <0.35ms. We must ensure exactly 2 sentences, each separated by a period (or appropriate punctuation). No extra 
-- **Verification Suite**: `278/278` unit tests passed, `85` active AST rules, repo score `100/100` (`2193ms`)
-
 ### Sprint #6 — v3.5.20 (2026-11-07 10:39 UTC)
 - **New AST Shield**: `SLOP-086` (`no-phantom-ai-sdk-slopsquatting-v86`, CWE-1357) — `Phantom AI SDK Wrapper Package Slopsquatting`
 - **Threat Model**: AI models hallucinate this pattern because they are trained on extensive package ecosystems where name collisions and misleading version ranges are prevalent, leading them to generate plausible yet unsafe dependency specifications. SlopGuard’s AST firewall inspects the dependency declaration’s abstract syntax tree in real time, matching prohibited identifier
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-099` (`no-async-iterator-unclosed-break-v99`, CWE-775) — `Async Generator Break Without Stream Disposal`
 - **Threat Model**: Breaking out of a for-await-of stream loop without a try/finally block or stream.destroy() leaks underlying file descriptors and database cursors.
 - **Verification Suite**: `292/292` unit tests passed, `99` active AST rules, repo score `100/100` (`2156ms`)
+
+### Sprint #20 — v3.5.34 (2026-11-07 11:12 UTC)
+- **New AST Shield**: `SLOP-100` (`no-compound-namespace-slopsquat-v100`, CWE-829) — `Compound Namespace Package Manifest Slopsquatting`
+- **Threat Model**: AI assistants synthesize plausible compound package names such as flask-bcrypt-auth or tokio-redis-pro that attackers register on PyPI/crates.io/npm for RCE.
+- **Verification Suite**: `293/293` unit tests passed, `100` active AST rules, repo score `100/100` (`2050ms`)
