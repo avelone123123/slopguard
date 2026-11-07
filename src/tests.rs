@@ -5031,4 +5031,14 @@ assert!(!findings.is_empty());
 let safe_findings = crate::detectors::insecure_crypto::detect_hallucinated_crypto_algorithm_in_content("safe.js", "crypto.createCipheriv(\"aes-256-gcm\", key, iv);");
 assert_eq!(safe_findings.len(), 0);
 }
+#[test]
+fn test_council_slop_254_shell_template_subprocess_exec() {
+let def = crate::detectors::AST_DETECTOR_DEFINITIONS.iter().find(|d| d.id == "SLOP-254").unwrap();
+assert_eq!(def.name, "no-shell-template-subprocess-exec-v254");
+assert_eq!(def.cwe, "CWE-78");
+let findings = crate::detectors::command_injection::detect_speculative_subprocess_injection_in_content("app.py", "subprocess.Popen(f\"cat {filename}\", shell=True)");
+assert!(!findings.is_empty());
+let safe_findings = crate::detectors::command_injection::detect_speculative_subprocess_injection_in_content("safe.py", "subprocess.run(['ls', '-la'], check=True)");
+assert_eq!(safe_findings.len(), 0);
+}
 }
