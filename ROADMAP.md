@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #74 — v3.5.309 (2026-11-08 17:05 UTC)
-- **New AST Shield**: `SLOP-376` (`no-shell-template-subprocess-exec-v376`, CWE-78) — `Formatted Shell String Subprocess Command Injection`
-- **Threat Model**: AI assistants pass formatted f-strings or template literals into subprocess.Popen(..., shell=True) and child_process.exec, allowing arbitrary shell command execution.
-- **Verification Suite**: `569/569` unit tests passed, `376` active AST rules, repo score `100/100` (`2108ms`)
-
 ### Sprint #75 — v3.5.310 (2026-11-08 17:08 UTC)
 - **New AST Shield**: `SLOP-377` (`no-loop-scoped-event-listener-leak-v377`, CWE-400) — `Unbounded Event Listener Registration Inside Loops`
 - **Threat Model**: AI-generated stream handlers attach emitter.on('data', ...) inside for/while loops without cleanup, exhausting V8 heap memory and triggering MaxListenersExceededWarning.
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-390` (`no-truncated-hex-entropy-keygen-v390`, CWE-326) — `Truncated Hex Slice & Weak PRNG Key Derivation`
 - **Threat Model**: AI models frequently slice hex-encoded random bytes to 16 chars (reducing 128-bit entropy to 64 bits) or use Math.random().toString(36) for AES/JWT secret keys.
 - **Verification Suite**: `583/583` unit tests passed, `390` active AST rules, repo score `100/100` (`2165ms`)
+
+### Sprint #89 — v3.5.324 (2026-11-08 17:51 UTC)
+- **New AST Shield**: `SLOP-391` (`no-async-iterator-unclosed-break-v391`, CWE-775) — `Async Generator Break Without Stream Disposal`
+- **Threat Model**: Breaking out of a for-await-of stream loop without a try/finally block or stream.destroy() leaks underlying file descriptors and database cursors.
+- **Verification Suite**: `584/584` unit tests passed, `391` active AST rules, repo score `100/100` (`2157ms`)
