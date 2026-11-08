@@ -1,5 +1,10 @@
 # Changelog
 All notable changes to SlopGuard are documented in this file.
+## [3.5.316] - 2026-11-08
+### Added
+- Expanded AST Firewall Matrix to 383 Active Shields: Added `SLOP-383` (`no-unvalidated-ssrf-redirect-chain-v383`, CWE-918) — Unvalidated dynamic host interpolation in outbound HTTP client requests.
+- Scaled Deterministic Test Battery: Verified 576/576 passing unit tests (100% pass rate, 0 warnings).
+- Threat Interception: 1.  **Analyze the Request:** *   **Rule/Topic:** unvalidated-ssrf-redirect-chain (CWE-918). *   **Blocked Code:** `const res = await axios.get(\`https://${req.query.apiHost}/v1/profile\`);` *   **Enforced Fix:** `if (!ALLOWED_ORIGINS.has(req.query.apiHost)) throw new Error('Blocked'); const res = await axios.get('https://api.internal.verified/v1/profile');` 
 ## [3.5.315] - 2026-11-08
 ### Added
 - Expanded AST Firewall Matrix to 382 Active Shields: Added `SLOP-382` (`no-compound-namespace-slopsquat-v382`, CWE-829) — Synthetic compound package names in dependency manifests.
