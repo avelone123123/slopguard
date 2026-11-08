@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #14 — v3.5.249 (2026-11-08 14:18 UTC)
-- **New AST Shield**: `SLOP-316` (`no-shell-template-subprocess-exec-v316`, CWE-78) — `Formatted Shell String Subprocess Command Injection`
-- **Threat Model**: 1.  **Analyze the Request:** *   **Rule:** `shell-template-subprocess-exec` (CWE-78). *   **Blocked Code:** `subprocess.Popen(f'tar -xzf {archive_name}', shell=True)` *   **Enforced Fix:** `subprocess.run(['tar', '-xzf', archive_name], check=True)` *   **Task:** Write exactly 2 technical sentences for a senior security engineer. *   **Topic:** Explain why AI
-- **Verification Suite**: `509/509` unit tests passed, `316` active AST rules, repo score `100/100` (`2150ms`)
-
 ### Sprint #15 — v3.5.250 (2026-11-08 14:21 UTC)
 - **New AST Shield**: `SLOP-317` (`no-loop-scoped-event-listener-leak-v317`, CWE-400) — `Unbounded Event Listener Registration Inside Loops`
 - **Threat Model**: AI-generated stream handlers attach emitter.on('data', ...) inside for/while loops without cleanup, exhausting V8 heap memory and triggering MaxListenersExceededWarning.
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-330` (`no-truncated-hex-entropy-keygen-v330`, CWE-326) — `Truncated Hex Slice & Weak PRNG Key Derivation`
 - **Threat Model**: AI models frequently slice hex-encoded random bytes to 16 chars (reducing 128-bit entropy to 64 bits) or use Math.random().toString(36) for AES/JWT secret keys.
 - **Verification Suite**: `523/523` unit tests passed, `330` active AST rules, repo score `100/100` (`2161ms`)
+
+### Sprint #29 — v3.5.264 (2026-11-08 15:00 UTC)
+- **New AST Shield**: `SLOP-331` (`no-async-iterator-unclosed-break-v331`, CWE-775) — `Async Generator Break Without Stream Disposal`
+- **Threat Model**: Breaking out of a for-await-of stream loop without a try/finally block or stream.destroy() leaks underlying file descriptors and database cursors.
+- **Verification Suite**: `524/524` unit tests passed, `331` active AST rules, repo score `100/100` (`2255ms`)
