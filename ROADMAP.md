@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #56 — v3.5.291 (2026-11-08 16:15 UTC)
-- **New AST Shield**: `SLOP-358` (`no-phantom-ai-sdk-slopsquatting-v358`, CWE-1357) — `Phantom AI SDK Wrapper Package Slopsquatting`
-- **Threat Model**: LLMs hallucinate plausible AI helper packages like @anthropic/tools-pro or openai-streaming-helper in package.json and requirements.txt, exposing builds to supply-chain hijacking.
-- **Verification Suite**: `551/551` unit tests passed, `358` active AST rules, repo score `100/100` (`2139ms`)
-
 ### Sprint #57 — v3.5.292 (2026-11-08 16:18 UTC)
 - **New AST Shield**: `SLOP-359` (`no-unbounded-mpsc-queue-sprawl-v359`, CWE-400) — `Unbounded MPSC & Asyncio Queue Memory Exhaustion`
 - **Threat Model**: 1.  **Analyze the Request:** *   **Rule:** `unbounded-mpsc-queue-sprawl` (Unbounded MPSC & Asyncio Queue Memory Exhaustion - CWE-400). *   **Blocked Code:** `tokio::sync::mpsc::unbounded_channel::<Job>()` *   **Enforced Fix:** `tokio::sync::mpsc::channel::<Job>(1024)` *   **Task:** Write exactly 2 technical sentences for a senior security engineer explaining
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-372` (`no-compound-namespace-slopsquat-v372`, CWE-829) — `Compound Namespace Package Manifest Slopsquatting`
 - **Threat Model**: AI assistants synthesize plausible compound package names such as flask-bcrypt-auth or tokio-redis-pro that attackers register on PyPI/crates.io/npm for RCE.
 - **Verification Suite**: `565/565` unit tests passed, `372` active AST rules, repo score `100/100` (`2115ms`)
+
+### Sprint #71 — v3.5.306 (2026-11-08 16:56 UTC)
+- **New AST Shield**: `SLOP-373` (`no-unvalidated-ssrf-redirect-chain-v373`, CWE-918) — `Unvalidated SSRF Host Interpolation & Redirect Bypass`
+- **Threat Model**: AI coding assistants interpolate user-controlled host variables directly into axios.get or requests.get URLs, enabling Server-Side Request Forgery against cloud metadata endpoints.
+- **Verification Suite**: `566/566` unit tests passed, `373` active AST rules, repo score `100/100` (`2156ms`)
