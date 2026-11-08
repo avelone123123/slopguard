@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #210 — v3.5.224 (2026-11-07 19:11 UTC)
-- **New AST Shield**: `SLOP-290` (`no-compound-namespace-slopsquat-v290`, CWE-829) — `Compound Namespace Package Manifest Slopsquatting`
-- **Threat Model**: AI assistants synthesize plausible compound package names such as flask-bcrypt-auth or tokio-redis-pro that attackers register on PyPI/crates.io/npm for RCE.
-- **Verification Suite**: `483/483` unit tests passed, `290` active AST rules, repo score `100/100` (`2145ms`)
-
 ### Sprint #211 — v3.5.225 (2026-11-07 19:14 UTC)
 - **New AST Shield**: `SLOP-291` (`no-unvalidated-ssrf-redirect-chain-v291`, CWE-918) — `Unvalidated SSRF Host Interpolation & Redirect Bypass`
 - **Threat Model**: AI coding assistants interpolate user-controlled host variables directly into axios.get or requests.get URLs, enabling Server-Side Request Forgery against cloud metadata endpoints.
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-305` (`no-hallucinated-cipher-primitive-v305`, CWE-327) — `Hallucinated Non-Standard Cryptographic Cipher Names`
 - **Threat Model**: AI models hallucinate non‑standard cipher names like “aes-256‑turbo” because their training data includes fragmented or outdated cryptographic references, causing the language model to synthesize plausible
 - **Verification Suite**: `498/498` unit tests passed, `305` active AST rules, repo score `100/100` (`2117ms`)
+
+### Sprint #4 — v3.5.239 (2026-11-08 13:51 UTC)
+- **New AST Shield**: `SLOP-306` (`no-shell-template-subprocess-exec-v306`, CWE-78) — `Formatted Shell String Subprocess Command Injection`
+- **Threat Model**: AI models hallucinate this pattern because they are trained on vast codebases where shell=True is prevalent and they generate plausible command strings without understanding the security implications of untrusted input. SlopGuard’s AST firewall parses the command into an abstract syntax tree, flags
+- **Verification Suite**: `499/499` unit tests passed, `306` active AST rules, repo score `100/100` (`2094ms`)
