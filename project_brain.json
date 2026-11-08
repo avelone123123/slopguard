@@ -23,10 +23,10 @@
     "Mandatory markdown (.md) synchronization on every change by Scribe."
   ],
   "current_metrics": {
-    "version": "3.5.331",
-    "tests_count": 591,
+    "version": "3.5.332",
+    "tests_count": 592,
     "tests_pass_rate": "100%",
-    "firewalls_count": 398
+    "firewalls_count": 399
   },
   "architecture_knowledge": {
     "core_crates": [
@@ -1762,6 +1762,11 @@
       "cycle": 95,
       "version": "3.5.330",
       "deliverables": "Sprint 95: QA Benchmarking, Fuzzing & Regression Firewalls (397 rules, 590 tests)"
+    },
+    {
+      "cycle": 96,
+      "version": "3.5.331",
+      "deliverables": "Sprint 96: Community Intel, Issue Triage & IDE Plugins (398 rules, 591 tests)"
     }
   ]
 }

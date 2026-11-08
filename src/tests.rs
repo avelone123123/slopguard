@@ -6481,4 +6481,14 @@ assert!(!findings.is_empty());
 let safe_findings = crate::detectors::package_hallucinations::detect_phantom_ai_wrappers_in_content("requirements.txt", "openai==1.50.0");
 assert_eq!(safe_findings.len(), 0);
 }
+#[test]
+fn test_council_slop_399_unbounded_mpsc_queue_sprawl() {
+let def = crate::detectors::AST_DETECTOR_DEFINITIONS.iter().find(|d| d.id == "SLOP-399").unwrap();
+assert_eq!(def.name, "no-unbounded-mpsc-queue-sprawl-v399");
+assert_eq!(def.cwe, "CWE-400");
+let findings = crate::detectors::unbounded_concurrency::detect_unbounded_channel_sprawl_in_content("queue.rs", "let (tx, rx) = tokio::sync::mpsc::unbounded_channel();");
+assert!(!findings.is_empty());
+let safe_findings = crate::detectors::unbounded_concurrency::detect_unbounded_channel_sprawl_in_content("safe.rs", "let (tx, rx) = tokio::sync::mpsc::channel(1024);");
+assert_eq!(safe_findings.len(), 0);
+}
 }
