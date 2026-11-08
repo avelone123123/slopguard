@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #84 — v3.5.319 (2026-11-08 17:36 UTC)
-- **New AST Shield**: `SLOP-386` (`no-shell-template-subprocess-exec-v386`, CWE-78) — `Formatted Shell String Subprocess Command Injection`
-- **Threat Model**: AI assistants pass formatted f-strings or template literals into subprocess.Popen(..., shell=True) and child_process.exec, allowing arbitrary shell command execution.
-- **Verification Suite**: `579/579` unit tests passed, `386` active AST rules, repo score `100/100` (`2208ms`)
-
 ### Sprint #85 — v3.5.320 (2026-11-08 17:39 UTC)
 - **New AST Shield**: `SLOP-387` (`no-loop-scoped-event-listener-leak-v387`, CWE-400) — `Unbounded Event Listener Registration Inside Loops`
 - **Threat Model**: AI-generated stream handlers attach emitter.on('data', ...) inside for/while loops without cleanup, exhausting V8 heap memory and triggering MaxListenersExceededWarning.
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-400` (`no-truncated-hex-entropy-keygen-v400`, CWE-326) — `Truncated Hex Slice & Weak PRNG Key Derivation`
 - **Threat Model**: 1.  **Analyze the Request:** *   **Rule Name:** truncated-hex-entropy-keygen (Truncated Hex Slice & Weak PRNG Key Derivation, CWE-326). *   **Blocked Code:** `const aesKey = crypto.randomBytes(32).toString('hex').slice(0, 16);` *   **Enforced Fix:** `const aesKey = crypto.randomBytes(32);` *   **Task:** Write exactly 2 technical sentences for a senior securi
 - **Verification Suite**: `593/593` unit tests passed, `400` active AST rules, repo score `100/100` (`2108ms`)
+
+### Sprint #99 — v3.5.334 (2026-11-08 18:26 UTC)
+- **New AST Shield**: `SLOP-401` (`no-async-iterator-unclosed-break-v401`, CWE-775) — `Async Generator Break Without Stream Disposal`
+- **Threat Model**: Breaking out of a for-await-of stream loop without a try/finally block or stream.destroy() leaks underlying file descriptors and database cursors.
+- **Verification Suite**: `594/594` unit tests passed, `401` active AST rules, repo score `100/100` (`2031ms`)
