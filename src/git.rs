@@ -1,24 +1,36 @@
 use crate::types::{DiffChunk, DiffFile, DiffLine, DiffLineType};
+#[cfg(target_os = "windows")]
+use std::os::windows::process::CommandExt;
 use std::path::{Path, PathBuf};
-use std::process::Command;
+use std::process::{Command, Stdio};
+fn git_cmd(cwd: &Path) -> Command {
+    let mut cmd = Command::new("git");
+    cmd.current_dir(cwd);
+    cmd.stdin(Stdio::null());
+    cmd.env("GIT_TERMINAL_PROMPT", "0");
+    cmd.env("GCM_INTERACTIVE", "never");
+    #[cfg(target_os = "windows")]
+    {
+        cmd.creation_flags(0x08000000);
+    }
+    cmd
+}
 pub fn is_git_repo(cwd: &Path) -> bool {
-    Command::new("git")
+    git_cmd(cwd)
         .args(["rev-parse", "--is-inside-work-tree"])
-        .current_dir(cwd)
         .output()
         .map(|o| o.status.success())
         .unwrap_or(false)
 }
 pub fn has_commits(cwd: &Path) -> bool {
-    Command::new("git")
+    git_cmd(cwd)
         .args(["rev-parse", "--verify", "HEAD"])
-        .current_dir(cwd)
         .output()
         .map(|o| o.status.success())
         .unwrap_or(false)
 }
 pub fn get_git_root(cwd: &Path) -> PathBuf {
-    if let Ok(output) = Command::new("git").args(["rev-parse", "--show-toplevel"]).current_dir(cwd).output() {
+    if let Ok(output) = git_cmd(cwd).args(["rev-parse", "--show-toplevel"]).output() {
         if output.status.success() {
             let path_str = String::from_utf8_lossy(&output.stdout).trim().to_string();
             if !path_str.is_empty() {
@@ -29,8 +41,7 @@ pub fn get_git_root(cwd: &Path) -> PathBuf {
     cwd.to_path_buf()
 }
 pub fn get_diff_output(cwd: &Path, staged_only: bool) -> String {
-    let mut cmd = Command::new("git");
-    cmd.current_dir(cwd);
+    let mut cmd = git_cmd(cwd);
     if staged_only || !has_commits(cwd) {
         cmd.args(["diff", "--cached", "--unified=3"]);
     } else {
@@ -41,12 +52,12 @@ pub fn get_diff_output(cwd: &Path, staged_only: bool) -> String {
             return String::from_utf8_lossy(&output.stdout).to_string();
         }
     }
-    let mut fallback = Command::new("git");
-    fallback.current_dir(cwd).args(["diff", "--unified=3"]);
+    let mut fallback = git_cmd(cwd);
+    fallback.args(["diff", "--unified=3"]);
     fallback.output().map(|o| String::from_utf8_lossy(&o.stdout).to_string()).unwrap_or_default()
 }
 pub fn get_untracked_files(cwd: &Path) -> Vec<String> {
-    if let Ok(output) = Command::new("git").args(["ls-files", "--others", "--exclude-standard"]).current_dir(cwd).output() {
+    if let Ok(output) = git_cmd(cwd).args(["ls-files", "--others", "--exclude-standard"]).output() {
         if output.status.success() {
             return String::from_utf8_lossy(&output.stdout).lines().map(|s| s.trim().to_string()).filter(|s| !s.is_empty()).collect();
         }
@@ -118,7 +129,7 @@ pub fn parse_unified_diff(diff_text: &str) -> Vec<DiffFile> {
     files
 }
 pub fn get_current_branch(cwd: &Path) -> String {
-    if let Ok(output) = Command::new("git").args(["branch", "--show-current"]).current_dir(cwd).output() {
+    if let Ok(output) = git_cmd(cwd).args(["branch", "--show-current"]).output() {
         if output.status.success() {
             let b = String::from_utf8_lossy(&output.stdout).trim().to_string();
             if !b.is_empty() {
@@ -129,7 +140,7 @@ pub fn get_current_branch(cwd: &Path) -> String {
     "main".to_string()
 }
 pub fn get_latest_commit(cwd: &Path) -> String {
-    if let Ok(output) = Command::new("git").args(["log", "-1", "--oneline"]).current_dir(cwd).output() {
+    if let Ok(output) = git_cmd(cwd).args(["log", "-1", "--oneline"]).output() {
         if output.status.success() {
             let c = String::from_utf8_lossy(&output.stdout).trim().to_string();
             if !c.is_empty() {

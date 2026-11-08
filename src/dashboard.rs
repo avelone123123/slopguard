@@ -294,7 +294,10 @@ pub fn spawn_dashboard_thread(port: u16, target_root: PathBuf, shared: SharedTel
 }
 pub fn open_browser(url: &str) {
     #[cfg(target_os = "windows")]
-    let _ = Command::new("cmd").args(["/c", "start", url]).spawn();
+    {
+        use std::os::windows::process::CommandExt;
+        let _ = Command::new("cmd").args(["/c", "start", "", url]).creation_flags(0x08000000).spawn();
+    }
     #[cfg(target_os = "macos")]
     let _ = Command::new("open").arg(url).spawn();
     #[cfg(target_os = "linux")]
