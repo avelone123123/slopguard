@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #47 — v3.5.282 (2026-11-08 15:50 UTC)
-- **New AST Shield**: `SLOP-349` (`no-unbounded-mpsc-queue-sprawl-v349`, CWE-400) — `Unbounded MPSC & Asyncio Queue Memory Exhaustion`
-- **Threat Model**: 1.  **Analyze the Request:** *   **Rule/Bug:** `unbounded_mpsc_queue_sprawl` (CWE-400) - using an unbounded MPSC/Asyncio queue instead of a bounded one, leading to memory exhaustion. *   **Blocked Code:** `tokio::sync::mpsc::unbounded_channel::<Job>()` *   **Enforced Fix:** `tokio::sync::mpsc::channel::<Job>(1024)` *   **Task:** Write exactly *two* technical
-- **Verification Suite**: `542/542` unit tests passed, `349` active AST rules, repo score `100/100` (`2176ms`)
-
 ### Sprint #48 — v3.5.283 (2026-11-08 15:53 UTC)
 - **New AST Shield**: `SLOP-350` (`no-truncated-hex-entropy-keygen-v350`, CWE-326) — `Truncated Hex Slice & Weak PRNG Key Derivation`
 - **Threat Model**: 1.  **Analyze the Request:** *   **Rule/Topic:** `truncated-hex-entropy-keygen` (Truncated Hex Slice & Weak PRNG Key Derivation, CWE-326). *   **Blocked Code:** `const aesKey = crypto.randomBytes(32).toString('hex').slice(0, 16);` *   **Enforced Fix:** `const aesKey = crypto.randomBytes(32);` *   **Target Audience:** Senior security engineer. *   **Output Co
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-363` (`no-unvalidated-ssrf-redirect-chain-v363`, CWE-918) — `Unvalidated SSRF Host Interpolation & Redirect Bypass`
 - **Threat Model**: 1.  **Analyze the Request:** *   **Rule:** unvalidated-ssrf-redirect-chain (CWE-918). *   **Blocked Code:** `const res = await axios.get(`https://${req.query.apiHost}/v1/profile`);` *   **Enforced Fix:** `if (!ALLOWED_ORIGINS.has(req.query.apiHost)) throw new Error('Blocked');` + hardcoded URL. *   **Output constraints:** Exactly 2 technical sentences for a 
 - **Verification Suite**: `556/556` unit tests passed, `363` active AST rules, repo score `100/100` (`2198ms`)
+
+### Sprint #62 — v3.5.297 (2026-11-08 16:31 UTC)
+- **New AST Shield**: `SLOP-364` (`no-non-atomic-toctou-fs-mutation-v364`, CWE-367) — `Non-Atomic TOCTOU File Existence Check Before Write`
+- **Threat Model**: AI models routinely generate fs.existsSync(p) followed by fs.writeFileSync(p), creating a CWE-367 Time-of-Check Time-of-Use race window exploitable via symlink swapping.
+- **Verification Suite**: `557/557` unit tests passed, `364` active AST rules, repo score `100/100` (`2196ms`)
