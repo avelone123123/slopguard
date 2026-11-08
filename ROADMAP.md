@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #18 — v3.5.253 (2026-11-08 14:29 UTC)
-- **New AST Shield**: `SLOP-320` (`no-truncated-hex-entropy-keygen-v320`, CWE-326) — `Truncated Hex Slice & Weak PRNG Key Derivation`
-- **Threat Model**: AI models frequently slice hex-encoded random bytes to 16 chars (reducing 128-bit entropy to 64 bits) or use Math.random().toString(36) for AES/JWT secret keys.
-- **Verification Suite**: `513/513` unit tests passed, `320` active AST rules, repo score `100/100` (`2260ms`)
-
 ### Sprint #19 — v3.5.254 (2026-11-08 14:31 UTC)
 - **New AST Shield**: `SLOP-321` (`no-async-iterator-unclosed-break-v321`, CWE-775) — `Async Generator Break Without Stream Disposal`
 - **Threat Model**: Breaking out of a for-await-of stream loop without a try/finally block or stream.destroy() leaks underlying file descriptors and database cursors.
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-334` (`no-non-atomic-toctou-fs-mutation-v334`, CWE-367) — `Non-Atomic TOCTOU File Existence Check Before Write`
 - **Threat Model**: We need answer exactly 2 technical sentences. Need explain why AI models hallucinate this pattern and how SlopGuard's AST firewall blocks in <0.35ms. User says "Write exactly 2 technical sentences for a senior security engineer explaining why AI models hallucinate this pattern and how SlopGuard's AST firewall blocks it in <0.35ms. Output ONLY the 2 sentences
 - **Verification Suite**: `527/527` unit tests passed, `334` active AST rules, repo score `100/100` (`2264ms`)
+
+### Sprint #33 — v3.5.268 (2026-11-08 15:11 UTC)
+- **New AST Shield**: `SLOP-335` (`no-hallucinated-cipher-primitive-v335`, CWE-327) — `Hallucinated Non-Standard Cryptographic Cipher Names`
+- **Threat Model**: 1.  **Analyze the Request:** *   **Rule/Topic:** hallucinated-cipher-primitive (CWE-327), specifically AI models hallucinating non-standard cipher names like `aes-256-turbo` and hashing algorithms like `sha256-fast`, and SlopGuard's AST firewall blocking it. *   **Context:** The user provided a "Blocked code" example using `aes-256-turbo` and `sha256-fast`, 
+- **Verification Suite**: `528/528` unit tests passed, `335` active AST rules, repo score `100/100` (`2344ms`)
