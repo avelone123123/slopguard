@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #60 — v3.5.295 (2026-11-08 16:25 UTC)
-- **New AST Shield**: `SLOP-362` (`no-compound-namespace-slopsquat-v362`, CWE-829) — `Compound Namespace Package Manifest Slopsquatting`
-- **Threat Model**: AI assistants synthesize plausible compound package names such as flask-bcrypt-auth or tokio-redis-pro that attackers register on PyPI/crates.io/npm for RCE.
-- **Verification Suite**: `555/555` unit tests passed, `362` active AST rules, repo score `100/100` (`2117ms`)
-
 ### Sprint #61 — v3.5.296 (2026-11-08 16:28 UTC)
 - **New AST Shield**: `SLOP-363` (`no-unvalidated-ssrf-redirect-chain-v363`, CWE-918) — `Unvalidated SSRF Host Interpolation & Redirect Bypass`
 - **Threat Model**: 1.  **Analyze the Request:** *   **Rule:** unvalidated-ssrf-redirect-chain (CWE-918). *   **Blocked Code:** `const res = await axios.get(`https://${req.query.apiHost}/v1/profile`);` *   **Enforced Fix:** `if (!ALLOWED_ORIGINS.has(req.query.apiHost)) throw new Error('Blocked');` + hardcoded URL. *   **Output constraints:** Exactly 2 technical sentences for a 
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-376` (`no-shell-template-subprocess-exec-v376`, CWE-78) — `Formatted Shell String Subprocess Command Injection`
 - **Threat Model**: AI assistants pass formatted f-strings or template literals into subprocess.Popen(..., shell=True) and child_process.exec, allowing arbitrary shell command execution.
 - **Verification Suite**: `569/569` unit tests passed, `376` active AST rules, repo score `100/100` (`2108ms`)
+
+### Sprint #75 — v3.5.310 (2026-11-08 17:08 UTC)
+- **New AST Shield**: `SLOP-377` (`no-loop-scoped-event-listener-leak-v377`, CWE-400) — `Unbounded Event Listener Registration Inside Loops`
+- **Threat Model**: AI-generated stream handlers attach emitter.on('data', ...) inside for/while loops without cleanup, exhausting V8 heap memory and triggering MaxListenersExceededWarning.
+- **Verification Suite**: `570/570` unit tests passed, `377` active AST rules, repo score `100/100` (`2180ms`)
