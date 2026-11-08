@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #220 — v3.5.234 (2026-11-07 19:41 UTC)
-- **New AST Shield**: `SLOP-300` (`no-compound-namespace-slopsquat-v300`, CWE-829) — `Compound Namespace Package Manifest Slopsquatting`
-- **Threat Model**: AI assistants synthesize plausible compound package names such as flask-bcrypt-auth or tokio-redis-pro that attackers register on PyPI/crates.io/npm for RCE.
-- **Verification Suite**: `493/493` unit tests passed, `300` active AST rules, repo score `100/100` (`2119ms`)
-
 ### Sprint #221 — v3.5.235 (2026-11-07 19:44 UTC)
 - **New AST Shield**: `SLOP-301` (`no-unvalidated-ssrf-redirect-chain-v301`, CWE-918) — `Unvalidated SSRF Host Interpolation & Redirect Bypass`
 - **Threat Model**: 1.  **Analyze the Request:** *   **Rule:** unvalidated-ssrf-redirect-chain (CWE-918). *   **Blocked code:** `const res = await axios.get(`https://${req.query.apiHost}/v1/profile`);` (SSRF via interpolation of user input into URL). *   **Enforced fix:** `if (!ALLOWED_ORIGINS.has(req.query.apiHost)) throw new Error('Blocked'); const res = await axios.get('http
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-315` (`no-hallucinated-cipher-primitive-v315`, CWE-327) — `Hallucinated Non-Standard Cryptographic Cipher Names`
 - **Threat Model**: We need answer to policy: two technical sentences for senior security engineer explaining why AI models hallucinate this pattern and how SlopGuard's AST firewall blocks it in <0.35ms. We must output ONLY the 2 sentences, no intro. Need no mention of Hallucinated Cipher etc? Probably not. Need technical sentences. First sentence: why AI models hallucinate "ae
 - **Verification Suite**: `508/508` unit tests passed, `315` active AST rules, repo score `100/100` (`2125ms`)
+
+### Sprint #14 — v3.5.249 (2026-11-08 14:18 UTC)
+- **New AST Shield**: `SLOP-316` (`no-shell-template-subprocess-exec-v316`, CWE-78) — `Formatted Shell String Subprocess Command Injection`
+- **Threat Model**: 1.  **Analyze the Request:** *   **Rule:** `shell-template-subprocess-exec` (CWE-78). *   **Blocked Code:** `subprocess.Popen(f'tar -xzf {archive_name}', shell=True)` *   **Enforced Fix:** `subprocess.run(['tar', '-xzf', archive_name], check=True)` *   **Task:** Write exactly 2 technical sentences for a senior security engineer. *   **Topic:** Explain why AI
+- **Verification Suite**: `509/509` unit tests passed, `316` active AST rules, repo score `100/100` (`2150ms`)
