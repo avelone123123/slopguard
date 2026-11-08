@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #80 — v3.5.315 (2026-11-08 17:23 UTC)
-- **New AST Shield**: `SLOP-382` (`no-compound-namespace-slopsquat-v382`, CWE-829) — `Compound Namespace Package Manifest Slopsquatting`
-- **Threat Model**: AI assistants synthesize plausible compound package names such as flask-bcrypt-auth or tokio-redis-pro that attackers register on PyPI/crates.io/npm for RCE.
-- **Verification Suite**: `575/575` unit tests passed, `382` active AST rules, repo score `100/100` (`2266ms`)
-
 ### Sprint #81 — v3.5.316 (2026-11-08 17:26 UTC)
 - **New AST Shield**: `SLOP-383` (`no-unvalidated-ssrf-redirect-chain-v383`, CWE-918) — `Unvalidated SSRF Host Interpolation & Redirect Bypass`
 - **Threat Model**: 1.  **Analyze the Request:** *   **Rule/Topic:** unvalidated-ssrf-redirect-chain (CWE-918). *   **Blocked Code:** `const res = await axios.get(\`https://${req.query.apiHost}/v1/profile\`);` *   **Enforced Fix:** `if (!ALLOWED_ORIGINS.has(req.query.apiHost)) throw new Error('Blocked'); const res = await axios.get('https://api.internal.verified/v1/profile');` 
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-396` (`no-shell-template-subprocess-exec-v396`, CWE-78) — `Formatted Shell String Subprocess Command Injection`
 - **Threat Model**: AI assistants pass formatted f-strings or template literals into subprocess.Popen(..., shell=True) and child_process.exec, allowing arbitrary shell command execution.
 - **Verification Suite**: `589/589` unit tests passed, `396` active AST rules, repo score `100/100` (`2199ms`)
+
+### Sprint #95 — v3.5.330 (2026-11-08 18:12 UTC)
+- **New AST Shield**: `SLOP-397` (`no-loop-scoped-event-listener-leak-v397`, CWE-400) — `Unbounded Event Listener Registration Inside Loops`
+- **Threat Model**: 1.  **Analyze the Request:** *   **Rule:** `loop-scoped-event-listener-leak` (Unbounded Event Listener Registration Inside Loops) - CWE-400. *   **Blocked Code:** A `for` loop registering an event listener for each item in `items`. This causes a memory/event-emission leak because listeners accumulate without bound. *   **Enforced Fix:** Move the logic into a
+- **Verification Suite**: `590/590` unit tests passed, `397` active AST rules, repo score `100/100` (`2170ms`)
