@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #12 — v3.5.247 (2026-11-08 14:12 UTC)
-- **New AST Shield**: `SLOP-314` (`no-non-atomic-toctou-fs-mutation-v314`, CWE-367) — `Non-Atomic TOCTOU File Existence Check Before Write`
-- **Threat Model**: AI models routinely generate fs.existsSync(p) followed by fs.writeFileSync(p), creating a CWE-367 Time-of-Check Time-of-Use race window exploitable via symlink swapping.
-- **Verification Suite**: `507/507` unit tests passed, `314` active AST rules, repo score `100/100` (`2119ms`)
-
 ### Sprint #13 — v3.5.248 (2026-11-08 14:15 UTC)
 - **New AST Shield**: `SLOP-315` (`no-hallucinated-cipher-primitive-v315`, CWE-327) — `Hallucinated Non-Standard Cryptographic Cipher Names`
 - **Threat Model**: We need answer to policy: two technical sentences for senior security engineer explaining why AI models hallucinate this pattern and how SlopGuard's AST firewall blocks it in <0.35ms. We must output ONLY the 2 sentences, no intro. Need no mention of Hallucinated Cipher etc? Probably not. Need technical sentences. First sentence: why AI models hallucinate "ae
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-328` (`no-phantom-ai-sdk-slopsquatting-v328`, CWE-1357) — `Phantom AI SDK Wrapper Package Slopsquatting`
 - **Threat Model**: 1.  **Analyze the Request:** *   **Rule/Context:** `phantom-ai-sdk-slopsquatting` (Phantom AI SDK Wrapper Package Slopsquatting, CWE-1357). This means someone is publishing malicious packages that look like legitimate AI SDKs but are actually typosquatting them, likely causing supply chain attacks. The blocked code lists two specific vulnerable or suspicious
 - **Verification Suite**: `521/521` unit tests passed, `328` active AST rules, repo score `100/100` (`2203ms`)
+
+### Sprint #27 — v3.5.262 (2026-11-08 14:54 UTC)
+- **New AST Shield**: `SLOP-329` (`no-unbounded-mpsc-queue-sprawl-v329`, CWE-400) — `Unbounded MPSC & Asyncio Queue Memory Exhaustion`
+- **Threat Model**: AI concurrency scaffolding defaults to tokio::sync::mpsc::unbounded_channel() and unbuffered asyncio.Queue(), removing backpressure and causing OOM kills under traffic spikes.
+- **Verification Suite**: `522/522` unit tests passed, `329` active AST rules, repo score `100/100` (`2531ms`)
