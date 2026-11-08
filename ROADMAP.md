@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #7 — v3.5.242 (2026-11-08 13:59 UTC)
-- **New AST Shield**: `SLOP-309` (`no-unbounded-mpsc-queue-sprawl-v309`, CWE-400) — `Unbounded MPSC & Asyncio Queue Memory Exhaustion`
-- **Threat Model**: AI models hallucinate unbounded MPSC/Asyncio queues because they are trained on generic
-- **Verification Suite**: `502/502` unit tests passed, `309` active AST rules, repo score `100/100` (`2117ms`)
-
 ### Sprint #8 — v3.5.243 (2026-11-08 14:02 UTC)
 - **New AST Shield**: `SLOP-310` (`no-truncated-hex-entropy-keygen-v310`, CWE-326) — `Truncated Hex Slice & Weak PRNG Key Derivation`
 - **Threat Model**: We need to output exactly 2 technical sentences. No intro. Sentence 1: explain why AI models hallucinate this pattern (truncated hex entropy keygen). Sentence 2: how SlopGuard's AST firewall blocks it in <0.35ms. Make sure each sentence ends with a period. No extra whitespace. Exactly 2 sentences. Let's craft: "AI models hallucinate the truncated‑hex pattern
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-323` (`no-unvalidated-ssrf-redirect-chain-v323`, CWE-918) — `Unvalidated SSRF Host Interpolation & Redirect Bypass`
 - **Threat Model**: AI coding assistants interpolate user-controlled host variables directly into axios.get or requests.get URLs, enabling Server-Side Request Forgery against cloud metadata endpoints.
 - **Verification Suite**: `516/516` unit tests passed, `323` active AST rules, repo score `100/100` (`2607ms`)
+
+### Sprint #22 — v3.5.257 (2026-11-08 14:40 UTC)
+- **New AST Shield**: `SLOP-324` (`no-non-atomic-toctou-fs-mutation-v324`, CWE-367) — `Non-Atomic TOCTOU File Existence Check Before Write`
+- **Threat Model**: AI models routinely generate fs.existsSync(p) followed by fs.writeFileSync(p), creating a CWE-367 Time-of-Check Time-of-Use race window exploitable via symlink swapping.
+- **Verification Suite**: `517/517` unit tests passed, `324` active AST rules, repo score `100/100` (`2237ms`)
