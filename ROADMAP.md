@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #26 — v3.5.261 (2026-11-08 14:51 UTC)
-- **New AST Shield**: `SLOP-328` (`no-phantom-ai-sdk-slopsquatting-v328`, CWE-1357) — `Phantom AI SDK Wrapper Package Slopsquatting`
-- **Threat Model**: 1.  **Analyze the Request:** *   **Rule/Context:** `phantom-ai-sdk-slopsquatting` (Phantom AI SDK Wrapper Package Slopsquatting, CWE-1357). This means someone is publishing malicious packages that look like legitimate AI SDKs but are actually typosquatting them, likely causing supply chain attacks. The blocked code lists two specific vulnerable or suspicious
-- **Verification Suite**: `521/521` unit tests passed, `328` active AST rules, repo score `100/100` (`2203ms`)
-
 ### Sprint #27 — v3.5.262 (2026-11-08 14:54 UTC)
 - **New AST Shield**: `SLOP-329` (`no-unbounded-mpsc-queue-sprawl-v329`, CWE-400) — `Unbounded MPSC & Asyncio Queue Memory Exhaustion`
 - **Threat Model**: AI concurrency scaffolding defaults to tokio::sync::mpsc::unbounded_channel() and unbuffered asyncio.Queue(), removing backpressure and causing OOM kills under traffic spikes.
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-342` (`no-compound-namespace-slopsquat-v342`, CWE-829) — `Compound Namespace Package Manifest Slopsquatting`
 - **Threat Model**: AI assistants synthesize plausible compound package names such as flask-bcrypt-auth or tokio-redis-pro that attackers register on PyPI/crates.io/npm for RCE.
 - **Verification Suite**: `535/535` unit tests passed, `342` active AST rules, repo score `100/100` (`2125ms`)
+
+### Sprint #41 — v3.5.276 (2026-11-08 15:34 UTC)
+- **New AST Shield**: `SLOP-343` (`no-unvalidated-ssrf-redirect-chain-v343`, CWE-918) — `Unvalidated SSRF Host Interpolation & Redirect Bypass`
+- **Threat Model**: AI coding assistants interpolate user-controlled host variables directly into axios.get or requests.get URLs, enabling Server-Side Request Forgery against cloud metadata endpoints.
+- **Verification Suite**: `536/536` unit tests passed, `343` active AST rules, repo score `100/100` (`2100ms`)
