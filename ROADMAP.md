@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #19 — v3.5.254 (2026-11-08 14:31 UTC)
-- **New AST Shield**: `SLOP-321` (`no-async-iterator-unclosed-break-v321`, CWE-775) — `Async Generator Break Without Stream Disposal`
-- **Threat Model**: Breaking out of a for-await-of stream loop without a try/finally block or stream.destroy() leaks underlying file descriptors and database cursors.
-- **Verification Suite**: `514/514` unit tests passed, `321` active AST rules, repo score `100/100` (`2332ms`)
-
 ### Sprint #20 — v3.5.255 (2026-11-08 14:35 UTC)
 - **New AST Shield**: `SLOP-322` (`no-compound-namespace-slopsquat-v322`, CWE-829) — `Compound Namespace Package Manifest Slopsquatting`
 - **Threat Model**: AI assistants synthesize plausible compound package names such as flask-bcrypt-auth or tokio-redis-pro that attackers register on PyPI/crates.io/npm for RCE.
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-335` (`no-hallucinated-cipher-primitive-v335`, CWE-327) — `Hallucinated Non-Standard Cryptographic Cipher Names`
 - **Threat Model**: 1.  **Analyze the Request:** *   **Rule/Topic:** hallucinated-cipher-primitive (CWE-327), specifically AI models hallucinating non-standard cipher names like `aes-256-turbo` and hashing algorithms like `sha256-fast`, and SlopGuard's AST firewall blocking it. *   **Context:** The user provided a "Blocked code" example using `aes-256-turbo` and `sha256-fast`, 
 - **Verification Suite**: `528/528` unit tests passed, `335` active AST rules, repo score `100/100` (`2344ms`)
+
+### Sprint #34 — v3.5.269 (2026-11-08 15:14 UTC)
+- **New AST Shield**: `SLOP-336` (`no-shell-template-subprocess-exec-v336`, CWE-78) — `Formatted Shell String Subprocess Command Injection`
+- **Threat Model**: AI assistants pass formatted f-strings or template literals into subprocess.Popen(..., shell=True) and child_process.exec, allowing arbitrary shell command execution.
+- **Verification Suite**: `529/529` unit tests passed, `336` active AST rules, repo score `100/100` (`2330ms`)
