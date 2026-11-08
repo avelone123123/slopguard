@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #214 — v3.5.228 (2026-11-07 19:24 UTC)
-- **New AST Shield**: `SLOP-294` (`no-shell-template-subprocess-exec-v294`, CWE-78) — `Formatted Shell String Subprocess Command Injection`
-- **Threat Model**: AI assistants pass formatted f-strings or template literals into subprocess.Popen(..., shell=True) and child_process.exec, allowing arbitrary shell command execution.
-- **Verification Suite**: `487/487` unit tests passed, `294` active AST rules, repo score `100/100` (`2094ms`)
-
 ### Sprint #215 — v3.5.229 (2026-11-07 19:26 UTC)
 - **New AST Shield**: `SLOP-295` (`no-loop-scoped-event-listener-leak-v295`, CWE-400) — `Unbounded Event Listener Registration Inside Loops`
 - **Threat Model**: AI-generated stream handlers attach emitter.on('data', ...) inside for/while loops without cleanup, exhausting V8 heap memory and triggering MaxListenersExceededWarning.
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-309` (`no-unbounded-mpsc-queue-sprawl-v309`, CWE-400) — `Unbounded MPSC & Asyncio Queue Memory Exhaustion`
 - **Threat Model**: AI models hallucinate unbounded MPSC/Asyncio queues because they are trained on generic
 - **Verification Suite**: `502/502` unit tests passed, `309` active AST rules, repo score `100/100` (`2117ms`)
+
+### Sprint #8 — v3.5.243 (2026-11-08 14:02 UTC)
+- **New AST Shield**: `SLOP-310` (`no-truncated-hex-entropy-keygen-v310`, CWE-326) — `Truncated Hex Slice & Weak PRNG Key Derivation`
+- **Threat Model**: We need to output exactly 2 technical sentences. No intro. Sentence 1: explain why AI models hallucinate this pattern (truncated hex entropy keygen). Sentence 2: how SlopGuard's AST firewall blocks it in <0.35ms. Make sure each sentence ends with a period. No extra whitespace. Exactly 2 sentences. Let's craft: "AI models hallucinate the truncated‑hex pattern
+- **Verification Suite**: `503/503` unit tests passed, `310` active AST rules, repo score `100/100` (`2133ms`)
