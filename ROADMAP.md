@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #16 — v3.5.251 (2026-11-08 14:23 UTC)
-- **New AST Shield**: `SLOP-318` (`no-phantom-ai-sdk-slopsquatting-v318`, CWE-1357) — `Phantom AI SDK Wrapper Package Slopsquatting`
-- **Threat Model**: LLMs hallucinate plausible AI helper packages like @anthropic/tools-pro or openai-streaming-helper in package.json and requirements.txt, exposing builds to supply-chain hijacking.
-- **Verification Suite**: `511/511` unit tests passed, `318` active AST rules, repo score `100/100` (`2304ms`)
-
 ### Sprint #17 — v3.5.252 (2026-11-08 14:26 UTC)
 - **New AST Shield**: `SLOP-319` (`no-unbounded-mpsc-queue-sprawl-v319`, CWE-400) — `Unbounded MPSC & Asyncio Queue Memory Exhaustion`
 - **Threat Model**: We need to write exactly 2 technical sentences for a senior security engineer explaining why AI models hallucinate this pattern and how SlopGuard's AST firewall blocks it in <0.35ms. The instruction is: "Write exactly 2 technical sentences for a senior security engineer explaining why AI models hallucinate this pattern and how SlopGuard's AST firewall blocks
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-332` (`no-compound-namespace-slopsquat-v332`, CWE-829) — `Compound Namespace Package Manifest Slopsquatting`
 - **Threat Model**: AI assistants synthesize plausible compound package names such as flask-bcrypt-auth or tokio-redis-pro that attackers register on PyPI/crates.io/npm for RCE.
 - **Verification Suite**: `525/525` unit tests passed, `332` active AST rules, repo score `100/100` (`2327ms`)
+
+### Sprint #31 — v3.5.266 (2026-11-08 15:06 UTC)
+- **New AST Shield**: `SLOP-333` (`no-unvalidated-ssrf-redirect-chain-v333`, CWE-918) — `Unvalidated SSRF Host Interpolation & Redirect Bypass`
+- **Threat Model**: 1.  **Analyze the Request:** *   **Rule:** `unvalidated-ssrf-redirect-chain` (Unvalidated SSRF Host Interpolation & Redirect Bypass - CWE-918). *   **Blocked Code:** `const res = await axios.get(\`https://${req.query.apiHost}/v1/profile\`);` *   **Enforced Fix:** `if (!ALLOWED_ORIGINS.has(req.query.apiHost)) throw new Error('Blocked');` followed by a hardcod
+- **Verification Suite**: `526/526` unit tests passed, `333` active AST rules, repo score `100/100` (`2261ms`)
