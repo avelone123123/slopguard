@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #46 — v3.5.281 (2026-11-08 15:47 UTC)
-- **New AST Shield**: `SLOP-348` (`no-phantom-ai-sdk-slopsquatting-v348`, CWE-1357) — `Phantom AI SDK Wrapper Package Slopsquatting`
-- **Threat Model**: LLMs hallucinate plausible AI helper packages like @anthropic/tools-pro or openai-streaming-helper in package.json and requirements.txt, exposing builds to supply-chain hijacking.
-- **Verification Suite**: `541/541` unit tests passed, `348` active AST rules, repo score `100/100` (`2100ms`)
-
 ### Sprint #47 — v3.5.282 (2026-11-08 15:50 UTC)
 - **New AST Shield**: `SLOP-349` (`no-unbounded-mpsc-queue-sprawl-v349`, CWE-400) — `Unbounded MPSC & Asyncio Queue Memory Exhaustion`
 - **Threat Model**: 1.  **Analyze the Request:** *   **Rule/Bug:** `unbounded_mpsc_queue_sprawl` (CWE-400) - using an unbounded MPSC/Asyncio queue instead of a bounded one, leading to memory exhaustion. *   **Blocked Code:** `tokio::sync::mpsc::unbounded_channel::<Job>()` *   **Enforced Fix:** `tokio::sync::mpsc::channel::<Job>(1024)` *   **Task:** Write exactly *two* technical
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-362` (`no-compound-namespace-slopsquat-v362`, CWE-829) — `Compound Namespace Package Manifest Slopsquatting`
 - **Threat Model**: AI assistants synthesize plausible compound package names such as flask-bcrypt-auth or tokio-redis-pro that attackers register on PyPI/crates.io/npm for RCE.
 - **Verification Suite**: `555/555` unit tests passed, `362` active AST rules, repo score `100/100` (`2117ms`)
+
+### Sprint #61 — v3.5.296 (2026-11-08 16:28 UTC)
+- **New AST Shield**: `SLOP-363` (`no-unvalidated-ssrf-redirect-chain-v363`, CWE-918) — `Unvalidated SSRF Host Interpolation & Redirect Bypass`
+- **Threat Model**: 1.  **Analyze the Request:** *   **Rule:** unvalidated-ssrf-redirect-chain (CWE-918). *   **Blocked Code:** `const res = await axios.get(`https://${req.query.apiHost}/v1/profile`);` *   **Enforced Fix:** `if (!ALLOWED_ORIGINS.has(req.query.apiHost)) throw new Error('Blocked');` + hardcoded URL. *   **Output constraints:** Exactly 2 technical sentences for a 
+- **Verification Suite**: `556/556` unit tests passed, `363` active AST rules, repo score `100/100` (`2198ms`)
