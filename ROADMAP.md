@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #81 — v3.5.316 (2026-11-08 17:26 UTC)
-- **New AST Shield**: `SLOP-383` (`no-unvalidated-ssrf-redirect-chain-v383`, CWE-918) — `Unvalidated SSRF Host Interpolation & Redirect Bypass`
-- **Threat Model**: 1.  **Analyze the Request:** *   **Rule/Topic:** unvalidated-ssrf-redirect-chain (CWE-918). *   **Blocked Code:** `const res = await axios.get(\`https://${req.query.apiHost}/v1/profile\`);` *   **Enforced Fix:** `if (!ALLOWED_ORIGINS.has(req.query.apiHost)) throw new Error('Blocked'); const res = await axios.get('https://api.internal.verified/v1/profile');` 
-- **Verification Suite**: `576/576` unit tests passed, `383` active AST rules, repo score `100/100` (`2207ms`)
-
 ### Sprint #82 — v3.5.317 (2026-11-08 17:30 UTC)
 - **New AST Shield**: `SLOP-384` (`no-non-atomic-toctou-fs-mutation-v384`, CWE-367) — `Non-Atomic TOCTOU File Existence Check Before Write`
 - **Threat Model**: AI models routinely generate fs.existsSync(p) followed by fs.writeFileSync(p), creating a CWE-367 Time-of-Check Time-of-Use race window exploitable via symlink swapping.
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-397` (`no-loop-scoped-event-listener-leak-v397`, CWE-400) — `Unbounded Event Listener Registration Inside Loops`
 - **Threat Model**: 1.  **Analyze the Request:** *   **Rule:** `loop-scoped-event-listener-leak` (Unbounded Event Listener Registration Inside Loops) - CWE-400. *   **Blocked Code:** A `for` loop registering an event listener for each item in `items`. This causes a memory/event-emission leak because listeners accumulate without bound. *   **Enforced Fix:** Move the logic into a
 - **Verification Suite**: `590/590` unit tests passed, `397` active AST rules, repo score `100/100` (`2170ms`)
+
+### Sprint #96 — v3.5.331 (2026-11-08 18:15 UTC)
+- **New AST Shield**: `SLOP-398` (`no-phantom-ai-sdk-slopsquatting-v398`, CWE-1357) — `Phantom AI SDK Wrapper Package Slopsquatting`
+- **Threat Model**: LLMs hallucinate plausible AI helper packages like @anthropic/tools-pro or openai-streaming-helper in package.json and requirements.txt, exposing builds to supply-chain hijacking.
+- **Verification Suite**: `591/591` unit tests passed, `398` active AST rules, repo score `100/100` (`2151ms`)
