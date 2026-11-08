@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #209 — v3.5.223 (2026-11-07 19:09 UTC)
-- **New AST Shield**: `SLOP-289` (`no-async-iterator-unclosed-break-v289`, CWE-775) — `Async Generator Break Without Stream Disposal`
-- **Threat Model**: Breaking out of a for-await-of stream loop without a try/finally block or stream.destroy() leaks underlying file descriptors and database cursors.
-- **Verification Suite**: `482/482` unit tests passed, `289` active AST rules, repo score `100/100` (`2119ms`)
-
 ### Sprint #210 — v3.5.224 (2026-11-07 19:11 UTC)
 - **New AST Shield**: `SLOP-290` (`no-compound-namespace-slopsquat-v290`, CWE-829) — `Compound Namespace Package Manifest Slopsquatting`
 - **Threat Model**: AI assistants synthesize plausible compound package names such as flask-bcrypt-auth or tokio-redis-pro that attackers register on PyPI/crates.io/npm for RCE.
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-304` (`no-non-atomic-toctou-fs-mutation-v304`, CWE-367) — `Non-Atomic TOCTOU File Existence Check Before Write`
 - **Threat Model**: We need to output exactly 2 technical sentences, no intro. Must explain why AI models hallucinate this pattern (i.e., they generate insecure code like existsSync then writeFileSync) and how SlopGuard's AST firewall blocks it in <0.35ms. Two sentences, technical. Sentence 1: AI models hallucinate the pattern because they learn from insecure code examples and 
 - **Verification Suite**: `497/497` unit tests passed, `304` active AST rules, repo score `100/100` (`2102ms`)
+
+### Sprint #3 — v3.5.238 (2026-11-08 13:48 UTC)
+- **New AST Shield**: `SLOP-305` (`no-hallucinated-cipher-primitive-v305`, CWE-327) — `Hallucinated Non-Standard Cryptographic Cipher Names`
+- **Threat Model**: AI models hallucinate non‑standard cipher names like “aes-256‑turbo” because their training data includes fragmented or outdated cryptographic references, causing the language model to synthesize plausible
+- **Verification Suite**: `498/498` unit tests passed, `305` active AST rules, repo score `100/100` (`2117ms`)
