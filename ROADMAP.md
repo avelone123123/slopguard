@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #207 — v3.5.221 (2026-11-07 19:03 UTC)
-- **New AST Shield**: `SLOP-287` (`no-unbounded-mpsc-queue-sprawl-v287`, CWE-400) — `Unbounded MPSC & Asyncio Queue Memory Exhaustion`
-- **Threat Model**: AI concurrency scaffolding defaults to tokio::sync::mpsc::unbounded_channel() and unbuffered asyncio.Queue(), removing backpressure and causing OOM kills under traffic spikes.
-- **Verification Suite**: `480/480` unit tests passed, `287` active AST rules, repo score `100/100` (`2154ms`)
-
 ### Sprint #208 — v3.5.222 (2026-11-07 19:06 UTC)
 - **New AST Shield**: `SLOP-288` (`no-truncated-hex-entropy-keygen-v288`, CWE-326) — `Truncated Hex Slice & Weak PRNG Key Derivation`
 - **Threat Model**: AI models frequently slice hex-encoded random bytes to 16 chars (reducing 128-bit entropy to 64 bits) or use Math.random().toString(36) for AES/JWT secret keys.
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-301` (`no-unvalidated-ssrf-redirect-chain-v301`, CWE-918) — `Unvalidated SSRF Host Interpolation & Redirect Bypass`
 - **Threat Model**: 1.  **Analyze the Request:** *   **Rule:** unvalidated-ssrf-redirect-chain (CWE-918). *   **Blocked code:** `const res = await axios.get(`https://${req.query.apiHost}/v1/profile`);` (SSRF via interpolation of user input into URL). *   **Enforced fix:** `if (!ALLOWED_ORIGINS.has(req.query.apiHost)) throw new Error('Blocked'); const res = await axios.get('http
 - **Verification Suite**: `494/494` unit tests passed, `301` active AST rules, repo score `100/100` (`2098ms`)
+
+### Sprint #1 — v3.5.236 (2026-11-08 13:42 UTC)
+- **New AST Shield**: `SLOP-303` (`no-unvalidated-ssrf-redirect-chain-v303`, CWE-918) — `Unvalidated SSRF Host Interpolation & Redirect Bypass`
+- **Threat Model**: AI models hallucinate this pattern because training data frequently contains insecure template interpolations where dynamic host values are assumed safe, causing them to generate code that trusts unvalidated query parameters. SlopGuard’s AST firewall detects the unsafe host interpolation node, validates it against a whitelist during static analysis, and abor
+- **Verification Suite**: `496/496` unit tests passed, `303` active AST rules, repo score `100/100` (`2146ms`)

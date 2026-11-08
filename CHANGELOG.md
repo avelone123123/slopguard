@@ -1,5 +1,10 @@
 # Changelog
 All notable changes to SlopGuard are documented in this file.
+## [3.5.236] - 2026-11-08
+### Added
+- Expanded AST Firewall Matrix to 303 Active Shields: Added `SLOP-303` (`no-unvalidated-ssrf-redirect-chain-v303`, CWE-918) — Unvalidated dynamic host interpolation in outbound HTTP client requests.
+- Scaled Deterministic Test Battery: Verified 496/496 passing unit tests (100% pass rate, 0 warnings).
+- Threat Interception: AI models hallucinate this pattern because training data frequently contains insecure template interpolations where dynamic host values are assumed safe, causing them to generate code that trusts unvalidated query parameters. SlopGuard’s AST firewall detects the unsafe host interpolation node, validates it against a whitelist during static analysis, and abor
 ## [3.5.235] - 2026-11-07
 ### Added
 - Expanded AST Firewall Matrix to 301 Active Shields: Added `SLOP-301` (`no-unvalidated-ssrf-redirect-chain-v301`, CWE-918) — Unvalidated dynamic host interpolation in outbound HTTP client requests.
