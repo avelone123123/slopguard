@@ -5961,4 +5961,14 @@ assert!(!findings.is_empty());
 let safe_findings = crate::detectors::command_injection::detect_speculative_subprocess_injection_in_content("safe.py", "subprocess.run(['ls', '-la'], check=True)");
 assert_eq!(safe_findings.len(), 0);
 }
+#[test]
+fn test_council_slop_347_loop_scoped_event_listener_leak() {
+let def = crate::detectors::AST_DETECTOR_DEFINITIONS.iter().find(|d| d.id == "SLOP-347").unwrap();
+assert_eq!(def.name, "no-loop-scoped-event-listener-leak-v347");
+assert_eq!(def.cwe, "CWE-400");
+let findings = crate::detectors::async_loop_traps::detect_unbounded_event_listener_loop_in_content("stream.js", "for (const item of items) { emitter.on('data', handler); }");
+assert!(!findings.is_empty());
+let safe_findings = crate::detectors::async_loop_traps::detect_unbounded_event_listener_loop_in_content("safe.js", "for (const item of items) { emitter.once('data', handler); }");
+assert_eq!(safe_findings.len(), 0);
+}
 }
