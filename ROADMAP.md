@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #4 — v3.5.239 (2026-11-08 13:51 UTC)
-- **New AST Shield**: `SLOP-306` (`no-shell-template-subprocess-exec-v306`, CWE-78) — `Formatted Shell String Subprocess Command Injection`
-- **Threat Model**: AI models hallucinate this pattern because they are trained on vast codebases where shell=True is prevalent and they generate plausible command strings without understanding the security implications of untrusted input. SlopGuard’s AST firewall parses the command into an abstract syntax tree, flags
-- **Verification Suite**: `499/499` unit tests passed, `306` active AST rules, repo score `100/100` (`2094ms`)
-
 ### Sprint #5 — v3.5.240 (2026-11-08 13:53 UTC)
 - **New AST Shield**: `SLOP-307` (`no-loop-scoped-event-listener-leak-v307`, CWE-400) — `Unbounded Event Listener Registration Inside Loops`
 - **Threat Model**: AI-generated stream handlers attach emitter.on('data', ...) inside for/while loops without cleanup, exhausting V8 heap memory and triggering MaxListenersExceededWarning.
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-320` (`no-truncated-hex-entropy-keygen-v320`, CWE-326) — `Truncated Hex Slice & Weak PRNG Key Derivation`
 - **Threat Model**: AI models frequently slice hex-encoded random bytes to 16 chars (reducing 128-bit entropy to 64 bits) or use Math.random().toString(36) for AES/JWT secret keys.
 - **Verification Suite**: `513/513` unit tests passed, `320` active AST rules, repo score `100/100` (`2260ms`)
+
+### Sprint #19 — v3.5.254 (2026-11-08 14:31 UTC)
+- **New AST Shield**: `SLOP-321` (`no-async-iterator-unclosed-break-v321`, CWE-775) — `Async Generator Break Without Stream Disposal`
+- **Threat Model**: Breaking out of a for-await-of stream loop without a try/finally block or stream.destroy() leaks underlying file descriptors and database cursors.
+- **Verification Suite**: `514/514` unit tests passed, `321` active AST rules, repo score `100/100` (`2332ms`)
