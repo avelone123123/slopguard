@@ -5691,4 +5691,14 @@ assert!(!findings.is_empty());
 let safe_findings = crate::detectors::unbounded_concurrency::detect_unbounded_channel_sprawl_in_content("safe.rs", "let (tx, rx) = tokio::sync::mpsc::channel(1024);");
 assert_eq!(safe_findings.len(), 0);
 }
+#[test]
+fn test_council_slop_320_truncated_hex_entropy_keygen() {
+let def = crate::detectors::AST_DETECTOR_DEFINITIONS.iter().find(|d| d.id == "SLOP-320").unwrap();
+assert_eq!(def.name, "no-truncated-hex-entropy-keygen-v320");
+assert_eq!(def.cwe, "CWE-326");
+let findings = crate::detectors::insecure_crypto::detect_insecure_direct_crypto_keygen_in_content("cipher.ts", "const encryption_key = crypto.randomBytes(32).toString('hex').slice(0, 16);");
+assert!(!findings.is_empty());
+let safe_findings = crate::detectors::insecure_crypto::detect_insecure_direct_crypto_keygen_in_content("safe.ts", "const key = crypto.randomBytes(32);");
+assert_eq!(safe_findings.len(), 0);
+}
 }

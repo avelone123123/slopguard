@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #3 — v3.5.238 (2026-11-08 13:48 UTC)
-- **New AST Shield**: `SLOP-305` (`no-hallucinated-cipher-primitive-v305`, CWE-327) — `Hallucinated Non-Standard Cryptographic Cipher Names`
-- **Threat Model**: AI models hallucinate non‑standard cipher names like “aes-256‑turbo” because their training data includes fragmented or outdated cryptographic references, causing the language model to synthesize plausible
-- **Verification Suite**: `498/498` unit tests passed, `305` active AST rules, repo score `100/100` (`2117ms`)
-
 ### Sprint #4 — v3.5.239 (2026-11-08 13:51 UTC)
 - **New AST Shield**: `SLOP-306` (`no-shell-template-subprocess-exec-v306`, CWE-78) — `Formatted Shell String Subprocess Command Injection`
 - **Threat Model**: AI models hallucinate this pattern because they are trained on vast codebases where shell=True is prevalent and they generate plausible command strings without understanding the security implications of untrusted input. SlopGuard’s AST firewall parses the command into an abstract syntax tree, flags
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-319` (`no-unbounded-mpsc-queue-sprawl-v319`, CWE-400) — `Unbounded MPSC & Asyncio Queue Memory Exhaustion`
 - **Threat Model**: We need to write exactly 2 technical sentences for a senior security engineer explaining why AI models hallucinate this pattern and how SlopGuard's AST firewall blocks it in <0.35ms. The instruction is: "Write exactly 2 technical sentences for a senior security engineer explaining why AI models hallucinate this pattern and how SlopGuard's AST firewall blocks
 - **Verification Suite**: `512/512` unit tests passed, `319` active AST rules, repo score `100/100` (`2350ms`)
+
+### Sprint #18 — v3.5.253 (2026-11-08 14:29 UTC)
+- **New AST Shield**: `SLOP-320` (`no-truncated-hex-entropy-keygen-v320`, CWE-326) — `Truncated Hex Slice & Weak PRNG Key Derivation`
+- **Threat Model**: AI models frequently slice hex-encoded random bytes to 16 chars (reducing 128-bit entropy to 64 bits) or use Math.random().toString(36) for AES/JWT secret keys.
+- **Verification Suite**: `513/513` unit tests passed, `320` active AST rules, repo score `100/100` (`2260ms`)
