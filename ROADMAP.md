@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #33 — v3.5.268 (2026-11-08 15:11 UTC)
-- **New AST Shield**: `SLOP-335` (`no-hallucinated-cipher-primitive-v335`, CWE-327) — `Hallucinated Non-Standard Cryptographic Cipher Names`
-- **Threat Model**: 1.  **Analyze the Request:** *   **Rule/Topic:** hallucinated-cipher-primitive (CWE-327), specifically AI models hallucinating non-standard cipher names like `aes-256-turbo` and hashing algorithms like `sha256-fast`, and SlopGuard's AST firewall blocking it. *   **Context:** The user provided a "Blocked code" example using `aes-256-turbo` and `sha256-fast`, 
-- **Verification Suite**: `528/528` unit tests passed, `335` active AST rules, repo score `100/100` (`2344ms`)
-
 ### Sprint #34 — v3.5.269 (2026-11-08 15:14 UTC)
 - **New AST Shield**: `SLOP-336` (`no-shell-template-subprocess-exec-v336`, CWE-78) — `Formatted Shell String Subprocess Command Injection`
 - **Threat Model**: AI assistants pass formatted f-strings or template literals into subprocess.Popen(..., shell=True) and child_process.exec, allowing arbitrary shell command execution.
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-349` (`no-unbounded-mpsc-queue-sprawl-v349`, CWE-400) — `Unbounded MPSC & Asyncio Queue Memory Exhaustion`
 - **Threat Model**: 1.  **Analyze the Request:** *   **Rule/Bug:** `unbounded_mpsc_queue_sprawl` (CWE-400) - using an unbounded MPSC/Asyncio queue instead of a bounded one, leading to memory exhaustion. *   **Blocked Code:** `tokio::sync::mpsc::unbounded_channel::<Job>()` *   **Enforced Fix:** `tokio::sync::mpsc::channel::<Job>(1024)` *   **Task:** Write exactly *two* technical
 - **Verification Suite**: `542/542` unit tests passed, `349` active AST rules, repo score `100/100` (`2176ms`)
+
+### Sprint #48 — v3.5.283 (2026-11-08 15:53 UTC)
+- **New AST Shield**: `SLOP-350` (`no-truncated-hex-entropy-keygen-v350`, CWE-326) — `Truncated Hex Slice & Weak PRNG Key Derivation`
+- **Threat Model**: 1.  **Analyze the Request:** *   **Rule/Topic:** `truncated-hex-entropy-keygen` (Truncated Hex Slice & Weak PRNG Key Derivation, CWE-326). *   **Blocked Code:** `const aesKey = crypto.randomBytes(32).toString('hex').slice(0, 16);` *   **Enforced Fix:** `const aesKey = crypto.randomBytes(32);` *   **Target Audience:** Senior security engineer. *   **Output Co
+- **Verification Suite**: `543/543` unit tests passed, `350` active AST rules, repo score `100/100` (`2149ms`)
