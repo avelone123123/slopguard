@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #213 — v3.5.227 (2026-11-07 19:21 UTC)
-- **New AST Shield**: `SLOP-293` (`no-hallucinated-cipher-primitive-v293`, CWE-327) — `Hallucinated Non-Standard Cryptographic Cipher Names`
-- **Threat Model**: LLMs invent non-existent cipher strings such as aes-256-turbo or sha256-fast in OpenSSL and Node crypto calls, causing runtime panics or silent fallback to weak encryption.
-- **Verification Suite**: `486/486` unit tests passed, `293` active AST rules, repo score `100/100` (`2161ms`)
-
 ### Sprint #214 — v3.5.228 (2026-11-07 19:24 UTC)
 - **New AST Shield**: `SLOP-294` (`no-shell-template-subprocess-exec-v294`, CWE-78) — `Formatted Shell String Subprocess Command Injection`
 - **Threat Model**: AI assistants pass formatted f-strings or template literals into subprocess.Popen(..., shell=True) and child_process.exec, allowing arbitrary shell command execution.
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-308` (`no-phantom-ai-sdk-slopsquatting-v308`, CWE-1357) — `Phantom AI SDK Wrapper Package Slopsquatting`
 - **Threat Model**: AI models hallucinate slopsquatting patterns because they infer package names from superficial string similarities in training data rather than semantic intent, causing them to generate misleading dependency identifiers. SlopGuard's AST firewall detects
 - **Verification Suite**: `501/501` unit tests passed, `308` active AST rules, repo score `100/100` (`2111ms`)
+
+### Sprint #7 — v3.5.242 (2026-11-08 13:59 UTC)
+- **New AST Shield**: `SLOP-309` (`no-unbounded-mpsc-queue-sprawl-v309`, CWE-400) — `Unbounded MPSC & Asyncio Queue Memory Exhaustion`
+- **Threat Model**: AI models hallucinate unbounded MPSC/Asyncio queues because they are trained on generic
+- **Verification Suite**: `502/502` unit tests passed, `309` active AST rules, repo score `100/100` (`2117ms`)
