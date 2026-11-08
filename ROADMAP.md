@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #221 — v3.5.235 (2026-11-07 19:44 UTC)
-- **New AST Shield**: `SLOP-301` (`no-unvalidated-ssrf-redirect-chain-v301`, CWE-918) — `Unvalidated SSRF Host Interpolation & Redirect Bypass`
-- **Threat Model**: 1.  **Analyze the Request:** *   **Rule:** unvalidated-ssrf-redirect-chain (CWE-918). *   **Blocked code:** `const res = await axios.get(`https://${req.query.apiHost}/v1/profile`);` (SSRF via interpolation of user input into URL). *   **Enforced fix:** `if (!ALLOWED_ORIGINS.has(req.query.apiHost)) throw new Error('Blocked'); const res = await axios.get('http
-- **Verification Suite**: `494/494` unit tests passed, `301` active AST rules, repo score `100/100` (`2098ms`)
-
 ### Sprint #1 — v3.5.236 (2026-11-08 13:42 UTC)
 - **New AST Shield**: `SLOP-303` (`no-unvalidated-ssrf-redirect-chain-v303`, CWE-918) — `Unvalidated SSRF Host Interpolation & Redirect Bypass`
 - **Threat Model**: AI models hallucinate this pattern because training data frequently contains insecure template interpolations where dynamic host values are assumed safe, causing them to generate code that trusts unvalidated query parameters. SlopGuard’s AST firewall detects the unsafe host interpolation node, validates it against a whitelist during static analysis, and abor
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-316` (`no-shell-template-subprocess-exec-v316`, CWE-78) — `Formatted Shell String Subprocess Command Injection`
 - **Threat Model**: 1.  **Analyze the Request:** *   **Rule:** `shell-template-subprocess-exec` (CWE-78). *   **Blocked Code:** `subprocess.Popen(f'tar -xzf {archive_name}', shell=True)` *   **Enforced Fix:** `subprocess.run(['tar', '-xzf', archive_name], check=True)` *   **Task:** Write exactly 2 technical sentences for a senior security engineer. *   **Topic:** Explain why AI
 - **Verification Suite**: `509/509` unit tests passed, `316` active AST rules, repo score `100/100` (`2150ms`)
+
+### Sprint #15 — v3.5.250 (2026-11-08 14:21 UTC)
+- **New AST Shield**: `SLOP-317` (`no-loop-scoped-event-listener-leak-v317`, CWE-400) — `Unbounded Event Listener Registration Inside Loops`
+- **Threat Model**: AI-generated stream handlers attach emitter.on('data', ...) inside for/while loops without cleanup, exhausting V8 heap memory and triggering MaxListenersExceededWarning.
+- **Verification Suite**: `510/510` unit tests passed, `317` active AST rules, repo score `100/100` (`2193ms`)
