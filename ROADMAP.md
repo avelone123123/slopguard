@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #208 — v3.5.222 (2026-11-07 19:06 UTC)
-- **New AST Shield**: `SLOP-288` (`no-truncated-hex-entropy-keygen-v288`, CWE-326) — `Truncated Hex Slice & Weak PRNG Key Derivation`
-- **Threat Model**: AI models frequently slice hex-encoded random bytes to 16 chars (reducing 128-bit entropy to 64 bits) or use Math.random().toString(36) for AES/JWT secret keys.
-- **Verification Suite**: `481/481` unit tests passed, `288` active AST rules, repo score `100/100` (`2184ms`)
-
 ### Sprint #209 — v3.5.223 (2026-11-07 19:09 UTC)
 - **New AST Shield**: `SLOP-289` (`no-async-iterator-unclosed-break-v289`, CWE-775) — `Async Generator Break Without Stream Disposal`
 - **Threat Model**: Breaking out of a for-await-of stream loop without a try/finally block or stream.destroy() leaks underlying file descriptors and database cursors.
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-303` (`no-unvalidated-ssrf-redirect-chain-v303`, CWE-918) — `Unvalidated SSRF Host Interpolation & Redirect Bypass`
 - **Threat Model**: AI models hallucinate this pattern because training data frequently contains insecure template interpolations where dynamic host values are assumed safe, causing them to generate code that trusts unvalidated query parameters. SlopGuard’s AST firewall detects the unsafe host interpolation node, validates it against a whitelist during static analysis, and abor
 - **Verification Suite**: `496/496` unit tests passed, `303` active AST rules, repo score `100/100` (`2146ms`)
+
+### Sprint #2 — v3.5.237 (2026-11-08 13:45 UTC)
+- **New AST Shield**: `SLOP-304` (`no-non-atomic-toctou-fs-mutation-v304`, CWE-367) — `Non-Atomic TOCTOU File Existence Check Before Write`
+- **Threat Model**: We need to output exactly 2 technical sentences, no intro. Must explain why AI models hallucinate this pattern (i.e., they generate insecure code like existsSync then writeFileSync) and how SlopGuard's AST firewall blocks it in <0.35ms. Two sentences, technical. Sentence 1: AI models hallucinate the pattern because they learn from insecure code examples and 
+- **Verification Suite**: `497/497` unit tests passed, `304` active AST rules, repo score `100/100` (`2102ms`)

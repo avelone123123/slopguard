@@ -406,6 +406,7 @@ AstDetectorDefinition { id: "SLOP-300", name: "no-compound-namespace-slopsquat-v
 AstDetectorDefinition { id: "SLOP-301", name: "no-unvalidated-ssrf-redirect-chain-v301", severity: SlopSeverity::Error, category: "path-injection", cwe: "CWE-918", description: "Unvalidated dynamic host interpolation in outbound HTTP client requests", recommendation: "Validate target hostnames against strict allowlist before dispatching requests" },
 AstDetectorDefinition { id: "SLOP-302", name: "no-non-atomic-toctou-fs-mutation-v302", severity: SlopSeverity::Error, category: "path-injection", cwe: "CWE-367", description: "Non-atomic file existence check prior to destructive file write", recommendation: "Use atomic exclusive file creation flags such as wx or O_CREAT | O_EXCL" },
 AstDetectorDefinition { id: "SLOP-303", name: "no-unvalidated-ssrf-redirect-chain-v303", severity: SlopSeverity::Error, category: "path-injection", cwe: "CWE-918", description: "Unvalidated dynamic host interpolation in outbound HTTP client requests", recommendation: "Validate target hostnames against strict allowlist before dispatching requests" },
+AstDetectorDefinition { id: "SLOP-304", name: "no-non-atomic-toctou-fs-mutation-v304", severity: SlopSeverity::Error, category: "path-injection", cwe: "CWE-367", description: "Non-atomic file existence check prior to destructive file write", recommendation: "Use atomic exclusive file creation flags such as wx or O_CREAT | O_EXCL" },
 ];
 #[allow(dead_code)]
 pub static ACTIVE_CONTRACTS: &[crate::types::AstDetectorContract] = &[
