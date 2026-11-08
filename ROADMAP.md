@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #215 — v3.5.229 (2026-11-07 19:26 UTC)
-- **New AST Shield**: `SLOP-295` (`no-loop-scoped-event-listener-leak-v295`, CWE-400) — `Unbounded Event Listener Registration Inside Loops`
-- **Threat Model**: AI-generated stream handlers attach emitter.on('data', ...) inside for/while loops without cleanup, exhausting V8 heap memory and triggering MaxListenersExceededWarning.
-- **Verification Suite**: `488/488` unit tests passed, `295` active AST rules, repo score `100/100` (`2142ms`)
-
 ### Sprint #216 — v3.5.230 (2026-11-07 19:30 UTC)
 - **New AST Shield**: `SLOP-296` (`no-phantom-ai-sdk-slopsquatting-v296`, CWE-1357) — `Phantom AI SDK Wrapper Package Slopsquatting`
 - **Threat Model**: LLMs hallucinate plausible AI helper packages like @anthropic/tools-pro or openai-streaming-helper in package.json and requirements.txt, exposing builds to supply-chain hijacking.
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-310` (`no-truncated-hex-entropy-keygen-v310`, CWE-326) — `Truncated Hex Slice & Weak PRNG Key Derivation`
 - **Threat Model**: We need to output exactly 2 technical sentences. No intro. Sentence 1: explain why AI models hallucinate this pattern (truncated hex entropy keygen). Sentence 2: how SlopGuard's AST firewall blocks it in <0.35ms. Make sure each sentence ends with a period. No extra whitespace. Exactly 2 sentences. Let's craft: "AI models hallucinate the truncated‑hex pattern
 - **Verification Suite**: `503/503` unit tests passed, `310` active AST rules, repo score `100/100` (`2133ms`)
+
+### Sprint #9 — v3.5.244 (2026-11-08 14:04 UTC)
+- **New AST Shield**: `SLOP-311` (`no-async-iterator-unclosed-break-v311`, CWE-775) — `Async Generator Break Without Stream Disposal`
+- **Threat Model**: Breaking out of a for-await-of stream loop without a try/finally block or stream.destroy() leaks underlying file descriptors and database cursors.
+- **Verification Suite**: `504/504` unit tests passed, `311` active AST rules, repo score `100/100` (`2089ms`)
