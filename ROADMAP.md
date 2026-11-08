@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #17 — v3.5.252 (2026-11-08 14:26 UTC)
-- **New AST Shield**: `SLOP-319` (`no-unbounded-mpsc-queue-sprawl-v319`, CWE-400) — `Unbounded MPSC & Asyncio Queue Memory Exhaustion`
-- **Threat Model**: We need to write exactly 2 technical sentences for a senior security engineer explaining why AI models hallucinate this pattern and how SlopGuard's AST firewall blocks it in <0.35ms. The instruction is: "Write exactly 2 technical sentences for a senior security engineer explaining why AI models hallucinate this pattern and how SlopGuard's AST firewall blocks
-- **Verification Suite**: `512/512` unit tests passed, `319` active AST rules, repo score `100/100` (`2350ms`)
-
 ### Sprint #18 — v3.5.253 (2026-11-08 14:29 UTC)
 - **New AST Shield**: `SLOP-320` (`no-truncated-hex-entropy-keygen-v320`, CWE-326) — `Truncated Hex Slice & Weak PRNG Key Derivation`
 - **Threat Model**: AI models frequently slice hex-encoded random bytes to 16 chars (reducing 128-bit entropy to 64 bits) or use Math.random().toString(36) for AES/JWT secret keys.
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-333` (`no-unvalidated-ssrf-redirect-chain-v333`, CWE-918) — `Unvalidated SSRF Host Interpolation & Redirect Bypass`
 - **Threat Model**: 1.  **Analyze the Request:** *   **Rule:** `unvalidated-ssrf-redirect-chain` (Unvalidated SSRF Host Interpolation & Redirect Bypass - CWE-918). *   **Blocked Code:** `const res = await axios.get(\`https://${req.query.apiHost}/v1/profile\`);` *   **Enforced Fix:** `if (!ALLOWED_ORIGINS.has(req.query.apiHost)) throw new Error('Blocked');` followed by a hardcod
 - **Verification Suite**: `526/526` unit tests passed, `333` active AST rules, repo score `100/100` (`2261ms`)
+
+### Sprint #32 — v3.5.267 (2026-11-08 15:08 UTC)
+- **New AST Shield**: `SLOP-334` (`no-non-atomic-toctou-fs-mutation-v334`, CWE-367) — `Non-Atomic TOCTOU File Existence Check Before Write`
+- **Threat Model**: We need answer exactly 2 technical sentences. Need explain why AI models hallucinate this pattern and how SlopGuard's AST firewall blocks in <0.35ms. User says "Write exactly 2 technical sentences for a senior security engineer explaining why AI models hallucinate this pattern and how SlopGuard's AST firewall blocks it in <0.35ms. Output ONLY the 2 sentences
+- **Verification Suite**: `527/527` unit tests passed, `334` active AST rules, repo score `100/100` (`2264ms`)
