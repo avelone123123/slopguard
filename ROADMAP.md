@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #1 — v3.5.236 (2026-11-08 13:42 UTC)
-- **New AST Shield**: `SLOP-303` (`no-unvalidated-ssrf-redirect-chain-v303`, CWE-918) — `Unvalidated SSRF Host Interpolation & Redirect Bypass`
-- **Threat Model**: AI models hallucinate this pattern because training data frequently contains insecure template interpolations where dynamic host values are assumed safe, causing them to generate code that trusts unvalidated query parameters. SlopGuard’s AST firewall detects the unsafe host interpolation node, validates it against a whitelist during static analysis, and abor
-- **Verification Suite**: `496/496` unit tests passed, `303` active AST rules, repo score `100/100` (`2146ms`)
-
 ### Sprint #2 — v3.5.237 (2026-11-08 13:45 UTC)
 - **New AST Shield**: `SLOP-304` (`no-non-atomic-toctou-fs-mutation-v304`, CWE-367) — `Non-Atomic TOCTOU File Existence Check Before Write`
 - **Threat Model**: We need to output exactly 2 technical sentences, no intro. Must explain why AI models hallucinate this pattern (i.e., they generate insecure code like existsSync then writeFileSync) and how SlopGuard's AST firewall blocks it in <0.35ms. Two sentences, technical. Sentence 1: AI models hallucinate the pattern because they learn from insecure code examples and 
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-317` (`no-loop-scoped-event-listener-leak-v317`, CWE-400) — `Unbounded Event Listener Registration Inside Loops`
 - **Threat Model**: AI-generated stream handlers attach emitter.on('data', ...) inside for/while loops without cleanup, exhausting V8 heap memory and triggering MaxListenersExceededWarning.
 - **Verification Suite**: `510/510` unit tests passed, `317` active AST rules, repo score `100/100` (`2193ms`)
+
+### Sprint #16 — v3.5.251 (2026-11-08 14:23 UTC)
+- **New AST Shield**: `SLOP-318` (`no-phantom-ai-sdk-slopsquatting-v318`, CWE-1357) — `Phantom AI SDK Wrapper Package Slopsquatting`
+- **Threat Model**: LLMs hallucinate plausible AI helper packages like @anthropic/tools-pro or openai-streaming-helper in package.json and requirements.txt, exposing builds to supply-chain hijacking.
+- **Verification Suite**: `511/511` unit tests passed, `318` active AST rules, repo score `100/100` (`2304ms`)
