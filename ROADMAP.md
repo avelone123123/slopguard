@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #83 — v3.5.318 (2026-11-08 17:33 UTC)
-- **New AST Shield**: `SLOP-385` (`no-hallucinated-cipher-primitive-v385`, CWE-327) — `Hallucinated Non-Standard Cryptographic Cipher Names`
-- **Threat Model**: LLMs invent non-existent cipher strings such as aes-256-turbo or sha256-fast in OpenSSL and Node crypto calls, causing runtime panics or silent fallback to weak encryption.
-- **Verification Suite**: `578/578` unit tests passed, `385` active AST rules, repo score `100/100` (`2119ms`)
-
 ### Sprint #84 — v3.5.319 (2026-11-08 17:36 UTC)
 - **New AST Shield**: `SLOP-386` (`no-shell-template-subprocess-exec-v386`, CWE-78) — `Formatted Shell String Subprocess Command Injection`
 - **Threat Model**: AI assistants pass formatted f-strings or template literals into subprocess.Popen(..., shell=True) and child_process.exec, allowing arbitrary shell command execution.
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-399` (`no-unbounded-mpsc-queue-sprawl-v399`, CWE-400) — `Unbounded MPSC & Asyncio Queue Memory Exhaustion`
 - **Threat Model**: 1.  **Analyze the Request:** *   **Rule:** `unbounded-mpsc-queue-sprawl` (CWE-400). Unbounded MPSC queues lead to memory exhaustion. *   **Blocked Code:** `tokio::sync::mpsc::unbounded_channel::<Job>()` *   **Enforced Fix:** `tokio::sync::mpsc::channel::<Job>(1024)` *   **Task:** Write exactly 2 technical sentences for a senior security engineer explaining *
 - **Verification Suite**: `592/592` unit tests passed, `399` active AST rules, repo score `100/100` (`2123ms`)
+
+### Sprint #98 — v3.5.333 (2026-11-08 18:23 UTC)
+- **New AST Shield**: `SLOP-400` (`no-truncated-hex-entropy-keygen-v400`, CWE-326) — `Truncated Hex Slice & Weak PRNG Key Derivation`
+- **Threat Model**: 1.  **Analyze the Request:** *   **Rule Name:** truncated-hex-entropy-keygen (Truncated Hex Slice & Weak PRNG Key Derivation, CWE-326). *   **Blocked Code:** `const aesKey = crypto.randomBytes(32).toString('hex').slice(0, 16);` *   **Enforced Fix:** `const aesKey = crypto.randomBytes(32);` *   **Task:** Write exactly 2 technical sentences for a senior securi
+- **Verification Suite**: `593/593` unit tests passed, `400` active AST rules, repo score `100/100` (`2108ms`)
