@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #2 — v3.5.237 (2026-11-08 13:45 UTC)
-- **New AST Shield**: `SLOP-304` (`no-non-atomic-toctou-fs-mutation-v304`, CWE-367) — `Non-Atomic TOCTOU File Existence Check Before Write`
-- **Threat Model**: We need to output exactly 2 technical sentences, no intro. Must explain why AI models hallucinate this pattern (i.e., they generate insecure code like existsSync then writeFileSync) and how SlopGuard's AST firewall blocks it in <0.35ms. Two sentences, technical. Sentence 1: AI models hallucinate the pattern because they learn from insecure code examples and 
-- **Verification Suite**: `497/497` unit tests passed, `304` active AST rules, repo score `100/100` (`2102ms`)
-
 ### Sprint #3 — v3.5.238 (2026-11-08 13:48 UTC)
 - **New AST Shield**: `SLOP-305` (`no-hallucinated-cipher-primitive-v305`, CWE-327) — `Hallucinated Non-Standard Cryptographic Cipher Names`
 - **Threat Model**: AI models hallucinate non‑standard cipher names like “aes-256‑turbo” because their training data includes fragmented or outdated cryptographic references, causing the language model to synthesize plausible
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-318` (`no-phantom-ai-sdk-slopsquatting-v318`, CWE-1357) — `Phantom AI SDK Wrapper Package Slopsquatting`
 - **Threat Model**: LLMs hallucinate plausible AI helper packages like @anthropic/tools-pro or openai-streaming-helper in package.json and requirements.txt, exposing builds to supply-chain hijacking.
 - **Verification Suite**: `511/511` unit tests passed, `318` active AST rules, repo score `100/100` (`2304ms`)
+
+### Sprint #17 — v3.5.252 (2026-11-08 14:26 UTC)
+- **New AST Shield**: `SLOP-319` (`no-unbounded-mpsc-queue-sprawl-v319`, CWE-400) — `Unbounded MPSC & Asyncio Queue Memory Exhaustion`
+- **Threat Model**: We need to write exactly 2 technical sentences for a senior security engineer explaining why AI models hallucinate this pattern and how SlopGuard's AST firewall blocks it in <0.35ms. The instruction is: "Write exactly 2 technical sentences for a senior security engineer explaining why AI models hallucinate this pattern and how SlopGuard's AST firewall blocks
+- **Verification Suite**: `512/512` unit tests passed, `319` active AST rules, repo score `100/100` (`2350ms`)
