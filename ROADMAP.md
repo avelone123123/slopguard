@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #43 — v3.5.278 (2026-11-08 15:39 UTC)
-- **New AST Shield**: `SLOP-345` (`no-hallucinated-cipher-primitive-v345`, CWE-327) — `Hallucinated Non-Standard Cryptographic Cipher Names`
-- **Threat Model**: LLMs invent non-existent cipher strings such as aes-256-turbo or sha256-fast in OpenSSL and Node crypto calls, causing runtime panics or silent fallback to weak encryption.
-- **Verification Suite**: `538/538` unit tests passed, `345` active AST rules, repo score `100/100` (`2166ms`)
-
 ### Sprint #44 — v3.5.279 (2026-11-08 15:42 UTC)
 - **New AST Shield**: `SLOP-346` (`no-shell-template-subprocess-exec-v346`, CWE-78) — `Formatted Shell String Subprocess Command Injection`
 - **Threat Model**: AI assistants pass formatted f-strings or template literals into subprocess.Popen(..., shell=True) and child_process.exec, allowing arbitrary shell command execution.
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-359` (`no-unbounded-mpsc-queue-sprawl-v359`, CWE-400) — `Unbounded MPSC & Asyncio Queue Memory Exhaustion`
 - **Threat Model**: 1.  **Analyze the Request:** *   **Rule:** `unbounded-mpsc-queue-sprawl` (Unbounded MPSC & Asyncio Queue Memory Exhaustion - CWE-400). *   **Blocked Code:** `tokio::sync::mpsc::unbounded_channel::<Job>()` *   **Enforced Fix:** `tokio::sync::mpsc::channel::<Job>(1024)` *   **Task:** Write exactly 2 technical sentences for a senior security engineer explaining
 - **Verification Suite**: `552/552` unit tests passed, `359` active AST rules, repo score `100/100` (`2116ms`)
+
+### Sprint #58 — v3.5.293 (2026-11-08 16:20 UTC)
+- **New AST Shield**: `SLOP-360` (`no-truncated-hex-entropy-keygen-v360`, CWE-326) — `Truncated Hex Slice & Weak PRNG Key Derivation`
+- **Threat Model**: AI models frequently slice hex-encoded random bytes to 16 chars (reducing 128-bit entropy to 64 bits) or use Math.random().toString(36) for AES/JWT secret keys.
+- **Verification Suite**: `553/553` unit tests passed, `360` active AST rules, repo score `100/100` (`2114ms`)
