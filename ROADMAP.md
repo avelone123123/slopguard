@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #32 — v3.5.267 (2026-11-08 15:08 UTC)
-- **New AST Shield**: `SLOP-334` (`no-non-atomic-toctou-fs-mutation-v334`, CWE-367) — `Non-Atomic TOCTOU File Existence Check Before Write`
-- **Threat Model**: We need answer exactly 2 technical sentences. Need explain why AI models hallucinate this pattern and how SlopGuard's AST firewall blocks in <0.35ms. User says "Write exactly 2 technical sentences for a senior security engineer explaining why AI models hallucinate this pattern and how SlopGuard's AST firewall blocks it in <0.35ms. Output ONLY the 2 sentences
-- **Verification Suite**: `527/527` unit tests passed, `334` active AST rules, repo score `100/100` (`2264ms`)
-
 ### Sprint #33 — v3.5.268 (2026-11-08 15:11 UTC)
 - **New AST Shield**: `SLOP-335` (`no-hallucinated-cipher-primitive-v335`, CWE-327) — `Hallucinated Non-Standard Cryptographic Cipher Names`
 - **Threat Model**: 1.  **Analyze the Request:** *   **Rule/Topic:** hallucinated-cipher-primitive (CWE-327), specifically AI models hallucinating non-standard cipher names like `aes-256-turbo` and hashing algorithms like `sha256-fast`, and SlopGuard's AST firewall blocking it. *   **Context:** The user provided a "Blocked code" example using `aes-256-turbo` and `sha256-fast`, 
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-348` (`no-phantom-ai-sdk-slopsquatting-v348`, CWE-1357) — `Phantom AI SDK Wrapper Package Slopsquatting`
 - **Threat Model**: LLMs hallucinate plausible AI helper packages like @anthropic/tools-pro or openai-streaming-helper in package.json and requirements.txt, exposing builds to supply-chain hijacking.
 - **Verification Suite**: `541/541` unit tests passed, `348` active AST rules, repo score `100/100` (`2100ms`)
+
+### Sprint #47 — v3.5.282 (2026-11-08 15:50 UTC)
+- **New AST Shield**: `SLOP-349` (`no-unbounded-mpsc-queue-sprawl-v349`, CWE-400) — `Unbounded MPSC & Asyncio Queue Memory Exhaustion`
+- **Threat Model**: 1.  **Analyze the Request:** *   **Rule/Bug:** `unbounded_mpsc_queue_sprawl` (CWE-400) - using an unbounded MPSC/Asyncio queue instead of a bounded one, leading to memory exhaustion. *   **Blocked Code:** `tokio::sync::mpsc::unbounded_channel::<Job>()` *   **Enforced Fix:** `tokio::sync::mpsc::channel::<Job>(1024)` *   **Task:** Write exactly *two* technical
+- **Verification Suite**: `542/542` unit tests passed, `349` active AST rules, repo score `100/100` (`2176ms`)
