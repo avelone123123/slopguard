@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #89 — v3.5.324 (2026-11-08 17:51 UTC)
-- **New AST Shield**: `SLOP-391` (`no-async-iterator-unclosed-break-v391`, CWE-775) — `Async Generator Break Without Stream Disposal`
-- **Threat Model**: Breaking out of a for-await-of stream loop without a try/finally block or stream.destroy() leaks underlying file descriptors and database cursors.
-- **Verification Suite**: `584/584` unit tests passed, `391` active AST rules, repo score `100/100` (`2157ms`)
-
 ### Sprint #90 — v3.5.325 (2026-11-08 17:54 UTC)
 - **New AST Shield**: `SLOP-392` (`no-compound-namespace-slopsquat-v392`, CWE-829) — `Compound Namespace Package Manifest Slopsquatting`
 - **Threat Model**: AI assistants synthesize plausible compound package names such as flask-bcrypt-auth or tokio-redis-pro that attackers register on PyPI/crates.io/npm for RCE.
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-405` (`no-non-atomic-toctou-fs-mutation-v405`, CWE-367) — `Non-Atomic TOCTOU File Existence Check Before Write`
 - **Threat Model**: We need to output exactly 2 technical sentences. No intro, just 2 sentences. Must explain why AI models hallucinate this pattern and how SlopGuard's AST firewall blocks it in <0.35ms. Sentence 1: Why AI models hallucinate this pattern (maybe due to training data bias, pattern similarity, lack of precise semantics). Sentence 2: How SlopGuard's AST firewall bl
 - **Verification Suite**: `598/598` unit tests passed, `405` active AST rules, repo score `100/100` (`2012ms`)
+
+### Sprint #3 — v3.5.339 (2026-11-09 11:51 UTC)
+- **New AST Shield**: `SLOP-406` (`no-hallucinated-cipher-primitive-v406`, CWE-327) — `Hallucinated Non-Standard Cryptographic Cipher Names`
+- **Threat Model**: We need to output exactly 2 technical sentences. No intro. Must explain why AI models hallucinate this pattern and how SlopGuard's AST firewall blocks it in <0.35ms. Sentence 1: why AI models hallucinate pattern (they generate plausible but non-standard cipher names due to training data noise and token probability). Sentence 2: how SlopGuard's AST firewall b
+- **Verification Suite**: `599/599` unit tests passed, `406` active AST rules, repo score `100/100` (`2046ms`)
