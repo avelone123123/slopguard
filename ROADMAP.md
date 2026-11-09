@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #98 — v3.5.333 (2026-11-08 18:23 UTC)
-- **New AST Shield**: `SLOP-400` (`no-truncated-hex-entropy-keygen-v400`, CWE-326) — `Truncated Hex Slice & Weak PRNG Key Derivation`
-- **Threat Model**: 1.  **Analyze the Request:** *   **Rule Name:** truncated-hex-entropy-keygen (Truncated Hex Slice & Weak PRNG Key Derivation, CWE-326). *   **Blocked Code:** `const aesKey = crypto.randomBytes(32).toString('hex').slice(0, 16);` *   **Enforced Fix:** `const aesKey = crypto.randomBytes(32);` *   **Task:** Write exactly 2 technical sentences for a senior securi
-- **Verification Suite**: `593/593` unit tests passed, `400` active AST rules, repo score `100/100` (`2108ms`)
-
 ### Sprint #99 — v3.5.334 (2026-11-08 18:26 UTC)
 - **New AST Shield**: `SLOP-401` (`no-async-iterator-unclosed-break-v401`, CWE-775) — `Async Generator Break Without Stream Disposal`
 - **Threat Model**: Breaking out of a for-await-of stream loop without a try/finally block or stream.destroy() leaks underlying file descriptors and database cursors.
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-414` (`no-unvalidated-ssrf-redirect-chain-v414`, CWE-918) — `Unvalidated SSRF Host Interpolation & Redirect Bypass`
 - **Threat Model**: AI coding assistants interpolate user-controlled host variables directly into axios.get or requests.get URLs, enabling Server-Side Request Forgery against cloud metadata endpoints.
 - **Verification Suite**: `607/607` unit tests passed, `414` active AST rules, repo score `100/100` (`2255ms`)
+
+### Sprint #12 — v3.5.348 (2026-11-09 12:19 UTC)
+- **New AST Shield**: `SLOP-415` (`no-non-atomic-toctou-fs-mutation-v415`, CWE-367) — `Non-Atomic TOCTOU File Existence Check Before Write`
+- **Threat Model**: AI models routinely generate fs.existsSync(p) followed by fs.writeFileSync(p), creating a CWE-367 Time-of-Check Time-of-Use race window exploitable via symlink swapping.
+- **Verification Suite**: `608/608` unit tests passed, `415` active AST rules, repo score `100/100` (`2109ms`)
