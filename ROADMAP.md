@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #97 — v3.5.332 (2026-11-08 18:19 UTC)
-- **New AST Shield**: `SLOP-399` (`no-unbounded-mpsc-queue-sprawl-v399`, CWE-400) — `Unbounded MPSC & Asyncio Queue Memory Exhaustion`
-- **Threat Model**: 1.  **Analyze the Request:** *   **Rule:** `unbounded-mpsc-queue-sprawl` (CWE-400). Unbounded MPSC queues lead to memory exhaustion. *   **Blocked Code:** `tokio::sync::mpsc::unbounded_channel::<Job>()` *   **Enforced Fix:** `tokio::sync::mpsc::channel::<Job>(1024)` *   **Task:** Write exactly 2 technical sentences for a senior security engineer explaining *
-- **Verification Suite**: `592/592` unit tests passed, `399` active AST rules, repo score `100/100` (`2123ms`)
-
 ### Sprint #98 — v3.5.333 (2026-11-08 18:23 UTC)
 - **New AST Shield**: `SLOP-400` (`no-truncated-hex-entropy-keygen-v400`, CWE-326) — `Truncated Hex Slice & Weak PRNG Key Derivation`
 - **Threat Model**: 1.  **Analyze the Request:** *   **Rule Name:** truncated-hex-entropy-keygen (Truncated Hex Slice & Weak PRNG Key Derivation, CWE-326). *   **Blocked Code:** `const aesKey = crypto.randomBytes(32).toString('hex').slice(0, 16);` *   **Enforced Fix:** `const aesKey = crypto.randomBytes(32);` *   **Task:** Write exactly 2 technical sentences for a senior securi
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-413` (`no-compound-namespace-slopsquat-v413`, CWE-829) — `Compound Namespace Package Manifest Slopsquatting`
 - **Threat Model**: AI assistants synthesize plausible compound package names such as flask-bcrypt-auth or tokio-redis-pro that attackers register on PyPI/crates.io/npm for RCE.
 - **Verification Suite**: `606/606` unit tests passed, `413` active AST rules, repo score `100/100` (`2098ms`)
+
+### Sprint #11 — v3.5.347 (2026-11-09 12:16 UTC)
+- **New AST Shield**: `SLOP-414` (`no-unvalidated-ssrf-redirect-chain-v414`, CWE-918) — `Unvalidated SSRF Host Interpolation & Redirect Bypass`
+- **Threat Model**: AI coding assistants interpolate user-controlled host variables directly into axios.get or requests.get URLs, enabling Server-Side Request Forgery against cloud metadata endpoints.
+- **Verification Suite**: `607/607` unit tests passed, `414` active AST rules, repo score `100/100` (`2255ms`)
