@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #153 — v3.5.489 (2026-11-09 18:50 UTC)
-- **New AST Shield**: `SLOP-556` (`no-hallucinated-cipher-primitive-v556`, CWE-327) — `Hallucinated Non-Standard Cryptographic Cipher Names`
-- **Threat Model**: LLMs invent non-existent cipher strings such as aes-256-turbo or sha256-fast in OpenSSL and Node crypto calls, causing runtime panics or silent fallback to weak encryption.
-- **Verification Suite**: `749/749` unit tests passed, `556` active AST rules, repo score `100/100` (`2052ms`)
-
 ### Sprint #154 — v3.5.490 (2026-11-09 18:53 UTC)
 - **New AST Shield**: `SLOP-557` (`no-shell-template-subprocess-exec-v557`, CWE-78) — `Formatted Shell String Subprocess Command Injection`
 - **Threat Model**: AI assistants pass formatted f-strings or template literals into subprocess.Popen(..., shell=True) and child_process.exec, allowing arbitrary shell command execution.
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-570` (`no-unbounded-mpsc-queue-sprawl-v570`, CWE-400) — `Unbounded MPSC & Asyncio Queue Memory Exhaustion`
 - **Threat Model**: 1.  **Analyze the Request:** *   **Rule/Code:** `unbounded-mpsc-queue-sprawl` (CWE-400). Original code uses `unbounded_channel`. Fixed code uses bounded channel with capacity 1024. *   **Target Audience:** Senior security engineer. *   **Task:** Write exactly 2 technical sentences explaining *why AI models hallucinate this pattern* and *how SlopGuard's AST f
 - **Verification Suite**: `763/763` unit tests passed, `570` active AST rules, repo score `100/100` (`2060ms`)
+
+### Sprint #168 — v3.5.504 (2026-11-09 19:33 UTC)
+- **New AST Shield**: `SLOP-571` (`no-truncated-hex-entropy-keygen-v571`, CWE-326) — `Truncated Hex Slice & Weak PRNG Key Derivation`
+- **Threat Model**: AI models frequently slice hex-encoded random bytes to 16 chars (reducing 128-bit entropy to 64 bits) or use Math.random().toString(36) for AES/JWT secret keys.
+- **Verification Suite**: `764/764` unit tests passed, `571` active AST rules, repo score `100/100` (`2037ms`)
