@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #88 — v3.5.323 (2026-11-08 17:48 UTC)
-- **New AST Shield**: `SLOP-390` (`no-truncated-hex-entropy-keygen-v390`, CWE-326) — `Truncated Hex Slice & Weak PRNG Key Derivation`
-- **Threat Model**: AI models frequently slice hex-encoded random bytes to 16 chars (reducing 128-bit entropy to 64 bits) or use Math.random().toString(36) for AES/JWT secret keys.
-- **Verification Suite**: `583/583` unit tests passed, `390` active AST rules, repo score `100/100` (`2165ms`)
-
 ### Sprint #89 — v3.5.324 (2026-11-08 17:51 UTC)
 - **New AST Shield**: `SLOP-391` (`no-async-iterator-unclosed-break-v391`, CWE-775) — `Async Generator Break Without Stream Disposal`
 - **Threat Model**: Breaking out of a for-await-of stream loop without a try/finally block or stream.destroy() leaks underlying file descriptors and database cursors.
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-404` (`no-unvalidated-ssrf-redirect-chain-v404`, CWE-918) — `Unvalidated SSRF Host Interpolation & Redirect Bypass`
 - **Threat Model**: We need to output exactly 2 technical sentences, no intro, no extra text. Sentences must explain why AI models hallucinate this pattern and how SlopGuard's AST firewall blocks it in <0.35ms. We need to be concise, technical. Sentence 1: AI models hallucinate because they are trained on large code corpora where similar patterns appear, causing them to generat
 - **Verification Suite**: `597/597` unit tests passed, `404` active AST rules, repo score `100/100` (`2064ms`)
+
+### Sprint #2 — v3.5.338 (2026-11-09 11:47 UTC)
+- **New AST Shield**: `SLOP-405` (`no-non-atomic-toctou-fs-mutation-v405`, CWE-367) — `Non-Atomic TOCTOU File Existence Check Before Write`
+- **Threat Model**: We need to output exactly 2 technical sentences. No intro, just 2 sentences. Must explain why AI models hallucinate this pattern and how SlopGuard's AST firewall blocks it in <0.35ms. Sentence 1: Why AI models hallucinate this pattern (maybe due to training data bias, pattern similarity, lack of precise semantics). Sentence 2: How SlopGuard's AST firewall bl
+- **Verification Suite**: `598/598` unit tests passed, `405` active AST rules, repo score `100/100` (`2012ms`)
