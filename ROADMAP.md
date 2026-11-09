@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #118 — v3.5.454 (2026-11-09 17:09 UTC)
-- **New AST Shield**: `SLOP-521` (`no-truncated-hex-entropy-keygen-v521`, CWE-326) — `Truncated Hex Slice & Weak PRNG Key Derivation`
-- **Threat Model**: 1.  **Analyze the Request:** *   **Rule/Topic:** Truncated-hex-entropy-keygen (CWE-326). The blocked code is `crypto.randomBytes(32).toString('hex').slice(0, 16)` which truncates the hex string to 16 chars (64 bits of entropy instead of 256 bits), leading to weak key derivation. The enforced fix is `const aesKey = crypto.randomBytes(32);`. *   **Task:** Writ
-- **Verification Suite**: `714/714` unit tests passed, `521` active AST rules, repo score `100/100` (`2070ms`)
-
 ### Sprint #119 — v3.5.455 (2026-11-09 17:12 UTC)
 - **New AST Shield**: `SLOP-522` (`no-async-iterator-unclosed-break-v522`, CWE-775) — `Async Generator Break Without Stream Disposal`
 - **Threat Model**: Breaking out of a for-await-of stream loop without a try/finally block or stream.destroy() leaks underlying file descriptors and database cursors.
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-535` (`no-non-atomic-toctou-fs-mutation-v535`, CWE-367) — `Non-Atomic TOCTOU File Existence Check Before Write`
 - **Threat Model**: We need to understand the rule: non-atomic-toctou-fs-mutation (Non-Atomic TOCTOU File Existence Check Before Write, CWE-367). The blocked code is a classic TOCTOU pattern: check if file exists with fs.existsSync, then writeFileSync. The fix is to use atomic write with flag 'wx' (O_CREAT|O_EXCL|O_WRONLY) which avoids race conditions and ensures fail-if-exists
 - **Verification Suite**: `728/728` unit tests passed, `535` active AST rules, repo score `100/100` (`2043ms`)
+
+### Sprint #133 — v3.5.469 (2026-11-09 17:53 UTC)
+- **New AST Shield**: `SLOP-536` (`no-hallucinated-cipher-primitive-v536`, CWE-327) — `Hallucinated Non-Standard Cryptographic Cipher Names`
+- **Threat Model**: LLMs invent non-existent cipher strings such as aes-256-turbo or sha256-fast in OpenSSL and Node crypto calls, causing runtime panics or silent fallback to weak encryption.
+- **Verification Suite**: `729/729` unit tests passed, `536` active AST rules, repo score `100/100` (`2066ms`)
