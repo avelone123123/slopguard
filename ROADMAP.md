@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #131 — v3.5.467 (2026-11-09 17:47 UTC)
-- **New AST Shield**: `SLOP-534` (`no-unvalidated-ssrf-redirect-chain-v534`, CWE-918) — `Unvalidated SSRF Host Interpolation & Redirect Bypass`
-- **Threat Model**: AI coding assistants interpolate user-controlled host variables directly into axios.get or requests.get URLs, enabling Server-Side Request Forgery against cloud metadata endpoints.
-- **Verification Suite**: `727/727` unit tests passed, `534` active AST rules, repo score `100/100` (`2079ms`)
-
 ### Sprint #132 — v3.5.468 (2026-11-09 17:50 UTC)
 - **New AST Shield**: `SLOP-535` (`no-non-atomic-toctou-fs-mutation-v535`, CWE-367) — `Non-Atomic TOCTOU File Existence Check Before Write`
 - **Threat Model**: We need to understand the rule: non-atomic-toctou-fs-mutation (Non-Atomic TOCTOU File Existence Check Before Write, CWE-367). The blocked code is a classic TOCTOU pattern: check if file exists with fs.existsSync, then writeFileSync. The fix is to use atomic write with flag 'wx' (O_CREAT|O_EXCL|O_WRONLY) which avoids race conditions and ensures fail-if-exists
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-548` (`no-loop-scoped-event-listener-leak-v548`, CWE-400) — `Unbounded Event Listener Registration Inside Loops`
 - **Threat Model**: AI-generated stream handlers attach emitter.on('data', ...) inside for/while loops without cleanup, exhausting V8 heap memory and triggering MaxListenersExceededWarning.
 - **Verification Suite**: `741/741` unit tests passed, `548` active AST rules, repo score `100/100` (`2027ms`)
+
+### Sprint #146 — v3.5.482 (2026-11-09 18:30 UTC)
+- **New AST Shield**: `SLOP-549` (`no-phantom-ai-sdk-slopsquatting-v549`, CWE-1357) — `Phantom AI SDK Wrapper Package Slopsquatting`
+- **Threat Model**: LLMs hallucinate plausible AI helper packages like @anthropic/tools-pro or openai-streaming-helper in package.json and requirements.txt, exposing builds to supply-chain hijacking.
+- **Verification Suite**: `742/742` unit tests passed, `549` active AST rules, repo score `100/100` (`2038ms`)
