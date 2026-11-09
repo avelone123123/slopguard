@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #33 — v3.5.369 (2026-11-09 13:21 UTC)
-- **New AST Shield**: `SLOP-436` (`no-hallucinated-cipher-primitive-v436`, CWE-327) — `Hallucinated Non-Standard Cryptographic Cipher Names`
-- **Threat Model**: 1.  **Analyze the Request:** *   **Rule Context:** "hallucinated-cipher-primitive" - a pattern where AI models hallucinate non-standard cryptographic cipher names (like 'aes-256-turbo') and fast hash algorithms (like 'sha256-fast') that don't exist, leading to vulnerable/insecure implementations. *   **Blocked Code:** `aes-256-turbo` cipher, `sha256-fast` ha
-- **Verification Suite**: `629/629` unit tests passed, `436` active AST rules, repo score `100/100` (`2069ms`)
-
 ### Sprint #34 — v3.5.370 (2026-11-09 13:23 UTC)
 - **New AST Shield**: `SLOP-437` (`no-shell-template-subprocess-exec-v437`, CWE-78) — `Formatted Shell String Subprocess Command Injection`
 - **Threat Model**: AI assistants pass formatted f-strings or template literals into subprocess.Popen(..., shell=True) and child_process.exec, allowing arbitrary shell command execution.
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-450` (`no-unbounded-mpsc-queue-sprawl-v450`, CWE-400) — `Unbounded MPSC & Asyncio Queue Memory Exhaustion`
 - **Threat Model**: AI concurrency scaffolding defaults to tokio::sync::mpsc::unbounded_channel() and unbuffered asyncio.Queue(), removing backpressure and causing OOM kills under traffic spikes.
 - **Verification Suite**: `643/643` unit tests passed, `450` active AST rules, repo score `100/100` (`2028ms`)
+
+### Sprint #48 — v3.5.384 (2026-11-09 14:04 UTC)
+- **New AST Shield**: `SLOP-451` (`no-truncated-hex-entropy-keygen-v451`, CWE-326) — `Truncated Hex Slice & Weak PRNG Key Derivation`
+- **Threat Model**: 1.  **Analyze the Request:** *   **Rule/Topic:** `truncated-hex-entropy-keygen` (Truncated Hex Slice & Weak PRNG Key Derivation - CWE-326). *   **Blocked Code:** `const aesKey = crypto.randomBytes(32).toString('hex').slice(0, 16);` (Uses `toString('hex')`, then `slice(0, 16)`, which drastically reduces entropy and creates predictable key patterns due to hex 
+- **Verification Suite**: `644/644` unit tests passed, `451` active AST rules, repo score `100/100` (`2044ms`)

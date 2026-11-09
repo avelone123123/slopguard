@@ -1,5 +1,10 @@
 # Changelog
 All notable changes to SlopGuard are documented in this file.
+## [3.5.384] - 2026-11-09
+### Added
+- Expanded AST Firewall Matrix to 451 Active Shields: Added `SLOP-451` (`no-truncated-hex-entropy-keygen-v451`, CWE-326) — Truncated hex buffer slicing or Math.random key generation reducing entropy.
+- Scaled Deterministic Test Battery: Verified 644/644 passing unit tests (100% pass rate, 0 warnings).
+- Threat Interception: 1.  **Analyze the Request:** *   **Rule/Topic:** `truncated-hex-entropy-keygen` (Truncated Hex Slice & Weak PRNG Key Derivation - CWE-326). *   **Blocked Code:** `const aesKey = crypto.randomBytes(32).toString('hex').slice(0, 16);` (Uses `toString('hex')`, then `slice(0, 16)`, which drastically reduces entropy and creates predictable key patterns due to hex 
 ## [3.5.383] - 2026-11-09
 ### Added
 - Expanded AST Firewall Matrix to 450 Active Shields: Added `SLOP-450` (`no-unbounded-mpsc-queue-sprawl-v450`, CWE-400) — Unbounded channel or async queue allocation lacking backpressure capacity.
