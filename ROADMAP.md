@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #106 — v3.5.442 (2026-11-09 16:34 UTC)
-- **New AST Shield**: `SLOP-509` (`no-phantom-ai-sdk-slopsquatting-v509`, CWE-1357) — `Phantom AI SDK Wrapper Package Slopsquatting`
-- **Threat Model**: LLMs hallucinate plausible AI helper packages like @anthropic/tools-pro or openai-streaming-helper in package.json and requirements.txt, exposing builds to supply-chain hijacking.
-- **Verification Suite**: `702/702` unit tests passed, `509` active AST rules, repo score `100/100` (`2065ms`)
-
 ### Sprint #107 — v3.5.443 (2026-11-09 16:37 UTC)
 - **New AST Shield**: `SLOP-510` (`no-unbounded-mpsc-queue-sprawl-v510`, CWE-400) — `Unbounded MPSC & Asyncio Queue Memory Exhaustion`
 - **Threat Model**: AI concurrency scaffolding defaults to tokio::sync::mpsc::unbounded_channel() and unbuffered asyncio.Queue(), removing backpressure and causing OOM kills under traffic spikes.
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-523` (`no-compound-namespace-slopsquat-v523`, CWE-829) — `Compound Namespace Package Manifest Slopsquatting`
 - **Threat Model**: AI assistants synthesize plausible compound package names such as flask-bcrypt-auth or tokio-redis-pro that attackers register on PyPI/crates.io/npm for RCE.
 - **Verification Suite**: `716/716` unit tests passed, `523` active AST rules, repo score `100/100` (`2014ms`)
+
+### Sprint #121 — v3.5.457 (2026-11-09 17:18 UTC)
+- **New AST Shield**: `SLOP-524` (`no-unvalidated-ssrf-redirect-chain-v524`, CWE-918) — `Unvalidated SSRF Host Interpolation & Redirect Bypass`
+- **Threat Model**: AI coding assistants interpolate user-controlled host variables directly into axios.get or requests.get URLs, enabling Server-Side Request Forgery against cloud metadata endpoints.
+- **Verification Suite**: `717/717` unit tests passed, `524` active AST rules, repo score `100/100` (`2078ms`)
