@@ -10,12 +10,12 @@
   <a href="https://t.me/SlopGuard"><img alt="Telegram" src="https://img.shields.io/badge/Telegram-@SlopGuard-26A5E4?style=flat-square&logo=telegram&logoColor=white"></a>
   [![M8ven Score](https://m8ven.ai/badge/mcp/avelone123123-slopguard-ddb87e)](https://m8ven.ai/mcp/avelone123123-slopguard-ddb87e?s=readme)
   <img alt="100% Rust" src="https://img.shields.io/badge/100%25-Rust-b7410e?style=flat-square&logo=rust">
-  <a href="https://github.com/avelone123123/slopguard/releases/tag/v3.5.379"><img alt="Релиз: v3.5.379" src="https://img.shields.io/badge/release-v3.5.379-10b981?style=flat-square"></a>
-  <img alt="Тесты: 639 пройдены" src="https://img.shields.io/badge/tests-639%20passed%20(100%25)-10b981?style=flat-square">
+  <a href="https://github.com/avelone123123/slopguard/releases/tag/v3.5.380"><img alt="Релиз: v3.5.380" src="https://img.shields.io/badge/release-v3.5.380-10b981?style=flat-square"></a>
+  <img alt="Тесты: 640 пройдены" src="https://img.shields.io/badge/tests-640%20passed%20(100%25)-10b981?style=flat-square">
   <img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-263146?style=flat-square">
   <img alt="Задержка: <0.35ms" src="https://img.shields.io/badge/latency-%3C0.35ms-2f6f4f?style=flat-square">
   <img alt="MCP Protocol: 2.0" src="https://img.shields.io/badge/MCP-JSON--RPC%202.0-7c3aed?style=flat-square">
-  <img alt="Фаерволы: 446" src="https://img.shields.io/badge/firewalls-446%20active-blue?style=flat-square">
+  <img alt="Фаерволы: 447" src="https://img.shields.io/badge/firewalls-447%20active-blue?style=flat-square">
   <img alt="Platforms" src="https://img.shields.io/badge/platforms-Windows%20%C2%B7%20macOS%20%C2%B7%20Linux-2f7bf5?style=flat-square">
 
   <br>
@@ -88,7 +88,7 @@ cargo install --path .
 
 | Целевой файл | Платформа | Формат | Контрольная сумма SHA-256 |
 | :--- | :--- | :--- | :--- |
-| `slopguard-v3.5.379-windows-x64.exe` | Windows x86_64 | Native PE Standalone | `A6F0345EF99300C19653F6232BA134A2B71118D5B85265FA1B9A69E9F5101B06` |
+| `slopguard-v3.5.380-windows-x64.exe` | Windows x86_64 | Native PE Standalone | `A6F0345EF99300C19653F6232BA134A2B71118D5B85265FA1B9A69E9F5101B06` |
 
 Либо сборка из исходников:
 
@@ -338,7 +338,7 @@ SlopGuard распределяет 66 активных AST-фаерволов п
 
 | Инструмент | Холодный старт | Время проверки (10k строк diff) | Потребление памяти |
 | :--- | :--- | :--- | :--- |
-| **SlopGuard (Rust v3.5.379)** | **< 2.5ms** | **< 0.35ms / 10k LOC** | **< 5.8 MB** |
+| **SlopGuard (Rust v3.5.380)** | **< 2.5ms** | **< 0.35ms / 10k LOC** | **< 5.8 MB** |
 | Biome | ~45ms | ~30ms | ~28 MB |
 | ESLint | ~620ms | ~480ms | ~140 MB |
 | SonarQube Scanner | ~4,200ms | ~3,100ms | ~600 MB |
