@@ -1,6 +1,6 @@
 [package]
 name = "slopguard"
-version = "3.5.540"
+version = "3.5.541"
 edition = "2021"
 authors = ["avelone123123"]
 description = "Zero-latency native Rust AI slop and hallucination firewall for Cursor, Claude Code, and vibe-coders"
