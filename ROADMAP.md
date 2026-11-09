@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #166 — v3.5.502 (2026-11-09 19:28 UTC)
-- **New AST Shield**: `SLOP-569` (`no-phantom-ai-sdk-slopsquatting-v569`, CWE-1357) — `Phantom AI SDK Wrapper Package Slopsquatting`
-- **Threat Model**: LLMs hallucinate plausible AI helper packages like @anthropic/tools-pro or openai-streaming-helper in package.json and requirements.txt, exposing builds to supply-chain hijacking.
-- **Verification Suite**: `762/762` unit tests passed, `569` active AST rules, repo score `100/100` (`2068ms`)
-
 ### Sprint #167 — v3.5.503 (2026-11-09 19:30 UTC)
 - **New AST Shield**: `SLOP-570` (`no-unbounded-mpsc-queue-sprawl-v570`, CWE-400) — `Unbounded MPSC & Asyncio Queue Memory Exhaustion`
 - **Threat Model**: 1.  **Analyze the Request:** *   **Rule/Code:** `unbounded-mpsc-queue-sprawl` (CWE-400). Original code uses `unbounded_channel`. Fixed code uses bounded channel with capacity 1024. *   **Target Audience:** Senior security engineer. *   **Task:** Write exactly 2 technical sentences explaining *why AI models hallucinate this pattern* and *how SlopGuard's AST f
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-583` (`no-compound-namespace-slopsquat-v583`, CWE-829) — `Compound Namespace Package Manifest Slopsquatting`
 - **Threat Model**: 1.  **Analyze the Request:** *   **Rule/Context:** "compound-namespace-slopsquat" (Compound Namespace Package Manifest Slopsquatting, CWE-829). This refers to a specific vulnerability/attack where malicious package names mimic legitimate ones to trick developers into installing them. *   **Blocked code:** `flask-bcrypt-auth>=1.0` (mimics `flask-bcrypt`, pote
 - **Verification Suite**: `776/776` unit tests passed, `583` active AST rules, repo score `100/100` (`2227ms`)
+
+### Sprint #181 — v3.5.517 (2026-11-09 20:10 UTC)
+- **New AST Shield**: `SLOP-584` (`no-unvalidated-ssrf-redirect-chain-v584`, CWE-918) — `Unvalidated SSRF Host Interpolation & Redirect Bypass`
+- **Threat Model**: AI coding assistants interpolate user-controlled host variables directly into axios.get or requests.get URLs, enabling Server-Side Request Forgery against cloud metadata endpoints.
+- **Verification Suite**: `777/777` unit tests passed, `584` active AST rules, repo score `100/100` (`2214ms`)
