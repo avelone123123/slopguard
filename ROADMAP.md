@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #145 — v3.5.481 (2026-11-09 18:27 UTC)
-- **New AST Shield**: `SLOP-548` (`no-loop-scoped-event-listener-leak-v548`, CWE-400) — `Unbounded Event Listener Registration Inside Loops`
-- **Threat Model**: AI-generated stream handlers attach emitter.on('data', ...) inside for/while loops without cleanup, exhausting V8 heap memory and triggering MaxListenersExceededWarning.
-- **Verification Suite**: `741/741` unit tests passed, `548` active AST rules, repo score `100/100` (`2027ms`)
-
 ### Sprint #146 — v3.5.482 (2026-11-09 18:30 UTC)
 - **New AST Shield**: `SLOP-549` (`no-phantom-ai-sdk-slopsquatting-v549`, CWE-1357) — `Phantom AI SDK Wrapper Package Slopsquatting`
 - **Threat Model**: LLMs hallucinate plausible AI helper packages like @anthropic/tools-pro or openai-streaming-helper in package.json and requirements.txt, exposing builds to supply-chain hijacking.
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-562` (`no-async-iterator-unclosed-break-v562`, CWE-775) — `Async Generator Break Without Stream Disposal`
 - **Threat Model**: Breaking out of a for-await-of stream loop without a try/finally block or stream.destroy() leaks underlying file descriptors and database cursors.
 - **Verification Suite**: `755/755` unit tests passed, `562` active AST rules, repo score `100/100` (`2109ms`)
+
+### Sprint #160 — v3.5.496 (2026-11-09 19:11 UTC)
+- **New AST Shield**: `SLOP-563` (`no-compound-namespace-slopsquat-v563`, CWE-829) — `Compound Namespace Package Manifest Slopsquatting`
+- **Threat Model**: AI assistants synthesize plausible compound package names such as flask-bcrypt-auth or tokio-redis-pro that attackers register on PyPI/crates.io/npm for RCE.
+- **Verification Suite**: `756/756` unit tests passed, `563` active AST rules, repo score `100/100` (`2000ms`)
