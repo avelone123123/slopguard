@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #170 — v3.5.506 (2026-11-09 19:39 UTC)
-- **New AST Shield**: `SLOP-573` (`no-compound-namespace-slopsquat-v573`, CWE-829) — `Compound Namespace Package Manifest Slopsquatting`
-- **Threat Model**: AI assistants synthesize plausible compound package names such as flask-bcrypt-auth or tokio-redis-pro that attackers register on PyPI/crates.io/npm for RCE.
-- **Verification Suite**: `766/766` unit tests passed, `573` active AST rules, repo score `100/100` (`2024ms`)
-
 ### Sprint #171 — v3.5.507 (2026-11-09 19:43 UTC)
 - **New AST Shield**: `SLOP-574` (`no-unvalidated-ssrf-redirect-chain-v574`, CWE-918) — `Unvalidated SSRF Host Interpolation & Redirect Bypass`
 - **Threat Model**: AI coding assistants interpolate user-controlled host variables directly into axios.get or requests.get URLs, enabling Server-Side Request Forgery against cloud metadata endpoints.
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-587` (`no-shell-template-subprocess-exec-v587`, CWE-78) — `Formatted Shell String Subprocess Command Injection`
 - **Threat Model**: AI assistants pass formatted f-strings or template literals into subprocess.Popen(..., shell=True) and child_process.exec, allowing arbitrary shell command execution.
 - **Verification Suite**: `780/780` unit tests passed, `587` active AST rules, repo score `100/100` (`2381ms`)
+
+### Sprint #185 — v3.5.521 (2026-11-09 20:21 UTC)
+- **New AST Shield**: `SLOP-588` (`no-loop-scoped-event-listener-leak-v588`, CWE-400) — `Unbounded Event Listener Registration Inside Loops`
+- **Threat Model**: 1.  **Analyze the Request:** *   **Rule:** loop-scoped-event-listener-leak (Unbounded Event Listener Registration Inside Loops, CWE-400). The "blocked code" registers an event listener inside a loop, causing a memory/listener leak. *   **Enforced fix:** Binds the handler to a batched function to avoid leaking listeners per iteration. *   **Task:** Write exac
+- **Verification Suite**: `781/781` unit tests passed, `588` active AST rules, repo score `100/100` (`3320ms`)
