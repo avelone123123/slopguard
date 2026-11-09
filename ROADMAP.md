@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #172 — v3.5.508 (2026-11-09 19:45 UTC)
-- **New AST Shield**: `SLOP-575` (`no-non-atomic-toctou-fs-mutation-v575`, CWE-367) — `Non-Atomic TOCTOU File Existence Check Before Write`
-- **Threat Model**: We need to answer the user's request: "Write exactly 2 technical sentences for a senior security engineer explaining why AI models hallucinate this pattern and how SlopGuard's AST firewall blocks it in <0.35ms. Output ONLY the 2 sentences, no intro." The context: "Rule: non-atomic-toctou-fs-mutation (Non-Atomic TOCTOU File Existence Check Before Write), CWE-
-- **Verification Suite**: `768/768` unit tests passed, `575` active AST rules, repo score `100/100` (`2090ms`)
-
 ### Sprint #173 — v3.5.509 (2026-11-09 19:48 UTC)
 - **New AST Shield**: `SLOP-576` (`no-hallucinated-cipher-primitive-v576`, CWE-327) — `Hallucinated Non-Standard Cryptographic Cipher Names`
 - **Threat Model**: LLMs invent non-existent cipher strings such as aes-256-turbo or sha256-fast in OpenSSL and Node crypto calls, causing runtime panics or silent fallback to weak encryption.
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-589` (`no-phantom-ai-sdk-slopsquatting-v589`, CWE-1357) — `Phantom AI SDK Wrapper Package Slopsquatting`
 - **Threat Model**: LLMs hallucinate plausible AI helper packages like @anthropic/tools-pro or openai-streaming-helper in package.json and requirements.txt, exposing builds to supply-chain hijacking.
 - **Verification Suite**: `782/782` unit tests passed, `589` active AST rules, repo score `100/100` (`2379ms`)
+
+### Sprint #187 — v3.5.523 (2026-11-09 20:26 UTC)
+- **New AST Shield**: `SLOP-590` (`no-unbounded-mpsc-queue-sprawl-v590`, CWE-400) — `Unbounded MPSC & Asyncio Queue Memory Exhaustion`
+- **Threat Model**: 1.  **Analyze the Request:** *   **Rule:** `unbounded-mpsc-queue-sprawl` (Unbounded MPSC & Asyncio Queue Memory Exhaustion, CWE-400). *   **Blocked code:** `tokio::sync::mpsc::unbounded_channel::<Job>()` (allowing unbounded memory consumption, risking OOM/CWE-400). *   **Enforced fix:** `tokio::sync::mpsc::channel::<Job>(1024)` (bounded channel preventing un
+- **Verification Suite**: `783/783` unit tests passed, `590` active AST rules, repo score `100/100` (`2397ms`)
