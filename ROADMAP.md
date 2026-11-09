@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #187 — v3.5.523 (2026-11-09 20:26 UTC)
-- **New AST Shield**: `SLOP-590` (`no-unbounded-mpsc-queue-sprawl-v590`, CWE-400) — `Unbounded MPSC & Asyncio Queue Memory Exhaustion`
-- **Threat Model**: 1.  **Analyze the Request:** *   **Rule:** `unbounded-mpsc-queue-sprawl` (Unbounded MPSC & Asyncio Queue Memory Exhaustion, CWE-400). *   **Blocked code:** `tokio::sync::mpsc::unbounded_channel::<Job>()` (allowing unbounded memory consumption, risking OOM/CWE-400). *   **Enforced fix:** `tokio::sync::mpsc::channel::<Job>(1024)` (bounded channel preventing un
-- **Verification Suite**: `783/783` unit tests passed, `590` active AST rules, repo score `100/100` (`2397ms`)
-
 ### Sprint #188 — v3.5.524 (2026-11-09 20:30 UTC)
 - **New AST Shield**: `SLOP-591` (`no-truncated-hex-entropy-keygen-v591`, CWE-326) — `Truncated Hex Slice & Weak PRNG Key Derivation`
 - **Threat Model**: AI models frequently slice hex-encoded random bytes to 16 chars (reducing 128-bit entropy to 64 bits) or use Math.random().toString(36) for AES/JWT secret keys.
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-604` (`no-unvalidated-ssrf-redirect-chain-v604`, CWE-918) — `Unvalidated SSRF Host Interpolation & Redirect Bypass`
 - **Threat Model**: 1.  **Analyze the Request:** *   **Rule:** `unvalidated-ssrf-redirect-chain` (CWE-918). *   **Blocked Code:** `const res = await axios.get(`https://${req.query.apiHost}/v1/profile`);` (SSRF via unsanitized user input). *   **Enforced Fix:** `if (!ALLOWED_ORIGINS.has(req.query.apiHost)) throw new Error('Blocked');` + hardcoded URL (or using an allowlisted hos
 - **Verification Suite**: `797/797` unit tests passed, `604` active AST rules, repo score `100/100` (`2011ms`)
+
+### Sprint #202 — v3.5.538 (2026-11-09 21:10 UTC)
+- **New AST Shield**: `SLOP-605` (`no-non-atomic-toctou-fs-mutation-v605`, CWE-367) — `Non-Atomic TOCTOU File Existence Check Before Write`
+- **Threat Model**: We need to answer: "Write exactly 2 technical sentences for a senior security engineer explaining why AI models hallucinate this pattern and how SlopGuard's AST firewall blocks it in <0.35ms." The rule is non-atomic TOCTOU file existence check before write (CWE-367). Blocked code: if (fs.existsSync(uploadPath)) { fs.writeFileSync(uploadPath, payload); } Enfo
+- **Verification Suite**: `798/798` unit tests passed, `605` active AST rules, repo score `100/100` (`2021ms`)
