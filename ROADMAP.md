@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #91 — v3.5.326 (2026-11-08 17:57 UTC)
-- **New AST Shield**: `SLOP-393` (`no-unvalidated-ssrf-redirect-chain-v393`, CWE-918) — `Unvalidated SSRF Host Interpolation & Redirect Bypass`
-- **Threat Model**: AI coding assistants interpolate user-controlled host variables directly into axios.get or requests.get URLs, enabling Server-Side Request Forgery against cloud metadata endpoints.
-- **Verification Suite**: `586/586` unit tests passed, `393` active AST rules, repo score `100/100` (`2151ms`)
-
 ### Sprint #92 — v3.5.327 (2026-11-08 18:01 UTC)
 - **New AST Shield**: `SLOP-394` (`no-non-atomic-toctou-fs-mutation-v394`, CWE-367) — `Non-Atomic TOCTOU File Existence Check Before Write`
 - **Threat Model**: AI models routinely generate fs.existsSync(p) followed by fs.writeFileSync(p), creating a CWE-367 Time-of-Check Time-of-Use race window exploitable via symlink swapping.
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-407` (`no-shell-template-subprocess-exec-v407`, CWE-78) — `Formatted Shell String Subprocess Command Injection`
 - **Threat Model**: We need to output exactly 2 technical sentences, no intro, no extra text. Sentences must explain why AI models hallucinate this pattern and how SlopGuard's AST firewall blocks it in <0.35ms. We must be concise, technical, 2 sentences. Ensure each sentence ends with a period. No extra spaces? Probably fine. First sentence: AI models hallucinate because they g
 - **Verification Suite**: `600/600` unit tests passed, `407` active AST rules, repo score `100/100` (`2078ms`)
+
+### Sprint #5 — v3.5.341 (2026-11-09 11:57 UTC)
+- **New AST Shield**: `SLOP-408` (`no-loop-scoped-event-listener-leak-v408`, CWE-400) — `Unbounded Event Listener Registration Inside Loops`
+- **Threat Model**: AI-generated stream handlers attach emitter.on('data', ...) inside for/while loops without cleanup, exhausting V8 heap memory and triggering MaxListenersExceededWarning.
+- **Verification Suite**: `601/601` unit tests passed, `408` active AST rules, repo score `100/100` (`2175ms`)
