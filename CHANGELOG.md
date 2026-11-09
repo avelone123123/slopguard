@@ -1,5 +1,10 @@
 # Changelog
 All notable changes to SlopGuard are documented in this file.
+## [3.5.507] - 2026-11-09
+### Added
+- Expanded AST Firewall Matrix to 574 Active Shields: Added `SLOP-574` (`no-unvalidated-ssrf-redirect-chain-v574`, CWE-918) — Unvalidated dynamic host interpolation in outbound HTTP client requests.
+- Scaled Deterministic Test Battery: Verified 767/767 passing unit tests (100% pass rate, 0 warnings).
+- Threat Interception: AI coding assistants interpolate user-controlled host variables directly into axios.get or requests.get URLs, enabling Server-Side Request Forgery against cloud metadata endpoints.
 ## [3.5.506] - 2026-11-09
 ### Added
 - Expanded AST Firewall Matrix to 573 Active Shields: Added `SLOP-573` (`no-compound-namespace-slopsquat-v573`, CWE-829) — Synthetic compound package names in dependency manifests.
