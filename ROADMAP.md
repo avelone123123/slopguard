@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #53 — v3.5.389 (2026-11-09 14:17 UTC)
-- **New AST Shield**: `SLOP-456` (`no-hallucinated-cipher-primitive-v456`, CWE-327) — `Hallucinated Non-Standard Cryptographic Cipher Names`
-- **Threat Model**: LLMs invent non-existent cipher strings such as aes-256-turbo or sha256-fast in OpenSSL and Node crypto calls, causing runtime panics or silent fallback to weak encryption.
-- **Verification Suite**: `649/649` unit tests passed, `456` active AST rules, repo score `100/100` (`2066ms`)
-
 ### Sprint #54 — v3.5.390 (2026-11-09 14:20 UTC)
 - **New AST Shield**: `SLOP-457` (`no-shell-template-subprocess-exec-v457`, CWE-78) — `Formatted Shell String Subprocess Command Injection`
 - **Threat Model**: 1.  **Analyze the Request:** *   **Rule/Context:** Shell-template-subprocess-exec (Formatted Shell String Subprocess Command Injection - CWE-78). The blocked code uses `subprocess.Popen(f'tar -xzf {archive_name}', shell=True)`, which is vulnerable to command injection if `archive_name` contains malicious input. The enforced fix uses `subprocess.run(['tar', '
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-470` (`no-unbounded-mpsc-queue-sprawl-v470`, CWE-400) — `Unbounded MPSC & Asyncio Queue Memory Exhaustion`
 - **Threat Model**: AI concurrency scaffolding defaults to tokio::sync::mpsc::unbounded_channel() and unbuffered asyncio.Queue(), removing backpressure and causing OOM kills under traffic spikes.
 - **Verification Suite**: `663/663` unit tests passed, `470` active AST rules, repo score `100/100` (`2080ms`)
+
+### Sprint #68 — v3.5.404 (2026-11-09 14:59 UTC)
+- **New AST Shield**: `SLOP-471` (`no-truncated-hex-entropy-keygen-v471`, CWE-326) — `Truncated Hex Slice & Weak PRNG Key Derivation`
+- **Threat Model**: AI models frequently slice hex-encoded random bytes to 16 chars (reducing 128-bit entropy to 64 bits) or use Math.random().toString(36) for AES/JWT secret keys.
+- **Verification Suite**: `664/664` unit tests passed, `471` active AST rules, repo score `100/100` (`2067ms`)
