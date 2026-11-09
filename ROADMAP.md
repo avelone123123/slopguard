@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #167 — v3.5.503 (2026-11-09 19:30 UTC)
-- **New AST Shield**: `SLOP-570` (`no-unbounded-mpsc-queue-sprawl-v570`, CWE-400) — `Unbounded MPSC & Asyncio Queue Memory Exhaustion`
-- **Threat Model**: 1.  **Analyze the Request:** *   **Rule/Code:** `unbounded-mpsc-queue-sprawl` (CWE-400). Original code uses `unbounded_channel`. Fixed code uses bounded channel with capacity 1024. *   **Target Audience:** Senior security engineer. *   **Task:** Write exactly 2 technical sentences explaining *why AI models hallucinate this pattern* and *how SlopGuard's AST f
-- **Verification Suite**: `763/763` unit tests passed, `570` active AST rules, repo score `100/100` (`2060ms`)
-
 ### Sprint #168 — v3.5.504 (2026-11-09 19:33 UTC)
 - **New AST Shield**: `SLOP-571` (`no-truncated-hex-entropy-keygen-v571`, CWE-326) — `Truncated Hex Slice & Weak PRNG Key Derivation`
 - **Threat Model**: AI models frequently slice hex-encoded random bytes to 16 chars (reducing 128-bit entropy to 64 bits) or use Math.random().toString(36) for AES/JWT secret keys.
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-584` (`no-unvalidated-ssrf-redirect-chain-v584`, CWE-918) — `Unvalidated SSRF Host Interpolation & Redirect Bypass`
 - **Threat Model**: AI coding assistants interpolate user-controlled host variables directly into axios.get or requests.get URLs, enabling Server-Side Request Forgery against cloud metadata endpoints.
 - **Verification Suite**: `777/777` unit tests passed, `584` active AST rules, repo score `100/100` (`2214ms`)
+
+### Sprint #182 — v3.5.518 (2026-11-09 20:12 UTC)
+- **New AST Shield**: `SLOP-585` (`no-non-atomic-toctou-fs-mutation-v585`, CWE-367) — `Non-Atomic TOCTOU File Existence Check Before Write`
+- **Threat Model**: AI models routinely generate fs.existsSync(p) followed by fs.writeFileSync(p), creating a CWE-367 Time-of-Check Time-of-Use race window exploitable via symlink swapping.
+- **Verification Suite**: `778/778` unit tests passed, `585` active AST rules, repo score `100/100` (`2329ms`)
