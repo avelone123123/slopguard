@@ -680,6 +680,7 @@ AstDetectorDefinition { id: "SLOP-574", name: "no-unvalidated-ssrf-redirect-chai
 AstDetectorDefinition { id: "SLOP-575", name: "no-non-atomic-toctou-fs-mutation-v575", severity: SlopSeverity::Error, category: "path-injection", cwe: "CWE-367", description: "Non-atomic file existence check prior to destructive file write", recommendation: "Use atomic exclusive file creation flags such as wx or O_CREAT | O_EXCL" },
 AstDetectorDefinition { id: "SLOP-576", name: "no-hallucinated-cipher-primitive-v576", severity: SlopSeverity::Error, category: "crypto-auth", cwe: "CWE-327", description: "Fictional or non-standard cipher algorithm strings passed to crypto APIs", recommendation: "Enforce NIST/IETF verified cipher primitives such as aes-256-gcm or sha256" },
 AstDetectorDefinition { id: "SLOP-577", name: "no-shell-template-subprocess-exec-v577", severity: SlopSeverity::Error, category: "path-injection", cwe: "CWE-78", description: "Dynamic string interpolation inside shell-enabled subprocess execution", recommendation: "Pass discrete argument arrays to subprocesses with shell execution disabled" },
+AstDetectorDefinition { id: "SLOP-578", name: "no-loop-scoped-event-listener-leak-v578", severity: SlopSeverity::Error, category: "async-concurrency", cwe: "CWE-400", description: "Event listener attachment inside loop body without removal or AbortSignal", recommendation: "Register event listeners outside loop bodies or attach once/AbortSignal" },
 ];
 #[allow(dead_code)]
 pub static ACTIVE_CONTRACTS: &[crate::types::AstDetectorContract] = &[
