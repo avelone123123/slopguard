@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #117 — v3.5.453 (2026-11-09 17:06 UTC)
-- **New AST Shield**: `SLOP-520` (`no-unbounded-mpsc-queue-sprawl-v520`, CWE-400) — `Unbounded MPSC & Asyncio Queue Memory Exhaustion`
-- **Threat Model**: AI concurrency scaffolding defaults to tokio::sync::mpsc::unbounded_channel() and unbuffered asyncio.Queue(), removing backpressure and causing OOM kills under traffic spikes.
-- **Verification Suite**: `713/713` unit tests passed, `520` active AST rules, repo score `100/100` (`2079ms`)
-
 ### Sprint #118 — v3.5.454 (2026-11-09 17:09 UTC)
 - **New AST Shield**: `SLOP-521` (`no-truncated-hex-entropy-keygen-v521`, CWE-326) — `Truncated Hex Slice & Weak PRNG Key Derivation`
 - **Threat Model**: 1.  **Analyze the Request:** *   **Rule/Topic:** Truncated-hex-entropy-keygen (CWE-326). The blocked code is `crypto.randomBytes(32).toString('hex').slice(0, 16)` which truncates the hex string to 16 chars (64 bits of entropy instead of 256 bits), leading to weak key derivation. The enforced fix is `const aesKey = crypto.randomBytes(32);`. *   **Task:** Writ
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-534` (`no-unvalidated-ssrf-redirect-chain-v534`, CWE-918) — `Unvalidated SSRF Host Interpolation & Redirect Bypass`
 - **Threat Model**: AI coding assistants interpolate user-controlled host variables directly into axios.get or requests.get URLs, enabling Server-Side Request Forgery against cloud metadata endpoints.
 - **Verification Suite**: `727/727` unit tests passed, `534` active AST rules, repo score `100/100` (`2079ms`)
+
+### Sprint #132 — v3.5.468 (2026-11-09 17:50 UTC)
+- **New AST Shield**: `SLOP-535` (`no-non-atomic-toctou-fs-mutation-v535`, CWE-367) — `Non-Atomic TOCTOU File Existence Check Before Write`
+- **Threat Model**: We need to understand the rule: non-atomic-toctou-fs-mutation (Non-Atomic TOCTOU File Existence Check Before Write, CWE-367). The blocked code is a classic TOCTOU pattern: check if file exists with fs.existsSync, then writeFileSync. The fix is to use atomic write with flag 'wx' (O_CREAT|O_EXCL|O_WRONLY) which avoids race conditions and ensures fail-if-exists
+- **Verification Suite**: `728/728` unit tests passed, `535` active AST rules, repo score `100/100` (`2043ms`)
