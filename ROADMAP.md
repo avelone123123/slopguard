@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #48 — v3.5.384 (2026-11-09 14:04 UTC)
-- **New AST Shield**: `SLOP-451` (`no-truncated-hex-entropy-keygen-v451`, CWE-326) — `Truncated Hex Slice & Weak PRNG Key Derivation`
-- **Threat Model**: 1.  **Analyze the Request:** *   **Rule/Topic:** `truncated-hex-entropy-keygen` (Truncated Hex Slice & Weak PRNG Key Derivation - CWE-326). *   **Blocked Code:** `const aesKey = crypto.randomBytes(32).toString('hex').slice(0, 16);` (Uses `toString('hex')`, then `slice(0, 16)`, which drastically reduces entropy and creates predictable key patterns due to hex 
-- **Verification Suite**: `644/644` unit tests passed, `451` active AST rules, repo score `100/100` (`2044ms`)
-
 ### Sprint #49 — v3.5.385 (2026-11-09 14:06 UTC)
 - **New AST Shield**: `SLOP-452` (`no-async-iterator-unclosed-break-v452`, CWE-775) — `Async Generator Break Without Stream Disposal`
 - **Threat Model**: Breaking out of a for-await-of stream loop without a try/finally block or stream.destroy() leaks underlying file descriptors and database cursors.
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-465` (`no-non-atomic-toctou-fs-mutation-v465`, CWE-367) — `Non-Atomic TOCTOU File Existence Check Before Write`
 - **Threat Model**: AI models routinely generate fs.existsSync(p) followed by fs.writeFileSync(p), creating a CWE-367 Time-of-Check Time-of-Use race window exploitable via symlink swapping.
 - **Verification Suite**: `658/658` unit tests passed, `465` active AST rules, repo score `100/100` (`2070ms`)
+
+### Sprint #63 — v3.5.399 (2026-11-09 14:45 UTC)
+- **New AST Shield**: `SLOP-466` (`no-hallucinated-cipher-primitive-v466`, CWE-327) — `Hallucinated Non-Standard Cryptographic Cipher Names`
+- **Threat Model**: LLMs invent non-existent cipher strings such as aes-256-turbo or sha256-fast in OpenSSL and Node crypto calls, causing runtime panics or silent fallback to weak encryption.
+- **Verification Suite**: `659/659` unit tests passed, `466` active AST rules, repo score `100/100` (`2085ms`)
