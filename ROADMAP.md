@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #54 — v3.5.390 (2026-11-09 14:20 UTC)
-- **New AST Shield**: `SLOP-457` (`no-shell-template-subprocess-exec-v457`, CWE-78) — `Formatted Shell String Subprocess Command Injection`
-- **Threat Model**: 1.  **Analyze the Request:** *   **Rule/Context:** Shell-template-subprocess-exec (Formatted Shell String Subprocess Command Injection - CWE-78). The blocked code uses `subprocess.Popen(f'tar -xzf {archive_name}', shell=True)`, which is vulnerable to command injection if `archive_name` contains malicious input. The enforced fix uses `subprocess.run(['tar', '
-- **Verification Suite**: `650/650` unit tests passed, `457` active AST rules, repo score `100/100` (`2057ms`)
-
 ### Sprint #55 — v3.5.391 (2026-11-09 14:23 UTC)
 - **New AST Shield**: `SLOP-458` (`no-loop-scoped-event-listener-leak-v458`, CWE-400) — `Unbounded Event Listener Registration Inside Loops`
 - **Threat Model**: 1.  **Analyze the Request:** *   **Rule:** loop-scoped-event-listener-leak (Unbounded Event Listener Registration Inside Loops) - CWE-400. *   **Blocked Code:** `for (const chunk of items) { socket.on('data', (buf) => handle(buf)); }` *   **Enforced Fix:** `socket.on('data', (buf) => handleBatch(buf));` *   **Task:** Write exactly 2 technical sentences for a
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-471` (`no-truncated-hex-entropy-keygen-v471`, CWE-326) — `Truncated Hex Slice & Weak PRNG Key Derivation`
 - **Threat Model**: AI models frequently slice hex-encoded random bytes to 16 chars (reducing 128-bit entropy to 64 bits) or use Math.random().toString(36) for AES/JWT secret keys.
 - **Verification Suite**: `664/664` unit tests passed, `471` active AST rules, repo score `100/100` (`2067ms`)
+
+### Sprint #69 — v3.5.405 (2026-11-09 15:01 UTC)
+- **New AST Shield**: `SLOP-472` (`no-async-iterator-unclosed-break-v472`, CWE-775) — `Async Generator Break Without Stream Disposal`
+- **Threat Model**: Breaking out of a for-await-of stream loop without a try/finally block or stream.destroy() leaks underlying file descriptors and database cursors.
+- **Verification Suite**: `665/665` unit tests passed, `472` active AST rules, repo score `100/100` (`2079ms`)
