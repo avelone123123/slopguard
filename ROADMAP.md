@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #22 — v3.5.358 (2026-11-09 12:46 UTC)
-- **New AST Shield**: `SLOP-425` (`no-non-atomic-toctou-fs-mutation-v425`, CWE-367) — `Non-Atomic TOCTOU File Existence Check Before Write`
-- **Threat Model**: 1.  **Analyze the Request:** *   **Topic:** Non-atomic TOCTOU file existence check (CWE-367), why AI models hallucinate this pattern, and how SlopGuard's AST firewall blocks it in <0.35ms. *   **Target Audience:** Senior security engineer. *   **Format Constraints:** Exactly 2 technical sentences. No intro, no extra text. Output ONLY the 2 sentences. 2.  **A
-- **Verification Suite**: `618/618` unit tests passed, `425` active AST rules, repo score `100/100` (`2238ms`)
-
 ### Sprint #23 — v3.5.359 (2026-11-09 12:49 UTC)
 - **New AST Shield**: `SLOP-426` (`no-hallucinated-cipher-primitive-v426`, CWE-327) — `Hallucinated Non-Standard Cryptographic Cipher Names`
 - **Threat Model**: LLMs invent non-existent cipher strings such as aes-256-turbo or sha256-fast in OpenSSL and Node crypto calls, causing runtime panics or silent fallback to weak encryption.
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-439` (`no-phantom-ai-sdk-slopsquatting-v439`, CWE-1357) — `Phantom AI SDK Wrapper Package Slopsquatting`
 - **Threat Model**: LLMs hallucinate plausible AI helper packages like @anthropic/tools-pro or openai-streaming-helper in package.json and requirements.txt, exposing builds to supply-chain hijacking.
 - **Verification Suite**: `632/632` unit tests passed, `439` active AST rules, repo score `100/100` (`2043ms`)
+
+### Sprint #37 — v3.5.373 (2026-11-09 13:32 UTC)
+- **New AST Shield**: `SLOP-440` (`no-unbounded-mpsc-queue-sprawl-v440`, CWE-400) — `Unbounded MPSC & Asyncio Queue Memory Exhaustion`
+- **Threat Model**: 1.  **Analyze the Request:** *   **Rule/Code:** `unbounded-mpsc-queue-sprawl` (Unbounded MPSC & Asyncio Queue Memory Exhaustion, CWE-400). *   **Blocked code:** `tokio::sync::mpsc::unbounded_channel::<Job>()` *   **Enforced fix:** `tokio::sync::mpsc::channel::<Job>(1024)` *   **Target Audience:** Senior security engineer. *   **Task:** Explain *why* AI model
+- **Verification Suite**: `633/633` unit tests passed, `440` active AST rules, repo score `100/100` (`2061ms`)
