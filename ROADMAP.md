@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #96 — v3.5.331 (2026-11-08 18:15 UTC)
-- **New AST Shield**: `SLOP-398` (`no-phantom-ai-sdk-slopsquatting-v398`, CWE-1357) — `Phantom AI SDK Wrapper Package Slopsquatting`
-- **Threat Model**: LLMs hallucinate plausible AI helper packages like @anthropic/tools-pro or openai-streaming-helper in package.json and requirements.txt, exposing builds to supply-chain hijacking.
-- **Verification Suite**: `591/591` unit tests passed, `398` active AST rules, repo score `100/100` (`2151ms`)
-
 ### Sprint #97 — v3.5.332 (2026-11-08 18:19 UTC)
 - **New AST Shield**: `SLOP-399` (`no-unbounded-mpsc-queue-sprawl-v399`, CWE-400) — `Unbounded MPSC & Asyncio Queue Memory Exhaustion`
 - **Threat Model**: 1.  **Analyze the Request:** *   **Rule:** `unbounded-mpsc-queue-sprawl` (CWE-400). Unbounded MPSC queues lead to memory exhaustion. *   **Blocked Code:** `tokio::sync::mpsc::unbounded_channel::<Job>()` *   **Enforced Fix:** `tokio::sync::mpsc::channel::<Job>(1024)` *   **Task:** Write exactly 2 technical sentences for a senior security engineer explaining *
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-412` (`no-async-iterator-unclosed-break-v412`, CWE-775) — `Async Generator Break Without Stream Disposal`
 - **Threat Model**: Breaking out of a for-await-of stream loop without a try/finally block or stream.destroy() leaks underlying file descriptors and database cursors.
 - **Verification Suite**: `605/605` unit tests passed, `412` active AST rules, repo score `100/100` (`2195ms`)
+
+### Sprint #10 — v3.5.346 (2026-11-09 12:13 UTC)
+- **New AST Shield**: `SLOP-413` (`no-compound-namespace-slopsquat-v413`, CWE-829) — `Compound Namespace Package Manifest Slopsquatting`
+- **Threat Model**: AI assistants synthesize plausible compound package names such as flask-bcrypt-auth or tokio-redis-pro that attackers register on PyPI/crates.io/npm for RCE.
+- **Verification Suite**: `606/606` unit tests passed, `413` active AST rules, repo score `100/100` (`2098ms`)
