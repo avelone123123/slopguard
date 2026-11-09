@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #132 — v3.5.468 (2026-11-09 17:50 UTC)
-- **New AST Shield**: `SLOP-535` (`no-non-atomic-toctou-fs-mutation-v535`, CWE-367) — `Non-Atomic TOCTOU File Existence Check Before Write`
-- **Threat Model**: We need to understand the rule: non-atomic-toctou-fs-mutation (Non-Atomic TOCTOU File Existence Check Before Write, CWE-367). The blocked code is a classic TOCTOU pattern: check if file exists with fs.existsSync, then writeFileSync. The fix is to use atomic write with flag 'wx' (O_CREAT|O_EXCL|O_WRONLY) which avoids race conditions and ensures fail-if-exists
-- **Verification Suite**: `728/728` unit tests passed, `535` active AST rules, repo score `100/100` (`2043ms`)
-
 ### Sprint #133 — v3.5.469 (2026-11-09 17:53 UTC)
 - **New AST Shield**: `SLOP-536` (`no-hallucinated-cipher-primitive-v536`, CWE-327) — `Hallucinated Non-Standard Cryptographic Cipher Names`
 - **Threat Model**: LLMs invent non-existent cipher strings such as aes-256-turbo or sha256-fast in OpenSSL and Node crypto calls, causing runtime panics or silent fallback to weak encryption.
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-549` (`no-phantom-ai-sdk-slopsquatting-v549`, CWE-1357) — `Phantom AI SDK Wrapper Package Slopsquatting`
 - **Threat Model**: LLMs hallucinate plausible AI helper packages like @anthropic/tools-pro or openai-streaming-helper in package.json and requirements.txt, exposing builds to supply-chain hijacking.
 - **Verification Suite**: `742/742` unit tests passed, `549` active AST rules, repo score `100/100` (`2038ms`)
+
+### Sprint #147 — v3.5.483 (2026-11-09 18:33 UTC)
+- **New AST Shield**: `SLOP-550` (`no-unbounded-mpsc-queue-sprawl-v550`, CWE-400) — `Unbounded MPSC & Asyncio Queue Memory Exhaustion`
+- **Threat Model**: AI concurrency scaffolding defaults to tokio::sync::mpsc::unbounded_channel() and unbuffered asyncio.Queue(), removing backpressure and causing OOM kills under traffic spikes.
+- **Verification Suite**: `743/743` unit tests passed, `550` active AST rules, repo score `100/100` (`2064ms`)
