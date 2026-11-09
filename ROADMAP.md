@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #202 — v3.5.538 (2026-11-09 21:10 UTC)
-- **New AST Shield**: `SLOP-605` (`no-non-atomic-toctou-fs-mutation-v605`, CWE-367) — `Non-Atomic TOCTOU File Existence Check Before Write`
-- **Threat Model**: We need to answer: "Write exactly 2 technical sentences for a senior security engineer explaining why AI models hallucinate this pattern and how SlopGuard's AST firewall blocks it in <0.35ms." The rule is non-atomic TOCTOU file existence check before write (CWE-367). Blocked code: if (fs.existsSync(uploadPath)) { fs.writeFileSync(uploadPath, payload); } Enfo
-- **Verification Suite**: `798/798` unit tests passed, `605` active AST rules, repo score `100/100` (`2021ms`)
-
 ### Sprint #203 — v3.5.539 (2026-11-09 21:13 UTC)
 - **New AST Shield**: `SLOP-606` (`no-hallucinated-cipher-primitive-v606`, CWE-327) — `Hallucinated Non-Standard Cryptographic Cipher Names`
 - **Threat Model**: We are asked: "Write exactly 2 technical sentences for a senior security engineer explaining why AI models hallucinate this pattern and how SlopGuard's AST firewall blocks it in <0.35ms. Output ONLY the 2 sentences, no intro." The context: Rule "hallucinated-cipher-primitive (Hallucinated Non-Standard Cryptographic Cipher Names CWE-327). Blocked code: const 
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-619` (`no-phantom-ai-sdk-slopsquatting-v619`, CWE-1357) — `Phantom AI SDK Wrapper Package Slopsquatting`
 - **Threat Model**: LLMs hallucinate plausible AI helper packages like @anthropic/tools-pro or openai-streaming-helper in package.json and requirements.txt, exposing builds to supply-chain hijacking.
 - **Verification Suite**: `812/812` unit tests passed, `619` active AST rules, repo score `100/100` (`2090ms`)
+
+### Sprint #217 — v3.5.553 (2026-11-09 21:51 UTC)
+- **New AST Shield**: `SLOP-620` (`no-unbounded-mpsc-queue-sprawl-v620`, CWE-400) — `Unbounded MPSC & Asyncio Queue Memory Exhaustion`
+- **Threat Model**: AI concurrency scaffolding defaults to tokio::sync::mpsc::unbounded_channel() and unbuffered asyncio.Queue(), removing backpressure and causing OOM kills under traffic spikes.
+- **Verification Suite**: `813/813` unit tests passed, `620` active AST rules, repo score `100/100` (`2957ms`)
