@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #1 — v3.5.337 (2026-11-09 11:44 UTC)
-- **New AST Shield**: `SLOP-404` (`no-unvalidated-ssrf-redirect-chain-v404`, CWE-918) — `Unvalidated SSRF Host Interpolation & Redirect Bypass`
-- **Threat Model**: We need to output exactly 2 technical sentences, no intro, no extra text. Sentences must explain why AI models hallucinate this pattern and how SlopGuard's AST firewall blocks it in <0.35ms. We need to be concise, technical. Sentence 1: AI models hallucinate because they are trained on large code corpora where similar patterns appear, causing them to generat
-- **Verification Suite**: `597/597` unit tests passed, `404` active AST rules, repo score `100/100` (`2064ms`)
-
 ### Sprint #2 — v3.5.338 (2026-11-09 11:47 UTC)
 - **New AST Shield**: `SLOP-405` (`no-non-atomic-toctou-fs-mutation-v405`, CWE-367) — `Non-Atomic TOCTOU File Existence Check Before Write`
 - **Threat Model**: We need to output exactly 2 technical sentences. No intro, just 2 sentences. Must explain why AI models hallucinate this pattern and how SlopGuard's AST firewall blocks it in <0.35ms. Sentence 1: Why AI models hallucinate this pattern (maybe due to training data bias, pattern similarity, lack of precise semantics). Sentence 2: How SlopGuard's AST firewall bl
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-418` (`no-loop-scoped-event-listener-leak-v418`, CWE-400) — `Unbounded Event Listener Registration Inside Loops`
 - **Threat Model**: 1.  **Analyze the Request:** *   **Rule:** loop-scoped-event-listener-leak (CWE-400). Unbounded event listener registration inside loops causes memory exhaustion. *   **Blocked Code:** `for (const chunk of items) { socket.on('data', (buf) => handle(buf)); }` (creates one listener per iteration, accumulating in `socket`). *   **Enforced Fix:** `socket.on('dat
 - **Verification Suite**: `611/611` unit tests passed, `418` active AST rules, repo score `100/100` (`2188ms`)
+
+### Sprint #16 — v3.5.352 (2026-11-09 12:30 UTC)
+- **New AST Shield**: `SLOP-419` (`no-phantom-ai-sdk-slopsquatting-v419`, CWE-1357) — `Phantom AI SDK Wrapper Package Slopsquatting`
+- **Threat Model**: LLMs hallucinate plausible AI helper packages like @anthropic/tools-pro or openai-streaming-helper in package.json and requirements.txt, exposing builds to supply-chain hijacking.
+- **Verification Suite**: `612/612` unit tests passed, `419` active AST rules, repo score `100/100` (`2094ms`)
