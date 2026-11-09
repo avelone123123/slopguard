@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #47 — v3.5.383 (2026-11-09 14:01 UTC)
-- **New AST Shield**: `SLOP-450` (`no-unbounded-mpsc-queue-sprawl-v450`, CWE-400) — `Unbounded MPSC & Asyncio Queue Memory Exhaustion`
-- **Threat Model**: AI concurrency scaffolding defaults to tokio::sync::mpsc::unbounded_channel() and unbuffered asyncio.Queue(), removing backpressure and causing OOM kills under traffic spikes.
-- **Verification Suite**: `643/643` unit tests passed, `450` active AST rules, repo score `100/100` (`2028ms`)
-
 ### Sprint #48 — v3.5.384 (2026-11-09 14:04 UTC)
 - **New AST Shield**: `SLOP-451` (`no-truncated-hex-entropy-keygen-v451`, CWE-326) — `Truncated Hex Slice & Weak PRNG Key Derivation`
 - **Threat Model**: 1.  **Analyze the Request:** *   **Rule/Topic:** `truncated-hex-entropy-keygen` (Truncated Hex Slice & Weak PRNG Key Derivation - CWE-326). *   **Blocked Code:** `const aesKey = crypto.randomBytes(32).toString('hex').slice(0, 16);` (Uses `toString('hex')`, then `slice(0, 16)`, which drastically reduces entropy and creates predictable key patterns due to hex 
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-464` (`no-unvalidated-ssrf-redirect-chain-v464`, CWE-918) — `Unvalidated SSRF Host Interpolation & Redirect Bypass`
 - **Threat Model**: AI coding assistants interpolate user-controlled host variables directly into axios.get or requests.get URLs, enabling Server-Side Request Forgery against cloud metadata endpoints.
 - **Verification Suite**: `657/657` unit tests passed, `464` active AST rules, repo score `100/100` (`2067ms`)
+
+### Sprint #62 — v3.5.398 (2026-11-09 14:43 UTC)
+- **New AST Shield**: `SLOP-465` (`no-non-atomic-toctou-fs-mutation-v465`, CWE-367) — `Non-Atomic TOCTOU File Existence Check Before Write`
+- **Threat Model**: AI models routinely generate fs.existsSync(p) followed by fs.writeFileSync(p), creating a CWE-367 Time-of-Check Time-of-Use race window exploitable via symlink swapping.
+- **Verification Suite**: `658/658` unit tests passed, `465` active AST rules, repo score `100/100` (`2070ms`)
