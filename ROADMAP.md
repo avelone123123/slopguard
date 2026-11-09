@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #200 — v3.5.536 (2026-11-09 21:04 UTC)
-- **New AST Shield**: `SLOP-603` (`no-compound-namespace-slopsquat-v603`, CWE-829) — `Compound Namespace Package Manifest Slopsquatting`
-- **Threat Model**: AI assistants synthesize plausible compound package names such as flask-bcrypt-auth or tokio-redis-pro that attackers register on PyPI/crates.io/npm for RCE.
-- **Verification Suite**: `796/796` unit tests passed, `603` active AST rules, repo score `100/100` (`1972ms`)
-
 ### Sprint #201 — v3.5.537 (2026-11-09 21:07 UTC)
 - **New AST Shield**: `SLOP-604` (`no-unvalidated-ssrf-redirect-chain-v604`, CWE-918) — `Unvalidated SSRF Host Interpolation & Redirect Bypass`
 - **Threat Model**: 1.  **Analyze the Request:** *   **Rule:** `unvalidated-ssrf-redirect-chain` (CWE-918). *   **Blocked Code:** `const res = await axios.get(`https://${req.query.apiHost}/v1/profile`);` (SSRF via unsanitized user input). *   **Enforced Fix:** `if (!ALLOWED_ORIGINS.has(req.query.apiHost)) throw new Error('Blocked');` + hardcoded URL (or using an allowlisted hos
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-617` (`no-shell-template-subprocess-exec-v617`, CWE-78) — `Formatted Shell String Subprocess Command Injection`
 - **Threat Model**: AI assistants pass formatted f-strings or template literals into subprocess.Popen(..., shell=True) and child_process.exec, allowing arbitrary shell command execution.
 - **Verification Suite**: `810/810` unit tests passed, `617` active AST rules, repo score `100/100` (`2126ms`)
+
+### Sprint #215 — v3.5.551 (2026-11-09 21:46 UTC)
+- **New AST Shield**: `SLOP-618` (`no-loop-scoped-event-listener-leak-v618`, CWE-400) — `Unbounded Event Listener Registration Inside Loops`
+- **Threat Model**: AI-generated stream handlers attach emitter.on('data', ...) inside for/while loops without cleanup, exhausting V8 heap memory and triggering MaxListenersExceededWarning.
+- **Verification Suite**: `811/811` unit tests passed, `618` active AST rules, repo score `100/100` (`2177ms`)
