@@ -1,5 +1,10 @@
 # Changelog
 All notable changes to SlopGuard are documented in this file.
+## [3.5.446] - 2026-11-09
+### Added
+- Expanded AST Firewall Matrix to 513 Active Shields: Added `SLOP-513` (`no-compound-namespace-slopsquat-v513`, CWE-829) — Synthetic compound package names in dependency manifests.
+- Scaled Deterministic Test Battery: Verified 706/706 passing unit tests (100% pass rate, 0 warnings).
+- Threat Interception: AI assistants synthesize plausible compound package names such as flask-bcrypt-auth or tokio-redis-pro that attackers register on PyPI/crates.io/npm for RCE.
 ## [3.5.445] - 2026-11-09
 ### Added
 - Expanded AST Firewall Matrix to 512 Active Shields: Added `SLOP-512` (`no-async-iterator-unclosed-break-v512`, CWE-775) — Early break or return inside for-await-of loop without stream closure.
