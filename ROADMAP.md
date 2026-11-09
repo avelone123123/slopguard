@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #99 — v3.5.334 (2026-11-08 18:26 UTC)
-- **New AST Shield**: `SLOP-401` (`no-async-iterator-unclosed-break-v401`, CWE-775) — `Async Generator Break Without Stream Disposal`
-- **Threat Model**: Breaking out of a for-await-of stream loop without a try/finally block or stream.destroy() leaks underlying file descriptors and database cursors.
-- **Verification Suite**: `594/594` unit tests passed, `401` active AST rules, repo score `100/100` (`2031ms`)
-
 ### Sprint #100 — v3.5.335 (2026-11-08 18:31 UTC)
 - **New AST Shield**: `SLOP-402` (`no-compound-namespace-slopsquat-v402`, CWE-829) — `Compound Namespace Package Manifest Slopsquatting`
 - **Threat Model**: AI assistants synthesize plausible compound package names such as flask-bcrypt-auth or tokio-redis-pro that attackers register on PyPI/crates.io/npm for RCE.
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-415` (`no-non-atomic-toctou-fs-mutation-v415`, CWE-367) — `Non-Atomic TOCTOU File Existence Check Before Write`
 - **Threat Model**: AI models routinely generate fs.existsSync(p) followed by fs.writeFileSync(p), creating a CWE-367 Time-of-Check Time-of-Use race window exploitable via symlink swapping.
 - **Verification Suite**: `608/608` unit tests passed, `415` active AST rules, repo score `100/100` (`2109ms`)
+
+### Sprint #13 — v3.5.349 (2026-11-09 12:21 UTC)
+- **New AST Shield**: `SLOP-416` (`no-hallucinated-cipher-primitive-v416`, CWE-327) — `Hallucinated Non-Standard Cryptographic Cipher Names`
+- **Threat Model**: LLMs invent non-existent cipher strings such as aes-256-turbo or sha256-fast in OpenSSL and Node crypto calls, causing runtime panics or silent fallback to weak encryption.
+- **Verification Suite**: `609/609` unit tests passed, `416` active AST rules, repo score `100/100` (`2112ms`)
