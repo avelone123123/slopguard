@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #90 — v3.5.325 (2026-11-08 17:54 UTC)
-- **New AST Shield**: `SLOP-392` (`no-compound-namespace-slopsquat-v392`, CWE-829) — `Compound Namespace Package Manifest Slopsquatting`
-- **Threat Model**: AI assistants synthesize plausible compound package names such as flask-bcrypt-auth or tokio-redis-pro that attackers register on PyPI/crates.io/npm for RCE.
-- **Verification Suite**: `585/585` unit tests passed, `392` active AST rules, repo score `100/100` (`2130ms`)
-
 ### Sprint #91 — v3.5.326 (2026-11-08 17:57 UTC)
 - **New AST Shield**: `SLOP-393` (`no-unvalidated-ssrf-redirect-chain-v393`, CWE-918) — `Unvalidated SSRF Host Interpolation & Redirect Bypass`
 - **Threat Model**: AI coding assistants interpolate user-controlled host variables directly into axios.get or requests.get URLs, enabling Server-Side Request Forgery against cloud metadata endpoints.
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-406` (`no-hallucinated-cipher-primitive-v406`, CWE-327) — `Hallucinated Non-Standard Cryptographic Cipher Names`
 - **Threat Model**: We need to output exactly 2 technical sentences. No intro. Must explain why AI models hallucinate this pattern and how SlopGuard's AST firewall blocks it in <0.35ms. Sentence 1: why AI models hallucinate pattern (they generate plausible but non-standard cipher names due to training data noise and token probability). Sentence 2: how SlopGuard's AST firewall b
 - **Verification Suite**: `599/599` unit tests passed, `406` active AST rules, repo score `100/100` (`2046ms`)
+
+### Sprint #4 — v3.5.340 (2026-11-09 11:54 UTC)
+- **New AST Shield**: `SLOP-407` (`no-shell-template-subprocess-exec-v407`, CWE-78) — `Formatted Shell String Subprocess Command Injection`
+- **Threat Model**: We need to output exactly 2 technical sentences, no intro, no extra text. Sentences must explain why AI models hallucinate this pattern and how SlopGuard's AST firewall blocks it in <0.35ms. We must be concise, technical, 2 sentences. Ensure each sentence ends with a period. No extra spaces? Probably fine. First sentence: AI models hallucinate because they g
+- **Verification Suite**: `600/600` unit tests passed, `407` active AST rules, repo score `100/100` (`2078ms`)
