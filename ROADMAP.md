@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #103 — v3.5.439 (2026-11-09 16:26 UTC)
-- **New AST Shield**: `SLOP-506` (`no-hallucinated-cipher-primitive-v506`, CWE-327) — `Hallucinated Non-Standard Cryptographic Cipher Names`
-- **Threat Model**: LLMs invent non-existent cipher strings such as aes-256-turbo or sha256-fast in OpenSSL and Node crypto calls, causing runtime panics or silent fallback to weak encryption.
-- **Verification Suite**: `699/699` unit tests passed, `506` active AST rules, repo score `100/100` (`2038ms`)
-
 ### Sprint #104 — v3.5.440 (2026-11-09 16:28 UTC)
 - **New AST Shield**: `SLOP-507` (`no-shell-template-subprocess-exec-v507`, CWE-78) — `Formatted Shell String Subprocess Command Injection`
 - **Threat Model**: AI assistants pass formatted f-strings or template literals into subprocess.Popen(..., shell=True) and child_process.exec, allowing arbitrary shell command execution.
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-520` (`no-unbounded-mpsc-queue-sprawl-v520`, CWE-400) — `Unbounded MPSC & Asyncio Queue Memory Exhaustion`
 - **Threat Model**: AI concurrency scaffolding defaults to tokio::sync::mpsc::unbounded_channel() and unbuffered asyncio.Queue(), removing backpressure and causing OOM kills under traffic spikes.
 - **Verification Suite**: `713/713` unit tests passed, `520` active AST rules, repo score `100/100` (`2079ms`)
+
+### Sprint #118 — v3.5.454 (2026-11-09 17:09 UTC)
+- **New AST Shield**: `SLOP-521` (`no-truncated-hex-entropy-keygen-v521`, CWE-326) — `Truncated Hex Slice & Weak PRNG Key Derivation`
+- **Threat Model**: 1.  **Analyze the Request:** *   **Rule/Topic:** Truncated-hex-entropy-keygen (CWE-326). The blocked code is `crypto.randomBytes(32).toString('hex').slice(0, 16)` which truncates the hex string to 16 chars (64 bits of entropy instead of 256 bits), leading to weak key derivation. The enforced fix is `const aesKey = crypto.randomBytes(32);`. *   **Task:** Writ
+- **Verification Suite**: `714/714` unit tests passed, `521` active AST rules, repo score `100/100` (`2070ms`)
