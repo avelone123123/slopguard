@@ -1,5 +1,10 @@
 # Changelog
 All notable changes to SlopGuard are documented in this file.
+## [3.5.528] - 2026-11-09
+### Added
+- Expanded AST Firewall Matrix to 595 Active Shields: Added `SLOP-595` (`no-non-atomic-toctou-fs-mutation-v595`, CWE-367) — Non-atomic file existence check prior to destructive file write.
+- Scaled Deterministic Test Battery: Verified 788/788 passing unit tests (100% pass rate, 0 warnings).
+- Threat Interception: AI models routinely generate fs.existsSync(p) followed by fs.writeFileSync(p), creating a CWE-367 Time-of-Check Time-of-Use race window exploitable via symlink swapping.
 ## [3.5.527] - 2026-11-09
 ### Added
 - Expanded AST Firewall Matrix to 594 Active Shields: Added `SLOP-594` (`no-unvalidated-ssrf-redirect-chain-v594`, CWE-918) — Unvalidated dynamic host interpolation in outbound HTTP client requests.

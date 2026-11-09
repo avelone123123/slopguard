@@ -697,6 +697,7 @@ AstDetectorDefinition { id: "SLOP-591", name: "no-truncated-hex-entropy-keygen-v
 AstDetectorDefinition { id: "SLOP-592", name: "no-async-iterator-unclosed-break-v592", severity: SlopSeverity::Error, category: "async-concurrency", cwe: "CWE-775", description: "Early break or return inside for-await-of loop without stream closure", recommendation: "Wrap async stream iteration in try/finally and call stream.destroy()" },
 AstDetectorDefinition { id: "SLOP-593", name: "no-compound-namespace-slopsquat-v593", severity: SlopSeverity::Error, category: "supply-chain", cwe: "CWE-829", description: "Synthetic compound package names in dependency manifests", recommendation: "Verify package existence on canonical registry and pin exact version" },
 AstDetectorDefinition { id: "SLOP-594", name: "no-unvalidated-ssrf-redirect-chain-v594", severity: SlopSeverity::Error, category: "path-injection", cwe: "CWE-918", description: "Unvalidated dynamic host interpolation in outbound HTTP client requests", recommendation: "Validate target hostnames against strict allowlist before dispatching requests" },
+AstDetectorDefinition { id: "SLOP-595", name: "no-non-atomic-toctou-fs-mutation-v595", severity: SlopSeverity::Error, category: "path-injection", cwe: "CWE-367", description: "Non-atomic file existence check prior to destructive file write", recommendation: "Use atomic exclusive file creation flags such as wx or O_CREAT | O_EXCL" },
 ];
 #[allow(dead_code)]
 pub static ACTIVE_CONTRACTS: &[crate::types::AstDetectorContract] = &[
