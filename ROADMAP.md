@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #179 — v3.5.515 (2026-11-09 20:04 UTC)
-- **New AST Shield**: `SLOP-582` (`no-async-iterator-unclosed-break-v582`, CWE-775) — `Async Generator Break Without Stream Disposal`
-- **Threat Model**: Breaking out of a for-await-of stream loop without a try/finally block or stream.destroy() leaks underlying file descriptors and database cursors.
-- **Verification Suite**: `775/775` unit tests passed, `582` active AST rules, repo score `100/100` (`2892ms`)
-
 ### Sprint #180 — v3.5.516 (2026-11-09 20:07 UTC)
 - **New AST Shield**: `SLOP-583` (`no-compound-namespace-slopsquat-v583`, CWE-829) — `Compound Namespace Package Manifest Slopsquatting`
 - **Threat Model**: 1.  **Analyze the Request:** *   **Rule/Context:** "compound-namespace-slopsquat" (Compound Namespace Package Manifest Slopsquatting, CWE-829). This refers to a specific vulnerability/attack where malicious package names mimic legitimate ones to trick developers into installing them. *   **Blocked code:** `flask-bcrypt-auth>=1.0` (mimics `flask-bcrypt`, pote
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-596` (`no-hallucinated-cipher-primitive-v596`, CWE-327) — `Hallucinated Non-Standard Cryptographic Cipher Names`
 - **Threat Model**: LLMs invent non-existent cipher strings such as aes-256-turbo or sha256-fast in OpenSSL and Node crypto calls, causing runtime panics or silent fallback to weak encryption.
 - **Verification Suite**: `789/789` unit tests passed, `596` active AST rules, repo score `100/100` (`2210ms`)
+
+### Sprint #194 — v3.5.530 (2026-11-09 20:47 UTC)
+- **New AST Shield**: `SLOP-597` (`no-shell-template-subprocess-exec-v597`, CWE-78) — `Formatted Shell String Subprocess Command Injection`
+- **Threat Model**: AI assistants pass formatted f-strings or template literals into subprocess.Popen(..., shell=True) and child_process.exec, allowing arbitrary shell command execution.
+- **Verification Suite**: `790/790` unit tests passed, `597` active AST rules, repo score `100/100` (`2035ms`)
