@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #4 — v3.5.340 (2026-11-09 11:54 UTC)
-- **New AST Shield**: `SLOP-407` (`no-shell-template-subprocess-exec-v407`, CWE-78) — `Formatted Shell String Subprocess Command Injection`
-- **Threat Model**: We need to output exactly 2 technical sentences, no intro, no extra text. Sentences must explain why AI models hallucinate this pattern and how SlopGuard's AST firewall blocks it in <0.35ms. We must be concise, technical, 2 sentences. Ensure each sentence ends with a period. No extra spaces? Probably fine. First sentence: AI models hallucinate because they g
-- **Verification Suite**: `600/600` unit tests passed, `407` active AST rules, repo score `100/100` (`2078ms`)
-
 ### Sprint #5 — v3.5.341 (2026-11-09 11:57 UTC)
 - **New AST Shield**: `SLOP-408` (`no-loop-scoped-event-listener-leak-v408`, CWE-400) — `Unbounded Event Listener Registration Inside Loops`
 - **Threat Model**: AI-generated stream handlers attach emitter.on('data', ...) inside for/while loops without cleanup, exhausting V8 heap memory and triggering MaxListenersExceededWarning.
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-421` (`no-truncated-hex-entropy-keygen-v421`, CWE-326) — `Truncated Hex Slice & Weak PRNG Key Derivation`
 - **Threat Model**: AI models frequently slice hex-encoded random bytes to 16 chars (reducing 128-bit entropy to 64 bits) or use Math.random().toString(36) for AES/JWT secret keys.
 - **Verification Suite**: `614/614` unit tests passed, `421` active AST rules, repo score `100/100` (`2258ms`)
+
+### Sprint #19 — v3.5.355 (2026-11-09 12:38 UTC)
+- **New AST Shield**: `SLOP-422` (`no-async-iterator-unclosed-break-v422`, CWE-775) — `Async Generator Break Without Stream Disposal`
+- **Threat Model**: Breaking out of a for-await-of stream loop without a try/finally block or stream.destroy() leaks underlying file descriptors and database cursors.
+- **Verification Suite**: `615/615` unit tests passed, `422` active AST rules, repo score `100/100` (`2116ms`)
