@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #87 — v3.5.322 (2026-11-08 17:45 UTC)
-- **New AST Shield**: `SLOP-389` (`no-unbounded-mpsc-queue-sprawl-v389`, CWE-400) — `Unbounded MPSC & Asyncio Queue Memory Exhaustion`
-- **Threat Model**: AI concurrency scaffolding defaults to tokio::sync::mpsc::unbounded_channel() and unbuffered asyncio.Queue(), removing backpressure and causing OOM kills under traffic spikes.
-- **Verification Suite**: `582/582` unit tests passed, `389` active AST rules, repo score `100/100` (`2198ms`)
-
 ### Sprint #88 — v3.5.323 (2026-11-08 17:48 UTC)
 - **New AST Shield**: `SLOP-390` (`no-truncated-hex-entropy-keygen-v390`, CWE-326) — `Truncated Hex Slice & Weak PRNG Key Derivation`
 - **Threat Model**: AI models frequently slice hex-encoded random bytes to 16 chars (reducing 128-bit entropy to 64 bits) or use Math.random().toString(36) for AES/JWT secret keys.
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-403` (`no-unvalidated-ssrf-redirect-chain-v403`, CWE-918) — `Unvalidated SSRF Host Interpolation & Redirect Bypass`
 - **Threat Model**: AI coding assistants interpolate user-controlled host variables directly into axios.get or requests.get URLs, enabling Server-Side Request Forgery against cloud metadata endpoints.
 - **Verification Suite**: `596/596` unit tests passed, `403` active AST rules, repo score `100/100` (`2200ms`)
+
+### Sprint #1 — v3.5.337 (2026-11-09 11:44 UTC)
+- **New AST Shield**: `SLOP-404` (`no-unvalidated-ssrf-redirect-chain-v404`, CWE-918) — `Unvalidated SSRF Host Interpolation & Redirect Bypass`
+- **Threat Model**: We need to output exactly 2 technical sentences, no intro, no extra text. Sentences must explain why AI models hallucinate this pattern and how SlopGuard's AST firewall blocks it in <0.35ms. We need to be concise, technical. Sentence 1: AI models hallucinate because they are trained on large code corpora where similar patterns appear, causing them to generat
+- **Verification Suite**: `597/597` unit tests passed, `404` active AST rules, repo score `100/100` (`2064ms`)

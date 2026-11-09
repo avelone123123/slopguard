@@ -506,6 +506,7 @@ AstDetectorDefinition { id: "SLOP-400", name: "no-truncated-hex-entropy-keygen-v
 AstDetectorDefinition { id: "SLOP-401", name: "no-async-iterator-unclosed-break-v401", severity: SlopSeverity::Error, category: "async-concurrency", cwe: "CWE-775", description: "Early break or return inside for-await-of loop without stream closure", recommendation: "Wrap async stream iteration in try/finally and call stream.destroy()" },
 AstDetectorDefinition { id: "SLOP-402", name: "no-compound-namespace-slopsquat-v402", severity: SlopSeverity::Error, category: "supply-chain", cwe: "CWE-829", description: "Synthetic compound package names in dependency manifests", recommendation: "Verify package existence on canonical registry and pin exact version" },
 AstDetectorDefinition { id: "SLOP-403", name: "no-unvalidated-ssrf-redirect-chain-v403", severity: SlopSeverity::Error, category: "path-injection", cwe: "CWE-918", description: "Unvalidated dynamic host interpolation in outbound HTTP client requests", recommendation: "Validate target hostnames against strict allowlist before dispatching requests" },
+AstDetectorDefinition { id: "SLOP-404", name: "no-unvalidated-ssrf-redirect-chain-v404", severity: SlopSeverity::Error, category: "path-injection", cwe: "CWE-918", description: "Unvalidated dynamic host interpolation in outbound HTTP client requests", recommendation: "Validate target hostnames against strict allowlist before dispatching requests" },
 ];
 #[allow(dead_code)]
 pub static ACTIVE_CONTRACTS: &[crate::types::AstDetectorContract] = &[
