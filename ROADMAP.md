@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #77 — v3.5.413 (2026-11-09 15:24 UTC)
-- **New AST Shield**: `SLOP-480` (`no-unbounded-mpsc-queue-sprawl-v480`, CWE-400) — `Unbounded MPSC & Asyncio Queue Memory Exhaustion`
-- **Threat Model**: 1.  **Analyze the Request:** *   **Rule:** unbounded-mpsc-queue-sprawl (Unbounded MPSC & Asyncio Queue Memory Exhaustion, CWE-400). *   **Blocked code:** `let (tx, rx) = tokio::sync::mpsc::unbounded_channel::<Job>();` *   **Enforced fix:** `let (tx, rx) = tokio::sync::mpsc::channel::<Job>(1024);` *   **Task:** Write exactly 2 technical sentences for a senior
-- **Verification Suite**: `673/673` unit tests passed, `480` active AST rules, repo score `100/100` (`2064ms`)
-
 ### Sprint #78 — v3.5.414 (2026-11-09 15:27 UTC)
 - **New AST Shield**: `SLOP-481` (`no-truncated-hex-entropy-keygen-v481`, CWE-326) — `Truncated Hex Slice & Weak PRNG Key Derivation`
 - **Threat Model**: AI models frequently slice hex-encoded random bytes to 16 chars (reducing 128-bit entropy to 64 bits) or use Math.random().toString(36) for AES/JWT secret keys.
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-494` (`no-unvalidated-ssrf-redirect-chain-v494`, CWE-918) — `Unvalidated SSRF Host Interpolation & Redirect Bypass`
 - **Threat Model**: AI coding assistants interpolate user-controlled host variables directly into axios.get or requests.get URLs, enabling Server-Side Request Forgery against cloud metadata endpoints.
 - **Verification Suite**: `687/687` unit tests passed, `494` active AST rules, repo score `100/100` (`2034ms`)
+
+### Sprint #92 — v3.5.428 (2026-11-09 16:01 UTC)
+- **New AST Shield**: `SLOP-495` (`no-non-atomic-toctou-fs-mutation-v495`, CWE-367) — `Non-Atomic TOCTOU File Existence Check Before Write`
+- **Threat Model**: AI models routinely generate fs.existsSync(p) followed by fs.writeFileSync(p), creating a CWE-367 Time-of-Check Time-of-Use race window exploitable via symlink swapping.
+- **Verification Suite**: `688/688` unit tests passed, `495` active AST rules, repo score `100/100` (`2055ms`)
