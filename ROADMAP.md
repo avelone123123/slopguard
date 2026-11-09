@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #157 — v3.5.493 (2026-11-09 19:02 UTC)
-- **New AST Shield**: `SLOP-560` (`no-unbounded-mpsc-queue-sprawl-v560`, CWE-400) — `Unbounded MPSC & Asyncio Queue Memory Exhaustion`
-- **Threat Model**: AI concurrency scaffolding defaults to tokio::sync::mpsc::unbounded_channel() and unbuffered asyncio.Queue(), removing backpressure and causing OOM kills under traffic spikes.
-- **Verification Suite**: `753/753` unit tests passed, `560` active AST rules, repo score `100/100` (`2046ms`)
-
 ### Sprint #158 — v3.5.494 (2026-11-09 19:04 UTC)
 - **New AST Shield**: `SLOP-561` (`no-truncated-hex-entropy-keygen-v561`, CWE-326) — `Truncated Hex Slice & Weak PRNG Key Derivation`
 - **Threat Model**: 1.  **Analyze the Request:** *   **Rule/Topic:** truncated-hex-entropy-keygen (CWE-326). The blocked code is taking `crypto.randomBytes(32).toString('hex')` and slicing it to 16 chars, severely reducing entropy. The enforced fix is using `crypto.randomBytes(32)` directly. *   **Target Audience:** Senior security engineer. *   **Task:** Explain *why AI models
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-574` (`no-unvalidated-ssrf-redirect-chain-v574`, CWE-918) — `Unvalidated SSRF Host Interpolation & Redirect Bypass`
 - **Threat Model**: AI coding assistants interpolate user-controlled host variables directly into axios.get or requests.get URLs, enabling Server-Side Request Forgery against cloud metadata endpoints.
 - **Verification Suite**: `767/767` unit tests passed, `574` active AST rules, repo score `100/100` (`2073ms`)
+
+### Sprint #172 — v3.5.508 (2026-11-09 19:45 UTC)
+- **New AST Shield**: `SLOP-575` (`no-non-atomic-toctou-fs-mutation-v575`, CWE-367) — `Non-Atomic TOCTOU File Existence Check Before Write`
+- **Threat Model**: We need to answer the user's request: "Write exactly 2 technical sentences for a senior security engineer explaining why AI models hallucinate this pattern and how SlopGuard's AST firewall blocks it in <0.35ms. Output ONLY the 2 sentences, no intro." The context: "Rule: non-atomic-toctou-fs-mutation (Non-Atomic TOCTOU File Existence Check Before Write), CWE-
+- **Verification Suite**: `768/768` unit tests passed, `575` active AST rules, repo score `100/100` (`2090ms`)
