@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #107 — v3.5.443 (2026-11-09 16:37 UTC)
-- **New AST Shield**: `SLOP-510` (`no-unbounded-mpsc-queue-sprawl-v510`, CWE-400) — `Unbounded MPSC & Asyncio Queue Memory Exhaustion`
-- **Threat Model**: AI concurrency scaffolding defaults to tokio::sync::mpsc::unbounded_channel() and unbuffered asyncio.Queue(), removing backpressure and causing OOM kills under traffic spikes.
-- **Verification Suite**: `703/703` unit tests passed, `510` active AST rules, repo score `100/100` (`2073ms`)
-
 ### Sprint #108 — v3.5.444 (2026-11-09 16:40 UTC)
 - **New AST Shield**: `SLOP-511` (`no-truncated-hex-entropy-keygen-v511`, CWE-326) — `Truncated Hex Slice & Weak PRNG Key Derivation`
 - **Threat Model**: AI models frequently slice hex-encoded random bytes to 16 chars (reducing 128-bit entropy to 64 bits) or use Math.random().toString(36) for AES/JWT secret keys.
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-524` (`no-unvalidated-ssrf-redirect-chain-v524`, CWE-918) — `Unvalidated SSRF Host Interpolation & Redirect Bypass`
 - **Threat Model**: AI coding assistants interpolate user-controlled host variables directly into axios.get or requests.get URLs, enabling Server-Side Request Forgery against cloud metadata endpoints.
 - **Verification Suite**: `717/717` unit tests passed, `524` active AST rules, repo score `100/100` (`2078ms`)
+
+### Sprint #122 — v3.5.458 (2026-11-09 17:21 UTC)
+- **New AST Shield**: `SLOP-525` (`no-non-atomic-toctou-fs-mutation-v525`, CWE-367) — `Non-Atomic TOCTOU File Existence Check Before Write`
+- **Threat Model**: AI models routinely generate fs.existsSync(p) followed by fs.writeFileSync(p), creating a CWE-367 Time-of-Check Time-of-Use race window exploitable via symlink swapping.
+- **Verification Suite**: `718/718` unit tests passed, `525` active AST rules, repo score `100/100` (`2115ms`)
