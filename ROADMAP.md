@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #158 — v3.5.494 (2026-11-09 19:04 UTC)
-- **New AST Shield**: `SLOP-561` (`no-truncated-hex-entropy-keygen-v561`, CWE-326) — `Truncated Hex Slice & Weak PRNG Key Derivation`
-- **Threat Model**: 1.  **Analyze the Request:** *   **Rule/Topic:** truncated-hex-entropy-keygen (CWE-326). The blocked code is taking `crypto.randomBytes(32).toString('hex')` and slicing it to 16 chars, severely reducing entropy. The enforced fix is using `crypto.randomBytes(32)` directly. *   **Target Audience:** Senior security engineer. *   **Task:** Explain *why AI models
-- **Verification Suite**: `754/754` unit tests passed, `561` active AST rules, repo score `100/100` (`2039ms`)
-
 ### Sprint #159 — v3.5.495 (2026-11-09 19:07 UTC)
 - **New AST Shield**: `SLOP-562` (`no-async-iterator-unclosed-break-v562`, CWE-775) — `Async Generator Break Without Stream Disposal`
 - **Threat Model**: Breaking out of a for-await-of stream loop without a try/finally block or stream.destroy() leaks underlying file descriptors and database cursors.
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-575` (`no-non-atomic-toctou-fs-mutation-v575`, CWE-367) — `Non-Atomic TOCTOU File Existence Check Before Write`
 - **Threat Model**: We need to answer the user's request: "Write exactly 2 technical sentences for a senior security engineer explaining why AI models hallucinate this pattern and how SlopGuard's AST firewall blocks it in <0.35ms. Output ONLY the 2 sentences, no intro." The context: "Rule: non-atomic-toctou-fs-mutation (Non-Atomic TOCTOU File Existence Check Before Write), CWE-
 - **Verification Suite**: `768/768` unit tests passed, `575` active AST rules, repo score `100/100` (`2090ms`)
+
+### Sprint #173 — v3.5.509 (2026-11-09 19:48 UTC)
+- **New AST Shield**: `SLOP-576` (`no-hallucinated-cipher-primitive-v576`, CWE-327) — `Hallucinated Non-Standard Cryptographic Cipher Names`
+- **Threat Model**: LLMs invent non-existent cipher strings such as aes-256-turbo or sha256-fast in OpenSSL and Node crypto calls, causing runtime panics or silent fallback to weak encryption.
+- **Verification Suite**: `769/769` unit tests passed, `576` active AST rules, repo score `100/100` (`2040ms`)
