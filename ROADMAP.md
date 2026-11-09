@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #94 — v3.5.329 (2026-11-08 18:08 UTC)
-- **New AST Shield**: `SLOP-396` (`no-shell-template-subprocess-exec-v396`, CWE-78) — `Formatted Shell String Subprocess Command Injection`
-- **Threat Model**: AI assistants pass formatted f-strings or template literals into subprocess.Popen(..., shell=True) and child_process.exec, allowing arbitrary shell command execution.
-- **Verification Suite**: `589/589` unit tests passed, `396` active AST rules, repo score `100/100` (`2199ms`)
-
 ### Sprint #95 — v3.5.330 (2026-11-08 18:12 UTC)
 - **New AST Shield**: `SLOP-397` (`no-loop-scoped-event-listener-leak-v397`, CWE-400) — `Unbounded Event Listener Registration Inside Loops`
 - **Threat Model**: 1.  **Analyze the Request:** *   **Rule:** `loop-scoped-event-listener-leak` (Unbounded Event Listener Registration Inside Loops) - CWE-400. *   **Blocked Code:** A `for` loop registering an event listener for each item in `items`. This causes a memory/event-emission leak because listeners accumulate without bound. *   **Enforced Fix:** Move the logic into a
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-410` (`no-unbounded-mpsc-queue-sprawl-v410`, CWE-400) — `Unbounded MPSC & Asyncio Queue Memory Exhaustion`
 - **Threat Model**: We need to output exactly 2 technical sentences. No intro, no extra text. Sentences must explain why AI models hallucinate this pattern and how SlopGuard's AST firewall blocks it in <0.35ms. First sentence: AI models hallucinate because they are trained on large code corpora with many patterns, including unbounded channels, and they generate plausible but in
 - **Verification Suite**: `603/603` unit tests passed, `410` active AST rules, repo score `100/100` (`2053ms`)
+
+### Sprint #8 — v3.5.344 (2026-11-09 12:07 UTC)
+- **New AST Shield**: `SLOP-411` (`no-truncated-hex-entropy-keygen-v411`, CWE-326) — `Truncated Hex Slice & Weak PRNG Key Derivation`
+- **Threat Model**: AI models frequently slice hex-encoded random bytes to 16 chars (reducing 128-bit entropy to 64 bits) or use Math.random().toString(36) for AES/JWT secret keys.
+- **Verification Suite**: `604/604` unit tests passed, `411` active AST rules, repo score `100/100` (`2111ms`)
