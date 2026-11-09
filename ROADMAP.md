@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #66 — v3.5.402 (2026-11-09 14:53 UTC)
-- **New AST Shield**: `SLOP-469` (`no-phantom-ai-sdk-slopsquatting-v469`, CWE-1357) — `Phantom AI SDK Wrapper Package Slopsquatting`
-- **Threat Model**: LLMs hallucinate plausible AI helper packages like @anthropic/tools-pro or openai-streaming-helper in package.json and requirements.txt, exposing builds to supply-chain hijacking.
-- **Verification Suite**: `662/662` unit tests passed, `469` active AST rules, repo score `100/100` (`2035ms`)
-
 ### Sprint #67 — v3.5.403 (2026-11-09 14:56 UTC)
 - **New AST Shield**: `SLOP-470` (`no-unbounded-mpsc-queue-sprawl-v470`, CWE-400) — `Unbounded MPSC & Asyncio Queue Memory Exhaustion`
 - **Threat Model**: AI concurrency scaffolding defaults to tokio::sync::mpsc::unbounded_channel() and unbuffered asyncio.Queue(), removing backpressure and causing OOM kills under traffic spikes.
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-483` (`no-compound-namespace-slopsquat-v483`, CWE-829) — `Compound Namespace Package Manifest Slopsquatting`
 - **Threat Model**: 1.  **Analyze the Request:** *   **Rule:** compound-namespace-slopsquat (CWE-829). *   **Blocked code:** `flask-bcrypt-auth>=1.0`, `tokio-redis-pro = "1.0.0"`. *   **Enforced fix:** `flask-login==0.6.3`, `redis = "0.27.5"`. *   **Task:** Write exactly 2 technical sentences for a senior security engineer explaining *why* AI models hallucinate this pattern and
 - **Verification Suite**: `676/676` unit tests passed, `483` active AST rules, repo score `100/100` (`2080ms`)
+
+### Sprint #81 — v3.5.417 (2026-11-09 15:35 UTC)
+- **New AST Shield**: `SLOP-484` (`no-unvalidated-ssrf-redirect-chain-v484`, CWE-918) — `Unvalidated SSRF Host Interpolation & Redirect Bypass`
+- **Threat Model**: AI coding assistants interpolate user-controlled host variables directly into axios.get or requests.get URLs, enabling Server-Side Request Forgery against cloud metadata endpoints.
+- **Verification Suite**: `677/677` unit tests passed, `484` active AST rules, repo score `100/100` (`2065ms`)
