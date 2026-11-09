@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #40 — v3.5.376 (2026-11-09 13:41 UTC)
-- **New AST Shield**: `SLOP-443` (`no-compound-namespace-slopsquat-v443`, CWE-829) — `Compound Namespace Package Manifest Slopsquatting`
-- **Threat Model**: AI assistants synthesize plausible compound package names such as flask-bcrypt-auth or tokio-redis-pro that attackers register on PyPI/crates.io/npm for RCE.
-- **Verification Suite**: `636/636` unit tests passed, `443` active AST rules, repo score `100/100` (`2038ms`)
-
 ### Sprint #41 — v3.5.377 (2026-11-09 13:44 UTC)
 - **New AST Shield**: `SLOP-444` (`no-unvalidated-ssrf-redirect-chain-v444`, CWE-918) — `Unvalidated SSRF Host Interpolation & Redirect Bypass`
 - **Threat Model**: AI coding assistants interpolate user-controlled host variables directly into axios.get or requests.get URLs, enabling Server-Side Request Forgery against cloud metadata endpoints.
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-457` (`no-shell-template-subprocess-exec-v457`, CWE-78) — `Formatted Shell String Subprocess Command Injection`
 - **Threat Model**: 1.  **Analyze the Request:** *   **Rule/Context:** Shell-template-subprocess-exec (Formatted Shell String Subprocess Command Injection - CWE-78). The blocked code uses `subprocess.Popen(f'tar -xzf {archive_name}', shell=True)`, which is vulnerable to command injection if `archive_name` contains malicious input. The enforced fix uses `subprocess.run(['tar', '
 - **Verification Suite**: `650/650` unit tests passed, `457` active AST rules, repo score `100/100` (`2057ms`)
+
+### Sprint #55 — v3.5.391 (2026-11-09 14:23 UTC)
+- **New AST Shield**: `SLOP-458` (`no-loop-scoped-event-listener-leak-v458`, CWE-400) — `Unbounded Event Listener Registration Inside Loops`
+- **Threat Model**: 1.  **Analyze the Request:** *   **Rule:** loop-scoped-event-listener-leak (Unbounded Event Listener Registration Inside Loops) - CWE-400. *   **Blocked Code:** `for (const chunk of items) { socket.on('data', (buf) => handle(buf)); }` *   **Enforced Fix:** `socket.on('data', (buf) => handleBatch(buf));` *   **Task:** Write exactly 2 technical sentences for a
+- **Verification Suite**: `651/651` unit tests passed, `458` active AST rules, repo score `100/100` (`2069ms`)
