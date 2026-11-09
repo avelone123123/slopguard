@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #147 — v3.5.483 (2026-11-09 18:33 UTC)
-- **New AST Shield**: `SLOP-550` (`no-unbounded-mpsc-queue-sprawl-v550`, CWE-400) — `Unbounded MPSC & Asyncio Queue Memory Exhaustion`
-- **Threat Model**: AI concurrency scaffolding defaults to tokio::sync::mpsc::unbounded_channel() and unbuffered asyncio.Queue(), removing backpressure and causing OOM kills under traffic spikes.
-- **Verification Suite**: `743/743` unit tests passed, `550` active AST rules, repo score `100/100` (`2064ms`)
-
 ### Sprint #148 — v3.5.484 (2026-11-09 18:36 UTC)
 - **New AST Shield**: `SLOP-551` (`no-truncated-hex-entropy-keygen-v551`, CWE-326) — `Truncated Hex Slice & Weak PRNG Key Derivation`
 - **Threat Model**: 1.  **Analyze the Request:** *   **Rule Context:** `truncated-hex-entropy-keygen` (Truncated Hex Slice & Weak PRNG Key Derivation, CWE-326). The bug is slicing a hex string of a cryptographically secure random byte sequence, which drops entropy and creates predictable keys. *   **Enforced Fix:** `const aesKey = crypto.randomBytes(32);` (using raw random byte
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-564` (`no-unvalidated-ssrf-redirect-chain-v564`, CWE-918) — `Unvalidated SSRF Host Interpolation & Redirect Bypass`
 - **Threat Model**: We need to write exactly 2 technical sentences for a senior security engineer explaining why AI models hallucinate this pattern (SSRF via unvalidated host interpolation in redirect chain, CWE-918) and how SlopGuard's AST firewall blocks it in <0.35ms. Output ONLY the two sentences, no intro. The blocked code: const res = await axios.get(`https://${req.query.
 - **Verification Suite**: `757/757` unit tests passed, `564` active AST rules, repo score `100/100` (`2026ms`)
+
+### Sprint #162 — v3.5.498 (2026-11-09 19:16 UTC)
+- **New AST Shield**: `SLOP-565` (`no-non-atomic-toctou-fs-mutation-v565`, CWE-367) — `Non-Atomic TOCTOU File Existence Check Before Write`
+- **Threat Model**: 1.  **Analyze the Request:** *   **Rule/Vulnerability:** Non-Atomic TOCTOU (Time of Check to Time of Use) File Existence Check Before Write (CWE-367). Checking if a file exists, then writing to it leaves a race condition window where another process might create the file or overwrite it, leading to security issues (e.g., path traversal overwriting critical f
+- **Verification Suite**: `758/758` unit tests passed, `565` active AST rules, repo score `100/100` (`2091ms`)

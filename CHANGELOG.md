@@ -1,5 +1,10 @@
 # Changelog
 All notable changes to SlopGuard are documented in this file.
+## [3.5.498] - 2026-11-09
+### Added
+- Expanded AST Firewall Matrix to 565 Active Shields: Added `SLOP-565` (`no-non-atomic-toctou-fs-mutation-v565`, CWE-367) — Non-atomic file existence check prior to destructive file write.
+- Scaled Deterministic Test Battery: Verified 758/758 passing unit tests (100% pass rate, 0 warnings).
+- Threat Interception: 1.  **Analyze the Request:** *   **Rule/Vulnerability:** Non-Atomic TOCTOU (Time of Check to Time of Use) File Existence Check Before Write (CWE-367). Checking if a file exists, then writing to it leaves a race condition window where another process might create the file or overwrite it, leading to security issues (e.g., path traversal overwriting critical f
 ## [3.5.497] - 2026-11-09
 ### Added
 - Expanded AST Firewall Matrix to 564 Active Shields: Added `SLOP-564` (`no-unvalidated-ssrf-redirect-chain-v564`, CWE-918) — Unvalidated dynamic host interpolation in outbound HTTP client requests.
