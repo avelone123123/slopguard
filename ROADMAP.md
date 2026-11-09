@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #194 — v3.5.530 (2026-11-09 20:47 UTC)
-- **New AST Shield**: `SLOP-597` (`no-shell-template-subprocess-exec-v597`, CWE-78) — `Formatted Shell String Subprocess Command Injection`
-- **Threat Model**: AI assistants pass formatted f-strings or template literals into subprocess.Popen(..., shell=True) and child_process.exec, allowing arbitrary shell command execution.
-- **Verification Suite**: `790/790` unit tests passed, `597` active AST rules, repo score `100/100` (`2035ms`)
-
 ### Sprint #195 — v3.5.531 (2026-11-09 20:50 UTC)
 - **New AST Shield**: `SLOP-598` (`no-loop-scoped-event-listener-leak-v598`, CWE-400) — `Unbounded Event Listener Registration Inside Loops`
 - **Threat Model**: AI-generated stream handlers attach emitter.on('data', ...) inside for/while loops without cleanup, exhausting V8 heap memory and triggering MaxListenersExceededWarning.
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-611` (`no-truncated-hex-entropy-keygen-v611`, CWE-326) — `Truncated Hex Slice & Weak PRNG Key Derivation`
 - **Threat Model**: 1.  **Analyze the Request:** *   **Rule:** `truncated-hex-entropy-keygen` (Truncated Hex Slice & Weak PRNG Key Derivation - CWE-326). *   **Blocked code:** `const aesKey = crypto.randomBytes(32).toString('hex').slice(0, 16);` (Creates a 32-byte random buffer, converts to hex string, truncates it to 16 hex chars (8 bytes), losing 75% of the entropy, and is vu
 - **Verification Suite**: `804/804` unit tests passed, `611` active AST rules, repo score `100/100` (`2039ms`)
+
+### Sprint #209 — v3.5.545 (2026-11-09 21:29 UTC)
+- **New AST Shield**: `SLOP-612` (`no-async-iterator-unclosed-break-v612`, CWE-775) — `Async Generator Break Without Stream Disposal`
+- **Threat Model**: Breaking out of a for-await-of stream loop without a try/finally block or stream.destroy() leaks underlying file descriptors and database cursors.
+- **Verification Suite**: `805/805` unit tests passed, `612` active AST rules, repo score `100/100` (`2030ms`)
