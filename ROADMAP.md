@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #101 — v3.5.336 (2026-11-08 18:34 UTC)
-- **New AST Shield**: `SLOP-403` (`no-unvalidated-ssrf-redirect-chain-v403`, CWE-918) — `Unvalidated SSRF Host Interpolation & Redirect Bypass`
-- **Threat Model**: AI coding assistants interpolate user-controlled host variables directly into axios.get or requests.get URLs, enabling Server-Side Request Forgery against cloud metadata endpoints.
-- **Verification Suite**: `596/596` unit tests passed, `403` active AST rules, repo score `100/100` (`2200ms`)
-
 ### Sprint #1 — v3.5.337 (2026-11-09 11:44 UTC)
 - **New AST Shield**: `SLOP-404` (`no-unvalidated-ssrf-redirect-chain-v404`, CWE-918) — `Unvalidated SSRF Host Interpolation & Redirect Bypass`
 - **Threat Model**: We need to output exactly 2 technical sentences, no intro, no extra text. Sentences must explain why AI models hallucinate this pattern and how SlopGuard's AST firewall blocks it in <0.35ms. We need to be concise, technical. Sentence 1: AI models hallucinate because they are trained on large code corpora where similar patterns appear, causing them to generat
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-417` (`no-shell-template-subprocess-exec-v417`, CWE-78) — `Formatted Shell String Subprocess Command Injection`
 - **Threat Model**: AI assistants pass formatted f-strings or template literals into subprocess.Popen(..., shell=True) and child_process.exec, allowing arbitrary shell command execution.
 - **Verification Suite**: `610/610` unit tests passed, `417` active AST rules, repo score `100/100` (`2290ms`)
+
+### Sprint #15 — v3.5.351 (2026-11-09 12:27 UTC)
+- **New AST Shield**: `SLOP-418` (`no-loop-scoped-event-listener-leak-v418`, CWE-400) — `Unbounded Event Listener Registration Inside Loops`
+- **Threat Model**: 1.  **Analyze the Request:** *   **Rule:** loop-scoped-event-listener-leak (CWE-400). Unbounded event listener registration inside loops causes memory exhaustion. *   **Blocked Code:** `for (const chunk of items) { socket.on('data', (buf) => handle(buf)); }` (creates one listener per iteration, accumulating in `socket`). *   **Enforced Fix:** `socket.on('dat
+- **Verification Suite**: `611/611` unit tests passed, `418` active AST rules, repo score `100/100` (`2188ms`)
