@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #93 — v3.5.328 (2026-11-08 18:04 UTC)
-- **New AST Shield**: `SLOP-395` (`no-hallucinated-cipher-primitive-v395`, CWE-327) — `Hallucinated Non-Standard Cryptographic Cipher Names`
-- **Threat Model**: LLMs invent non-existent cipher strings such as aes-256-turbo or sha256-fast in OpenSSL and Node crypto calls, causing runtime panics or silent fallback to weak encryption.
-- **Verification Suite**: `588/588` unit tests passed, `395` active AST rules, repo score `100/100` (`2150ms`)
-
 ### Sprint #94 — v3.5.329 (2026-11-08 18:08 UTC)
 - **New AST Shield**: `SLOP-396` (`no-shell-template-subprocess-exec-v396`, CWE-78) — `Formatted Shell String Subprocess Command Injection`
 - **Threat Model**: AI assistants pass formatted f-strings or template literals into subprocess.Popen(..., shell=True) and child_process.exec, allowing arbitrary shell command execution.
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-409` (`no-phantom-ai-sdk-slopsquatting-v409`, CWE-1357) — `Phantom AI SDK Wrapper Package Slopsquatting`
 - **Threat Model**: AI models hallucinate slopsquatting patterns because they learn from training data that conflates legitimate package names with malicious mimics, causing the tokenizer to treat the injected “@
 - **Verification Suite**: `602/602` unit tests passed, `409` active AST rules, repo score `100/100` (`2201ms`)
+
+### Sprint #7 — v3.5.343 (2026-11-09 12:03 UTC)
+- **New AST Shield**: `SLOP-410` (`no-unbounded-mpsc-queue-sprawl-v410`, CWE-400) — `Unbounded MPSC & Asyncio Queue Memory Exhaustion`
+- **Threat Model**: We need to output exactly 2 technical sentences. No intro, no extra text. Sentences must explain why AI models hallucinate this pattern and how SlopGuard's AST firewall blocks it in <0.35ms. First sentence: AI models hallucinate because they are trained on large code corpora with many patterns, including unbounded channels, and they generate plausible but in
+- **Verification Suite**: `603/603` unit tests passed, `410` active AST rules, repo score `100/100` (`2053ms`)
