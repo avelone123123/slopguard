@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #68 — v3.5.404 (2026-11-09 14:59 UTC)
-- **New AST Shield**: `SLOP-471` (`no-truncated-hex-entropy-keygen-v471`, CWE-326) — `Truncated Hex Slice & Weak PRNG Key Derivation`
-- **Threat Model**: AI models frequently slice hex-encoded random bytes to 16 chars (reducing 128-bit entropy to 64 bits) or use Math.random().toString(36) for AES/JWT secret keys.
-- **Verification Suite**: `664/664` unit tests passed, `471` active AST rules, repo score `100/100` (`2067ms`)
-
 ### Sprint #69 — v3.5.405 (2026-11-09 15:01 UTC)
 - **New AST Shield**: `SLOP-472` (`no-async-iterator-unclosed-break-v472`, CWE-775) — `Async Generator Break Without Stream Disposal`
 - **Threat Model**: Breaking out of a for-await-of stream loop without a try/finally block or stream.destroy() leaks underlying file descriptors and database cursors.
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-485` (`no-non-atomic-toctou-fs-mutation-v485`, CWE-367) — `Non-Atomic TOCTOU File Existence Check Before Write`
 - **Threat Model**: AI models routinely generate fs.existsSync(p) followed by fs.writeFileSync(p), creating a CWE-367 Time-of-Check Time-of-Use race window exploitable via symlink swapping.
 - **Verification Suite**: `678/678` unit tests passed, `485` active AST rules, repo score `100/100` (`2071ms`)
+
+### Sprint #83 — v3.5.419 (2026-11-09 15:40 UTC)
+- **New AST Shield**: `SLOP-486` (`no-hallucinated-cipher-primitive-v486`, CWE-327) — `Hallucinated Non-Standard Cryptographic Cipher Names`
+- **Threat Model**: LLMs invent non-existent cipher strings such as aes-256-turbo or sha256-fast in OpenSSL and Node crypto calls, causing runtime panics or silent fallback to weak encryption.
+- **Verification Suite**: `679/679` unit tests passed, `486` active AST rules, repo score `100/100` (`2060ms`)
