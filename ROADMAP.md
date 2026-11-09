@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #198 — v3.5.534 (2026-11-09 20:58 UTC)
-- **New AST Shield**: `SLOP-601` (`no-truncated-hex-entropy-keygen-v601`, CWE-326) — `Truncated Hex Slice & Weak PRNG Key Derivation`
-- **Threat Model**: AI models frequently slice hex-encoded random bytes to 16 chars (reducing 128-bit entropy to 64 bits) or use Math.random().toString(36) for AES/JWT secret keys.
-- **Verification Suite**: `794/794` unit tests passed, `601` active AST rules, repo score `100/100` (`2059ms`)
-
 ### Sprint #199 — v3.5.535 (2026-11-09 21:01 UTC)
 - **New AST Shield**: `SLOP-602` (`no-async-iterator-unclosed-break-v602`, CWE-775) — `Async Generator Break Without Stream Disposal`
 - **Threat Model**: Breaking out of a for-await-of stream loop without a try/finally block or stream.destroy() leaks underlying file descriptors and database cursors.
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-615` (`no-non-atomic-toctou-fs-mutation-v615`, CWE-367) — `Non-Atomic TOCTOU File Existence Check Before Write`
 - **Threat Model**: 1.  **Analyze the Request:** *   **Rule:** Non-Atomic TOCTOU File Existence Check Before Write (CWE-367). *   **Blocked Code:** `if (fs.existsSync(uploadPath)) { fs.writeFileSync(uploadPath, payload); }` *   **Enforced Fix:** `fs.writeFileSync(uploadPath, payload, { flag: 'wx' });` *   **Topic:** Why AI models hallucinate this pattern and how SlopGuard's AST
 - **Verification Suite**: `808/808` unit tests passed, `615` active AST rules, repo score `100/100` (`2078ms`)
+
+### Sprint #213 — v3.5.549 (2026-11-09 21:41 UTC)
+- **New AST Shield**: `SLOP-616` (`no-hallucinated-cipher-primitive-v616`, CWE-327) — `Hallucinated Non-Standard Cryptographic Cipher Names`
+- **Threat Model**: LLMs invent non-existent cipher strings such as aes-256-turbo or sha256-fast in OpenSSL and Node crypto calls, causing runtime panics or silent fallback to weak encryption.
+- **Verification Suite**: `809/809` unit tests passed, `616` active AST rules, repo score `100/100` (`2188ms`)
