@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #100 — v3.5.335 (2026-11-08 18:31 UTC)
-- **New AST Shield**: `SLOP-402` (`no-compound-namespace-slopsquat-v402`, CWE-829) — `Compound Namespace Package Manifest Slopsquatting`
-- **Threat Model**: AI assistants synthesize plausible compound package names such as flask-bcrypt-auth or tokio-redis-pro that attackers register on PyPI/crates.io/npm for RCE.
-- **Verification Suite**: `595/595` unit tests passed, `402` active AST rules, repo score `100/100` (`2098ms`)
-
 ### Sprint #101 — v3.5.336 (2026-11-08 18:34 UTC)
 - **New AST Shield**: `SLOP-403` (`no-unvalidated-ssrf-redirect-chain-v403`, CWE-918) — `Unvalidated SSRF Host Interpolation & Redirect Bypass`
 - **Threat Model**: AI coding assistants interpolate user-controlled host variables directly into axios.get or requests.get URLs, enabling Server-Side Request Forgery against cloud metadata endpoints.
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-416` (`no-hallucinated-cipher-primitive-v416`, CWE-327) — `Hallucinated Non-Standard Cryptographic Cipher Names`
 - **Threat Model**: LLMs invent non-existent cipher strings such as aes-256-turbo or sha256-fast in OpenSSL and Node crypto calls, causing runtime panics or silent fallback to weak encryption.
 - **Verification Suite**: `609/609` unit tests passed, `416` active AST rules, repo score `100/100` (`2112ms`)
+
+### Sprint #14 — v3.5.350 (2026-11-09 12:25 UTC)
+- **New AST Shield**: `SLOP-417` (`no-shell-template-subprocess-exec-v417`, CWE-78) — `Formatted Shell String Subprocess Command Injection`
+- **Threat Model**: AI assistants pass formatted f-strings or template literals into subprocess.Popen(..., shell=True) and child_process.exec, allowing arbitrary shell command execution.
+- **Verification Suite**: `610/610` unit tests passed, `417` active AST rules, repo score `100/100` (`2290ms`)
