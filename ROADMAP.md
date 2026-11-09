@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #193 — v3.5.529 (2026-11-09 20:45 UTC)
-- **New AST Shield**: `SLOP-596` (`no-hallucinated-cipher-primitive-v596`, CWE-327) — `Hallucinated Non-Standard Cryptographic Cipher Names`
-- **Threat Model**: LLMs invent non-existent cipher strings such as aes-256-turbo or sha256-fast in OpenSSL and Node crypto calls, causing runtime panics or silent fallback to weak encryption.
-- **Verification Suite**: `789/789` unit tests passed, `596` active AST rules, repo score `100/100` (`2210ms`)
-
 ### Sprint #194 — v3.5.530 (2026-11-09 20:47 UTC)
 - **New AST Shield**: `SLOP-597` (`no-shell-template-subprocess-exec-v597`, CWE-78) — `Formatted Shell String Subprocess Command Injection`
 - **Threat Model**: AI assistants pass formatted f-strings or template literals into subprocess.Popen(..., shell=True) and child_process.exec, allowing arbitrary shell command execution.
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-610` (`no-unbounded-mpsc-queue-sprawl-v610`, CWE-400) — `Unbounded MPSC & Asyncio Queue Memory Exhaustion`
 - **Threat Model**: 1.  **Analyze the Request:** *   **Rule:** `unbounded-mpsc-queue-sprawl` (CWE-400) - Unbounded channels consume unbounded memory, leading to resource exhaustion. *   **Blocked Code:** `tokio::sync::mpsc::unbounded_channel::<Job>()` *   **Enforced Fix:** `tokio::sync::mpsc::channel::<Job>(1024)` (Bounded buffer). *   **Task:** Write exactly 2 technical senten
 - **Verification Suite**: `803/803` unit tests passed, `610` active AST rules, repo score `100/100` (`2020ms`)
+
+### Sprint #208 — v3.5.544 (2026-11-09 21:26 UTC)
+- **New AST Shield**: `SLOP-611` (`no-truncated-hex-entropy-keygen-v611`, CWE-326) — `Truncated Hex Slice & Weak PRNG Key Derivation`
+- **Threat Model**: 1.  **Analyze the Request:** *   **Rule:** `truncated-hex-entropy-keygen` (Truncated Hex Slice & Weak PRNG Key Derivation - CWE-326). *   **Blocked code:** `const aesKey = crypto.randomBytes(32).toString('hex').slice(0, 16);` (Creates a 32-byte random buffer, converts to hex string, truncates it to 16 hex chars (8 bytes), losing 75% of the entropy, and is vu
+- **Verification Suite**: `804/804` unit tests passed, `611` active AST rules, repo score `100/100` (`2039ms`)
