@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #95 — v3.5.330 (2026-11-08 18:12 UTC)
-- **New AST Shield**: `SLOP-397` (`no-loop-scoped-event-listener-leak-v397`, CWE-400) — `Unbounded Event Listener Registration Inside Loops`
-- **Threat Model**: 1.  **Analyze the Request:** *   **Rule:** `loop-scoped-event-listener-leak` (Unbounded Event Listener Registration Inside Loops) - CWE-400. *   **Blocked Code:** A `for` loop registering an event listener for each item in `items`. This causes a memory/event-emission leak because listeners accumulate without bound. *   **Enforced Fix:** Move the logic into a
-- **Verification Suite**: `590/590` unit tests passed, `397` active AST rules, repo score `100/100` (`2170ms`)
-
 ### Sprint #96 — v3.5.331 (2026-11-08 18:15 UTC)
 - **New AST Shield**: `SLOP-398` (`no-phantom-ai-sdk-slopsquatting-v398`, CWE-1357) — `Phantom AI SDK Wrapper Package Slopsquatting`
 - **Threat Model**: LLMs hallucinate plausible AI helper packages like @anthropic/tools-pro or openai-streaming-helper in package.json and requirements.txt, exposing builds to supply-chain hijacking.
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-411` (`no-truncated-hex-entropy-keygen-v411`, CWE-326) — `Truncated Hex Slice & Weak PRNG Key Derivation`
 - **Threat Model**: AI models frequently slice hex-encoded random bytes to 16 chars (reducing 128-bit entropy to 64 bits) or use Math.random().toString(36) for AES/JWT secret keys.
 - **Verification Suite**: `604/604` unit tests passed, `411` active AST rules, repo score `100/100` (`2111ms`)
+
+### Sprint #9 — v3.5.345 (2026-11-09 12:10 UTC)
+- **New AST Shield**: `SLOP-412` (`no-async-iterator-unclosed-break-v412`, CWE-775) — `Async Generator Break Without Stream Disposal`
+- **Threat Model**: Breaking out of a for-await-of stream loop without a try/finally block or stream.destroy() leaks underlying file descriptors and database cursors.
+- **Verification Suite**: `605/605` unit tests passed, `412` active AST rules, repo score `100/100` (`2195ms`)
