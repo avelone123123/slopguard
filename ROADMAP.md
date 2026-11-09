@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #161 — v3.5.497 (2026-11-09 19:13 UTC)
-- **New AST Shield**: `SLOP-564` (`no-unvalidated-ssrf-redirect-chain-v564`, CWE-918) — `Unvalidated SSRF Host Interpolation & Redirect Bypass`
-- **Threat Model**: We need to write exactly 2 technical sentences for a senior security engineer explaining why AI models hallucinate this pattern (SSRF via unvalidated host interpolation in redirect chain, CWE-918) and how SlopGuard's AST firewall blocks it in <0.35ms. Output ONLY the two sentences, no intro. The blocked code: const res = await axios.get(`https://${req.query.
-- **Verification Suite**: `757/757` unit tests passed, `564` active AST rules, repo score `100/100` (`2026ms`)
-
 ### Sprint #162 — v3.5.498 (2026-11-09 19:16 UTC)
 - **New AST Shield**: `SLOP-565` (`no-non-atomic-toctou-fs-mutation-v565`, CWE-367) — `Non-Atomic TOCTOU File Existence Check Before Write`
 - **Threat Model**: 1.  **Analyze the Request:** *   **Rule/Vulnerability:** Non-Atomic TOCTOU (Time of Check to Time of Use) File Existence Check Before Write (CWE-367). Checking if a file exists, then writing to it leaves a race condition window where another process might create the file or overwrite it, leading to security issues (e.g., path traversal overwriting critical f
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-578` (`no-loop-scoped-event-listener-leak-v578`, CWE-400) — `Unbounded Event Listener Registration Inside Loops`
 - **Threat Model**: AI-generated stream handlers attach emitter.on('data', ...) inside for/while loops without cleanup, exhausting V8 heap memory and triggering MaxListenersExceededWarning.
 - **Verification Suite**: `771/771` unit tests passed, `578` active AST rules, repo score `100/100` (`2037ms`)
+
+### Sprint #176 — v3.5.512 (2026-11-09 19:56 UTC)
+- **New AST Shield**: `SLOP-579` (`no-phantom-ai-sdk-slopsquatting-v579`, CWE-1357) — `Phantom AI SDK Wrapper Package Slopsquatting`
+- **Threat Model**: LLMs hallucinate plausible AI helper packages like @anthropic/tools-pro or openai-streaming-helper in package.json and requirements.txt, exposing builds to supply-chain hijacking.
+- **Verification Suite**: `772/772` unit tests passed, `579` active AST rules, repo score `100/100` (`2100ms`)
