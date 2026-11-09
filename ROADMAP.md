@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #165 — v3.5.501 (2026-11-09 19:25 UTC)
-- **New AST Shield**: `SLOP-568` (`no-loop-scoped-event-listener-leak-v568`, CWE-400) — `Unbounded Event Listener Registration Inside Loops`
-- **Threat Model**: 1.  **Analyze the Request:** *   **Rule:** `loop-scoped-event-listener-leak` (Unbounded Event Listener Registration Inside Loops) - CWE-400. *   **Blocked Code:** `for (const chunk of items) { socket.on('data', (buf) => handle(buf)); }` *   **Enforced Fix:** `socket.on('data', (buf) => handleBatch(buf));` *   **Task:** Write exactly 2 technical sentences for
-- **Verification Suite**: `761/761` unit tests passed, `568` active AST rules, repo score `100/100` (`2071ms`)
-
 ### Sprint #166 — v3.5.502 (2026-11-09 19:28 UTC)
 - **New AST Shield**: `SLOP-569` (`no-phantom-ai-sdk-slopsquatting-v569`, CWE-1357) — `Phantom AI SDK Wrapper Package Slopsquatting`
 - **Threat Model**: LLMs hallucinate plausible AI helper packages like @anthropic/tools-pro or openai-streaming-helper in package.json and requirements.txt, exposing builds to supply-chain hijacking.
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-582` (`no-async-iterator-unclosed-break-v582`, CWE-775) — `Async Generator Break Without Stream Disposal`
 - **Threat Model**: Breaking out of a for-await-of stream loop without a try/finally block or stream.destroy() leaks underlying file descriptors and database cursors.
 - **Verification Suite**: `775/775` unit tests passed, `582` active AST rules, repo score `100/100` (`2892ms`)
+
+### Sprint #180 — v3.5.516 (2026-11-09 20:07 UTC)
+- **New AST Shield**: `SLOP-583` (`no-compound-namespace-slopsquat-v583`, CWE-829) — `Compound Namespace Package Manifest Slopsquatting`
+- **Threat Model**: 1.  **Analyze the Request:** *   **Rule/Context:** "compound-namespace-slopsquat" (Compound Namespace Package Manifest Slopsquatting, CWE-829). This refers to a specific vulnerability/attack where malicious package names mimic legitimate ones to trick developers into installing them. *   **Blocked code:** `flask-bcrypt-auth>=1.0` (mimics `flask-bcrypt`, pote
+- **Verification Suite**: `776/776` unit tests passed, `583` active AST rules, repo score `100/100` (`2227ms`)
