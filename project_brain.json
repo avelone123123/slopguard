@@ -23,10 +23,10 @@
     "Mandatory markdown (.md) synchronization on every change by Scribe."
   ],
   "current_metrics": {
-    "version": "3.5.357",
-    "tests_count": 617,
+    "version": "3.5.358",
+    "tests_count": 618,
     "tests_pass_rate": "100%",
-    "firewalls_count": 424
+    "firewalls_count": 425
   },
   "architecture_knowledge": {
     "core_crates": [
@@ -1887,6 +1887,11 @@
       "cycle": 20,
       "version": "3.5.356",
       "deliverables": "Sprint 20: Web Playground, Live Audits & Interactive UX (423 rules, 616 tests)"
+    },
+    {
+      "cycle": 21,
+      "version": "3.5.357",
+      "deliverables": "Sprint 21: Documentation Synchronization & Multi-Language (424 rules, 617 tests)"
     }
   ]
 }

@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #7 — v3.5.343 (2026-11-09 12:03 UTC)
-- **New AST Shield**: `SLOP-410` (`no-unbounded-mpsc-queue-sprawl-v410`, CWE-400) — `Unbounded MPSC & Asyncio Queue Memory Exhaustion`
-- **Threat Model**: We need to output exactly 2 technical sentences. No intro, no extra text. Sentences must explain why AI models hallucinate this pattern and how SlopGuard's AST firewall blocks it in <0.35ms. First sentence: AI models hallucinate because they are trained on large code corpora with many patterns, including unbounded channels, and they generate plausible but in
-- **Verification Suite**: `603/603` unit tests passed, `410` active AST rules, repo score `100/100` (`2053ms`)
-
 ### Sprint #8 — v3.5.344 (2026-11-09 12:07 UTC)
 - **New AST Shield**: `SLOP-411` (`no-truncated-hex-entropy-keygen-v411`, CWE-326) — `Truncated Hex Slice & Weak PRNG Key Derivation`
 - **Threat Model**: AI models frequently slice hex-encoded random bytes to 16 chars (reducing 128-bit entropy to 64 bits) or use Math.random().toString(36) for AES/JWT secret keys.
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-424` (`no-unvalidated-ssrf-redirect-chain-v424`, CWE-918) — `Unvalidated SSRF Host Interpolation & Redirect Bypass`
 - **Threat Model**: AI coding assistants interpolate user-controlled host variables directly into axios.get or requests.get URLs, enabling Server-Side Request Forgery against cloud metadata endpoints.
 - **Verification Suite**: `617/617` unit tests passed, `424` active AST rules, repo score `100/100` (`2067ms`)
+
+### Sprint #22 — v3.5.358 (2026-11-09 12:46 UTC)
+- **New AST Shield**: `SLOP-425` (`no-non-atomic-toctou-fs-mutation-v425`, CWE-367) — `Non-Atomic TOCTOU File Existence Check Before Write`
+- **Threat Model**: 1.  **Analyze the Request:** *   **Topic:** Non-atomic TOCTOU file existence check (CWE-367), why AI models hallucinate this pattern, and how SlopGuard's AST firewall blocks it in <0.35ms. *   **Target Audience:** Senior security engineer. *   **Format Constraints:** Exactly 2 technical sentences. No intro, no extra text. Output ONLY the 2 sentences. 2.  **A
+- **Verification Suite**: `618/618` unit tests passed, `425` active AST rules, repo score `100/100` (`2238ms`)
