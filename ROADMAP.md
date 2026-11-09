@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #61 — v3.5.397 (2026-11-09 14:40 UTC)
-- **New AST Shield**: `SLOP-464` (`no-unvalidated-ssrf-redirect-chain-v464`, CWE-918) — `Unvalidated SSRF Host Interpolation & Redirect Bypass`
-- **Threat Model**: AI coding assistants interpolate user-controlled host variables directly into axios.get or requests.get URLs, enabling Server-Side Request Forgery against cloud metadata endpoints.
-- **Verification Suite**: `657/657` unit tests passed, `464` active AST rules, repo score `100/100` (`2067ms`)
-
 ### Sprint #62 — v3.5.398 (2026-11-09 14:43 UTC)
 - **New AST Shield**: `SLOP-465` (`no-non-atomic-toctou-fs-mutation-v465`, CWE-367) — `Non-Atomic TOCTOU File Existence Check Before Write`
 - **Threat Model**: AI models routinely generate fs.existsSync(p) followed by fs.writeFileSync(p), creating a CWE-367 Time-of-Check Time-of-Use race window exploitable via symlink swapping.
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-478` (`no-loop-scoped-event-listener-leak-v478`, CWE-400) — `Unbounded Event Listener Registration Inside Loops`
 - **Threat Model**: 1.  **Analyze the Request:** *   **Rule:** loop-scoped-event-listener-leak (Unbounded Event Listener Registration Inside Loops) - CWE-400. *   **Blocked Code:** `for (const chunk of items) { socket.on('data', (buf) => handle(buf)); }` *   **Enforced Fix:** `socket.on('data', (buf) => handleBatch(buf));` *   **Role/Task:** Write exactly 2 technical sentences 
 - **Verification Suite**: `671/671` unit tests passed, `478` active AST rules, repo score `100/100` (`2049ms`)
+
+### Sprint #76 — v3.5.412 (2026-11-09 15:21 UTC)
+- **New AST Shield**: `SLOP-479` (`no-phantom-ai-sdk-slopsquatting-v479`, CWE-1357) — `Phantom AI SDK Wrapper Package Slopsquatting`
+- **Threat Model**: LLMs hallucinate plausible AI helper packages like @anthropic/tools-pro or openai-streaming-helper in package.json and requirements.txt, exposing builds to supply-chain hijacking.
+- **Verification Suite**: `672/672` unit tests passed, `479` active AST rules, repo score `100/100` (`2087ms`)
