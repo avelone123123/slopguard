@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #120 — v3.5.456 (2026-11-09 17:14 UTC)
-- **New AST Shield**: `SLOP-523` (`no-compound-namespace-slopsquat-v523`, CWE-829) — `Compound Namespace Package Manifest Slopsquatting`
-- **Threat Model**: AI assistants synthesize plausible compound package names such as flask-bcrypt-auth or tokio-redis-pro that attackers register on PyPI/crates.io/npm for RCE.
-- **Verification Suite**: `716/716` unit tests passed, `523` active AST rules, repo score `100/100` (`2014ms`)
-
 ### Sprint #121 — v3.5.457 (2026-11-09 17:18 UTC)
 - **New AST Shield**: `SLOP-524` (`no-unvalidated-ssrf-redirect-chain-v524`, CWE-918) — `Unvalidated SSRF Host Interpolation & Redirect Bypass`
 - **Threat Model**: AI coding assistants interpolate user-controlled host variables directly into axios.get or requests.get URLs, enabling Server-Side Request Forgery against cloud metadata endpoints.
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-537` (`no-shell-template-subprocess-exec-v537`, CWE-78) — `Formatted Shell String Subprocess Command Injection`
 - **Threat Model**: AI assistants pass formatted f-strings or template literals into subprocess.Popen(..., shell=True) and child_process.exec, allowing arbitrary shell command execution.
 - **Verification Suite**: `730/730` unit tests passed, `537` active AST rules, repo score `100/100` (`2010ms`)
+
+### Sprint #135 — v3.5.471 (2026-11-09 17:58 UTC)
+- **New AST Shield**: `SLOP-538` (`no-loop-scoped-event-listener-leak-v538`, CWE-400) — `Unbounded Event Listener Registration Inside Loops`
+- **Threat Model**: AI-generated stream handlers attach emitter.on('data', ...) inside for/while loops without cleanup, exhausting V8 heap memory and triggering MaxListenersExceededWarning.
+- **Verification Suite**: `731/731` unit tests passed, `538` active AST rules, repo score `100/100` (`2078ms`)
