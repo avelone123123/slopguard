@@ -7631,4 +7631,14 @@ assert!(!findings.is_empty());
 let safe_findings = crate::detectors::package_hallucinations::detect_compound_slopsquat_in_content("Cargo.toml", "[dependencies]\ntokio = \"1.0\"\n");
 assert_eq!(safe_findings.len(), 0);
 }
+#[test]
+fn test_council_slop_514_unvalidated_ssrf_redirect_chain() {
+let def = crate::detectors::AST_DETECTOR_DEFINITIONS.iter().find(|d| d.id == "SLOP-514").unwrap();
+assert_eq!(def.name, "no-unvalidated-ssrf-redirect-chain-v514");
+assert_eq!(def.cwe, "CWE-918");
+let findings = crate::detectors::command_injection::detect_speculative_ssrf_interpolation_in_content("client.js", "axios.get(`https://${targetHost}/api/data`)");
+assert!(!findings.is_empty());
+let safe_findings = crate::detectors::command_injection::detect_speculative_ssrf_interpolation_in_content("safe.js", "axios.get(\"https://api.verified.com/v1\")");
+assert_eq!(safe_findings.len(), 0);
+}
 }
