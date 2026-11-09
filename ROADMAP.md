@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #3 — v3.5.339 (2026-11-09 11:51 UTC)
-- **New AST Shield**: `SLOP-406` (`no-hallucinated-cipher-primitive-v406`, CWE-327) — `Hallucinated Non-Standard Cryptographic Cipher Names`
-- **Threat Model**: We need to output exactly 2 technical sentences. No intro. Must explain why AI models hallucinate this pattern and how SlopGuard's AST firewall blocks it in <0.35ms. Sentence 1: why AI models hallucinate pattern (they generate plausible but non-standard cipher names due to training data noise and token probability). Sentence 2: how SlopGuard's AST firewall b
-- **Verification Suite**: `599/599` unit tests passed, `406` active AST rules, repo score `100/100` (`2046ms`)
-
 ### Sprint #4 — v3.5.340 (2026-11-09 11:54 UTC)
 - **New AST Shield**: `SLOP-407` (`no-shell-template-subprocess-exec-v407`, CWE-78) — `Formatted Shell String Subprocess Command Injection`
 - **Threat Model**: We need to output exactly 2 technical sentences, no intro, no extra text. Sentences must explain why AI models hallucinate this pattern and how SlopGuard's AST firewall blocks it in <0.35ms. We must be concise, technical, 2 sentences. Ensure each sentence ends with a period. No extra spaces? Probably fine. First sentence: AI models hallucinate because they g
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-420` (`no-unbounded-mpsc-queue-sprawl-v420`, CWE-400) — `Unbounded MPSC & Asyncio Queue Memory Exhaustion`
 - **Threat Model**: AI concurrency scaffolding defaults to tokio::sync::mpsc::unbounded_channel() and unbuffered asyncio.Queue(), removing backpressure and causing OOM kills under traffic spikes.
 - **Verification Suite**: `613/613` unit tests passed, `420` active AST rules, repo score `100/100` (`2129ms`)
+
+### Sprint #18 — v3.5.354 (2026-11-09 12:35 UTC)
+- **New AST Shield**: `SLOP-421` (`no-truncated-hex-entropy-keygen-v421`, CWE-326) — `Truncated Hex Slice & Weak PRNG Key Derivation`
+- **Threat Model**: AI models frequently slice hex-encoded random bytes to 16 chars (reducing 128-bit entropy to 64 bits) or use Math.random().toString(36) for AES/JWT secret keys.
+- **Verification Suite**: `614/614` unit tests passed, `421` active AST rules, repo score `100/100` (`2258ms`)
