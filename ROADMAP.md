@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #184 — v3.5.520 (2026-11-09 20:17 UTC)
-- **New AST Shield**: `SLOP-587` (`no-shell-template-subprocess-exec-v587`, CWE-78) — `Formatted Shell String Subprocess Command Injection`
-- **Threat Model**: AI assistants pass formatted f-strings or template literals into subprocess.Popen(..., shell=True) and child_process.exec, allowing arbitrary shell command execution.
-- **Verification Suite**: `780/780` unit tests passed, `587` active AST rules, repo score `100/100` (`2381ms`)
-
 ### Sprint #185 — v3.5.521 (2026-11-09 20:21 UTC)
 - **New AST Shield**: `SLOP-588` (`no-loop-scoped-event-listener-leak-v588`, CWE-400) — `Unbounded Event Listener Registration Inside Loops`
 - **Threat Model**: 1.  **Analyze the Request:** *   **Rule:** loop-scoped-event-listener-leak (Unbounded Event Listener Registration Inside Loops, CWE-400). The "blocked code" registers an event listener inside a loop, causing a memory/listener leak. *   **Enforced fix:** Binds the handler to a batched function to avoid leaking listeners per iteration. *   **Task:** Write exac
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-601` (`no-truncated-hex-entropy-keygen-v601`, CWE-326) — `Truncated Hex Slice & Weak PRNG Key Derivation`
 - **Threat Model**: AI models frequently slice hex-encoded random bytes to 16 chars (reducing 128-bit entropy to 64 bits) or use Math.random().toString(36) for AES/JWT secret keys.
 - **Verification Suite**: `794/794` unit tests passed, `601` active AST rules, repo score `100/100` (`2059ms`)
+
+### Sprint #199 — v3.5.535 (2026-11-09 21:01 UTC)
+- **New AST Shield**: `SLOP-602` (`no-async-iterator-unclosed-break-v602`, CWE-775) — `Async Generator Break Without Stream Disposal`
+- **Threat Model**: Breaking out of a for-await-of stream loop without a try/finally block or stream.destroy() leaks underlying file descriptors and database cursors.
+- **Verification Suite**: `795/795` unit tests passed, `602` active AST rules, repo score `100/100` (`2029ms`)
