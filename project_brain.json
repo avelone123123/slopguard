@@ -34,6 +34,11 @@
       "cycle": 47,
       "version": "3.5.0",
       "deliverables": "Sprint 47: QA Benchmarking, Fuzzing & Regression Firewalls (66 rules, 259 tests)"
+    },
+    {
+      "cycle": 48,
+      "version": "3.5.0",
+      "deliverables": "Sprint 48: Community Intel, Issue Triage & IDE Plugins (66 rules, 259 tests)"
     }
   ],
   "current_metrics": {
