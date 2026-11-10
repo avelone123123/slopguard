@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #5 — v3.5.558 (2026-11-10 15:11 UTC)
-- **New AST Shield**: `SLOP-625` (`no-loop-scoped-event-listener-leak-v625`, CWE-400) — `Unbounded Event Listener Registration Inside Loops`
-- **Threat Model**: AI-generated stream handlers attach emitter.on('data', ...) inside for/while loops without cleanup, exhausting V8 heap memory and triggering MaxListenersExceededWarning.
-- **Verification Suite**: `818/818` unit tests passed, `625` active AST rules, repo score `100/100` (`2278ms`)
-
 ### Sprint #6 — v3.5.559 (2026-11-10 15:14 UTC)
 - **New AST Shield**: `SLOP-626` (`no-phantom-ai-sdk-slopsquatting-v626`, CWE-1357) — `Phantom AI SDK Wrapper Package Slopsquatting`
 - **Threat Model**: LLMs hallucinate plausible AI helper packages like @anthropic/tools-pro or openai-streaming-helper in package.json and requirements.txt, exposing builds to supply-chain hijacking.
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-639` (`no-async-iterator-unclosed-break-v639`, CWE-775) — `Async Generator Break Without Stream Disposal`
 - **Threat Model**: 1.  **Analyze the Request:** *   **Topic:** Explain why AI models hallucinate a specific async-iterator-unclosed-break pattern and how SlopGuard's AST firewall blocks it in <0.35ms. *   **Input Code:** ```javascript for await (const chunk of fileStream) { if (chunk.includes(EOF_MARKER)) break; } ``` *(Note: The prompt uses "Blocked code" and "Enforced fix" w
 - **Verification Suite**: `832/832` unit tests passed, `639` active AST rules, repo score `100/100` (`2197ms`)
+
+### Sprint #20 — v3.5.573 (2026-11-10 15:56 UTC)
+- **New AST Shield**: `SLOP-640` (`no-compound-namespace-slopsquat-v640`, CWE-829) — `Compound Namespace Package Manifest Slopsquatting`
+- **Threat Model**: AI assistants synthesize plausible compound package names such as flask-bcrypt-auth or tokio-redis-pro that attackers register on PyPI/crates.io/npm for RCE.
+- **Verification Suite**: `833/833` unit tests passed, `640` active AST rules, repo score `100/100` (`2154ms`)
