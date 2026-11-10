@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #207 — v3.5.543 (2026-11-09 21:23 UTC)
-- **New AST Shield**: `SLOP-610` (`no-unbounded-mpsc-queue-sprawl-v610`, CWE-400) — `Unbounded MPSC & Asyncio Queue Memory Exhaustion`
-- **Threat Model**: 1.  **Analyze the Request:** *   **Rule:** `unbounded-mpsc-queue-sprawl` (CWE-400) - Unbounded channels consume unbounded memory, leading to resource exhaustion. *   **Blocked Code:** `tokio::sync::mpsc::unbounded_channel::<Job>()` *   **Enforced Fix:** `tokio::sync::mpsc::channel::<Job>(1024)` (Bounded buffer). *   **Task:** Write exactly 2 technical senten
-- **Verification Suite**: `803/803` unit tests passed, `610` active AST rules, repo score `100/100` (`2020ms`)
-
 ### Sprint #208 — v3.5.544 (2026-11-09 21:26 UTC)
 - **New AST Shield**: `SLOP-611` (`no-truncated-hex-entropy-keygen-v611`, CWE-326) — `Truncated Hex Slice & Weak PRNG Key Derivation`
 - **Threat Model**: 1.  **Analyze the Request:** *   **Rule:** `truncated-hex-entropy-keygen` (Truncated Hex Slice & Weak PRNG Key Derivation - CWE-326). *   **Blocked code:** `const aesKey = crypto.randomBytes(32).toString('hex').slice(0, 16);` (Creates a 32-byte random buffer, converts to hex string, truncates it to 16 hex chars (8 bytes), losing 75% of the entropy, and is vu
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-624` (`no-shell-template-subprocess-exec-v624`, CWE-78) — `Formatted Shell String Subprocess Command Injection`
 - **Threat Model**: AI assistants pass formatted f-strings or template literals into subprocess.Popen(..., shell=True) and child_process.exec, allowing arbitrary shell command execution.
 - **Verification Suite**: `817/817` unit tests passed, `624` active AST rules, repo score `100/100` (`2250ms`)
+
+### Sprint #5 — v3.5.558 (2026-11-10 15:11 UTC)
+- **New AST Shield**: `SLOP-625` (`no-loop-scoped-event-listener-leak-v625`, CWE-400) — `Unbounded Event Listener Registration Inside Loops`
+- **Threat Model**: AI-generated stream handlers attach emitter.on('data', ...) inside for/while loops without cleanup, exhausting V8 heap memory and triggering MaxListenersExceededWarning.
+- **Verification Suite**: `818/818` unit tests passed, `625` active AST rules, repo score `100/100` (`2278ms`)
