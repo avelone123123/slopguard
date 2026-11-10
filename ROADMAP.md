@@ -1,9 +1,4 @@
 ## Autonomous Council Verification Log
-### Sprint #44 — v3.5.0 (2026-11-10 17:38 UTC)
-- **New AST Shield**: `SLOP-067` (`no-shell-template-subprocess-exec-v67`, CWE-78) — `Formatted Shell String Subprocess Command Injection`
-- **Threat Model**: AI assistants pass formatted f-strings or template literals into subprocess.Popen(..., shell=True) and child_process.exec, allowing arbitrary shell command execution.
-- **Verification Suite**: `259/259` unit tests passed, `66` active AST rules, repo score `100/100` (`2461ms`)
-
 ### Sprint #45 — v3.5.0 (2026-11-10 17:41 UTC)
 - **New AST Shield**: `SLOP-067` (`no-loop-scoped-event-listener-leak-v67`, CWE-400) — `Unbounded Event Listener Registration Inside Loops`
 - **Threat Model**: AI-generated stream handlers attach emitter.on('data', ...) inside for/while loops without cleanup, exhausting V8 heap memory and triggering MaxListenersExceededWarning.
@@ -73,3 +68,8 @@
 - **New AST Shield**: `SLOP-067` (`no-truncated-hex-entropy-keygen-v67`, CWE-326) — `Truncated Hex Slice & Weak PRNG Key Derivation`
 - **Threat Model**: 1.  **Analyze the Request:** *   **Rule/Topic:** `truncated-hex-entropy-keygen` (CWE-326). *   **Blocked Code:** `const aesKey = crypto.randomBytes(32).toString('hex').slice(0, 16);` (Lowers 32 bytes of entropy to 64 bits / 16 hex chars). *   **Enforced Fix:** `const aesKey = crypto.randomBytes(32);` (Uses full raw byte entropy). *   **Task:** Write exactly 
 - **Verification Suite**: `259/259` unit tests passed, `66` active AST rules, repo score `100/100` (`2018ms`)
+
+### Sprint #59 — v3.5.0 (2026-11-10 18:19 UTC)
+- **New AST Shield**: `SLOP-067` (`no-async-iterator-unclosed-break-v67`, CWE-775) — `Async Generator Break Without Stream Disposal`
+- **Threat Model**: Breaking out of a for-await-of stream loop without a try/finally block or stream.destroy() leaks underlying file descriptors and database cursors.
+- **Verification Suite**: `259/259` unit tests passed, `66` active AST rules, repo score `100/100` (`2134ms`)
