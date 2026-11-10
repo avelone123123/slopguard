@@ -18,3 +18,8 @@
 - **New AST Shield**: `SLOP-067` (`no-shell-template-subprocess-exec-v67`, CWE-78) — `Formatted Shell String Subprocess Command Injection`
 - **Threat Model**: AI assistants pass formatted f-strings or template literals into subprocess.Popen(..., shell=True) and child_process.exec, allowing arbitrary shell command execution.
 - **Verification Suite**: `259/259` unit tests passed, `66` active AST rules, repo score `100/100` (`2461ms`)
+
+### Sprint #45 — v3.5.0 (2026-11-10 17:41 UTC)
+- **New AST Shield**: `SLOP-067` (`no-loop-scoped-event-listener-leak-v67`, CWE-400) — `Unbounded Event Listener Registration Inside Loops`
+- **Threat Model**: AI-generated stream handlers attach emitter.on('data', ...) inside for/while loops without cleanup, exhausting V8 heap memory and triggering MaxListenersExceededWarning.
+- **Verification Suite**: `259/259` unit tests passed, `66` active AST rules, repo score `100/100` (`2213ms`)
