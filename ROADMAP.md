@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #217 — v3.5.553 (2026-11-09 21:51 UTC)
-- **New AST Shield**: `SLOP-620` (`no-unbounded-mpsc-queue-sprawl-v620`, CWE-400) — `Unbounded MPSC & Asyncio Queue Memory Exhaustion`
-- **Threat Model**: AI concurrency scaffolding defaults to tokio::sync::mpsc::unbounded_channel() and unbuffered asyncio.Queue(), removing backpressure and causing OOM kills under traffic spikes.
-- **Verification Suite**: `813/813` unit tests passed, `620` active AST rules, repo score `100/100` (`2957ms`)
-
 ### Sprint #1 — v3.5.554 (2026-11-10 14:58 UTC)
 - **New AST Shield**: `SLOP-621` (`no-unvalidated-ssrf-redirect-chain-v621`, CWE-918) — `Unvalidated SSRF Host Interpolation & Redirect Bypass`
 - **Threat Model**: AI coding assistants interpolate user-controlled host variables directly into axios.get or requests.get URLs, enabling Server-Side Request Forgery against cloud metadata endpoints.
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-634` (`no-shell-template-subprocess-exec-v634`, CWE-78) — `Formatted Shell String Subprocess Command Injection`
 - **Threat Model**: AI assistants pass formatted f-strings or template literals into subprocess.Popen(..., shell=True) and child_process.exec, allowing arbitrary shell command execution.
 - **Verification Suite**: `827/827` unit tests passed, `634` active AST rules, repo score `100/100` (`3071ms`)
+
+### Sprint #15 — v3.5.568 (2026-11-10 15:41 UTC)
+- **New AST Shield**: `SLOP-635` (`no-loop-scoped-event-listener-leak-v635`, CWE-400) — `Unbounded Event Listener Registration Inside Loops`
+- **Threat Model**: AI-generated stream handlers attach emitter.on('data', ...) inside for/while loops without cleanup, exhausting V8 heap memory and triggering MaxListenersExceededWarning.
+- **Verification Suite**: `828/828` unit tests passed, `635` active AST rules, repo score `100/100` (`2192ms`)
