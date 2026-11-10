@@ -1,5 +1,10 @@
 # Changelog
 All notable changes to SlopGuard are documented in this file.
+## [3.5.585] - 2026-11-10
+### Added
+- Expanded AST Firewall Matrix to 652 Active Shields: Added `SLOP-652` (`no-non-atomic-toctou-fs-mutation-v652`, CWE-367) — Non-atomic file existence check prior to destructive file write.
+- Scaled Deterministic Test Battery: Verified 845/845 passing unit tests (100% pass rate, 0 warnings).
+- Threat Interception: 1.  **Analyze the Request:** *   **Rule:** Non-Atomic TOCTOU File Existence Check Before Write (CWE-367). *   **Blocked Code:** `if (fs.existsSync(uploadPath)) { fs.writeFileSync(uploadPath, payload); }` (Check-then-act race condition). *   **Enforced Fix:** `fs.writeFileSync(uploadPath, payload, { flag: 'wx' });` (O_EXCL flag ensures atomic creation, failin
 ## [3.5.584] - 2026-11-10
 ### Added
 - Expanded AST Firewall Matrix to 651 Active Shields: Added `SLOP-651` (`no-unvalidated-ssrf-redirect-chain-v651`, CWE-918) — Unvalidated dynamic host interpolation in outbound HTTP client requests.
