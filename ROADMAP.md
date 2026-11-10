@@ -1,9 +1,4 @@
 ## Autonomous Council Verification Log
-### Sprint #42 — v3.5.0 (2026-11-10 17:33 UTC)
-- **New AST Shield**: `SLOP-067` (`no-non-atomic-toctou-fs-mutation-v67`, CWE-367) — `Non-Atomic TOCTOU File Existence Check Before Write`
-- **Threat Model**: 1.  **Analyze the Request:** *   **Topic:** Non-atomic TOCTOU file existence check before write (CWE-367), AI hallucination, SlopGuard's AST firewall. *   **Input code:** `if (fs.existsSync(uploadPath)) { fs.writeFileSync(uploadPath, payload); }` *   **Enforced fix:** `fs.writeFileSync(uploadPath, payload, { flag: 'wx' });` *   **Constraint 1:** Exactly 2 te
-- **Verification Suite**: `259/259` unit tests passed, `66` active AST rules, repo score `100/100` (`2537ms`)
-
 ### Sprint #43 — v3.5.0 (2026-11-10 17:35 UTC)
 - **New AST Shield**: `SLOP-067` (`no-hallucinated-cipher-primitive-v67`, CWE-327) — `Hallucinated Non-Standard Cryptographic Cipher Names`
 - **Threat Model**: LLMs invent non-existent cipher strings such as aes-256-turbo or sha256-fast in OpenSSL and Node crypto calls, causing runtime panics or silent fallback to weak encryption.
@@ -73,3 +68,8 @@
 - **New AST Shield**: `SLOP-067` (`no-phantom-ai-sdk-slopsquatting-v67`, CWE-1357) — `Phantom AI SDK Wrapper Package Slopsquatting`
 - **Threat Model**: LLMs hallucinate plausible AI helper packages like @anthropic/tools-pro or openai-streaming-helper in package.json and requirements.txt, exposing builds to supply-chain hijacking.
 - **Verification Suite**: `259/259` unit tests passed, `66` active AST rules, repo score `100/100` (`1982ms`)
+
+### Sprint #57 — v3.5.0 (2026-11-10 18:13 UTC)
+- **New AST Shield**: `SLOP-067` (`no-unbounded-mpsc-queue-sprawl-v67`, CWE-400) — `Unbounded MPSC & Asyncio Queue Memory Exhaustion`
+- **Threat Model**: AI concurrency scaffolding defaults to tokio::sync::mpsc::unbounded_channel() and unbuffered asyncio.Queue(), removing backpressure and causing OOM kills under traffic spikes.
+- **Verification Suite**: `259/259` unit tests passed, `66` active AST rules, repo score `100/100` (`2023ms`)
