@@ -8701,4 +8701,14 @@ assert!(!findings.is_empty());
 let safe_findings = crate::detectors::unbounded_concurrency::detect_unbounded_channel_sprawl_in_content("safe.rs", "let (tx, rx) = tokio::sync::mpsc::channel(1024);");
 assert_eq!(safe_findings.len(), 0);
 }
+#[test]
+fn test_council_slop_621_unvalidated_ssrf_redirect_chain() {
+let def = crate::detectors::AST_DETECTOR_DEFINITIONS.iter().find(|d| d.id == "SLOP-621").unwrap();
+assert_eq!(def.name, "no-unvalidated-ssrf-redirect-chain-v621");
+assert_eq!(def.cwe, "CWE-918");
+let findings = crate::detectors::command_injection::detect_speculative_ssrf_interpolation_in_content("client.js", "axios.get(`https://${targetHost}/api/data`)");
+assert!(!findings.is_empty());
+let safe_findings = crate::detectors::command_injection::detect_speculative_ssrf_interpolation_in_content("safe.js", "axios.get(\"https://api.verified.com/v1\")");
+assert_eq!(safe_findings.len(), 0);
+}
 }
