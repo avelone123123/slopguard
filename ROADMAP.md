@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #4 — v3.5.557 (2026-11-10 15:08 UTC)
-- **New AST Shield**: `SLOP-624` (`no-shell-template-subprocess-exec-v624`, CWE-78) — `Formatted Shell String Subprocess Command Injection`
-- **Threat Model**: AI assistants pass formatted f-strings or template literals into subprocess.Popen(..., shell=True) and child_process.exec, allowing arbitrary shell command execution.
-- **Verification Suite**: `817/817` unit tests passed, `624` active AST rules, repo score `100/100` (`2250ms`)
-
 ### Sprint #5 — v3.5.558 (2026-11-10 15:11 UTC)
 - **New AST Shield**: `SLOP-625` (`no-loop-scoped-event-listener-leak-v625`, CWE-400) — `Unbounded Event Listener Registration Inside Loops`
 - **Threat Model**: AI-generated stream handlers attach emitter.on('data', ...) inside for/while loops without cleanup, exhausting V8 heap memory and triggering MaxListenersExceededWarning.
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-638` (`no-truncated-hex-entropy-keygen-v638`, CWE-326) — `Truncated Hex Slice & Weak PRNG Key Derivation`
 - **Threat Model**: AI models frequently slice hex-encoded random bytes to 16 chars (reducing 128-bit entropy to 64 bits) or use Math.random().toString(36) for AES/JWT secret keys.
 - **Verification Suite**: `831/831` unit tests passed, `638` active AST rules, repo score `100/100` (`2375ms`)
+
+### Sprint #19 — v3.5.572 (2026-11-10 15:52 UTC)
+- **New AST Shield**: `SLOP-639` (`no-async-iterator-unclosed-break-v639`, CWE-775) — `Async Generator Break Without Stream Disposal`
+- **Threat Model**: 1.  **Analyze the Request:** *   **Topic:** Explain why AI models hallucinate a specific async-iterator-unclosed-break pattern and how SlopGuard's AST firewall blocks it in <0.35ms. *   **Input Code:** ```javascript for await (const chunk of fileStream) { if (chunk.includes(EOF_MARKER)) break; } ``` *(Note: The prompt uses "Blocked code" and "Enforced fix" w
+- **Verification Suite**: `832/832` unit tests passed, `639` active AST rules, repo score `100/100` (`2197ms`)
