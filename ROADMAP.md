@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #215 — v3.5.551 (2026-11-09 21:46 UTC)
-- **New AST Shield**: `SLOP-618` (`no-loop-scoped-event-listener-leak-v618`, CWE-400) — `Unbounded Event Listener Registration Inside Loops`
-- **Threat Model**: AI-generated stream handlers attach emitter.on('data', ...) inside for/while loops without cleanup, exhausting V8 heap memory and triggering MaxListenersExceededWarning.
-- **Verification Suite**: `811/811` unit tests passed, `618` active AST rules, repo score `100/100` (`2177ms`)
-
 ### Sprint #216 — v3.5.552 (2026-11-09 21:49 UTC)
 - **New AST Shield**: `SLOP-619` (`no-phantom-ai-sdk-slopsquatting-v619`, CWE-1357) — `Phantom AI SDK Wrapper Package Slopsquatting`
 - **Threat Model**: LLMs hallucinate plausible AI helper packages like @anthropic/tools-pro or openai-streaming-helper in package.json and requirements.txt, exposing builds to supply-chain hijacking.
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-632` (`no-non-atomic-toctou-fs-mutation-v632`, CWE-367) — `Non-Atomic TOCTOU File Existence Check Before Write`
 - **Threat Model**: AI models routinely generate fs.existsSync(p) followed by fs.writeFileSync(p), creating a CWE-367 Time-of-Check Time-of-Use race window exploitable via symlink swapping.
 - **Verification Suite**: `825/825` unit tests passed, `632` active AST rules, repo score `100/100` (`2520ms`)
+
+### Sprint #13 — v3.5.566 (2026-11-10 15:34 UTC)
+- **New AST Shield**: `SLOP-633` (`no-hallucinated-cipher-primitive-v633`, CWE-327) — `Hallucinated Non-Standard Cryptographic Cipher Names`
+- **Threat Model**: LLMs invent non-existent cipher strings such as aes-256-turbo or sha256-fast in OpenSSL and Node crypto calls, causing runtime panics or silent fallback to weak encryption.
+- **Verification Suite**: `826/826` unit tests passed, `633` active AST rules, repo score `100/100` (`2198ms`)
