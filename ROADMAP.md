@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #208 — v3.5.544 (2026-11-09 21:26 UTC)
-- **New AST Shield**: `SLOP-611` (`no-truncated-hex-entropy-keygen-v611`, CWE-326) — `Truncated Hex Slice & Weak PRNG Key Derivation`
-- **Threat Model**: 1.  **Analyze the Request:** *   **Rule:** `truncated-hex-entropy-keygen` (Truncated Hex Slice & Weak PRNG Key Derivation - CWE-326). *   **Blocked code:** `const aesKey = crypto.randomBytes(32).toString('hex').slice(0, 16);` (Creates a 32-byte random buffer, converts to hex string, truncates it to 16 hex chars (8 bytes), losing 75% of the entropy, and is vu
-- **Verification Suite**: `804/804` unit tests passed, `611` active AST rules, repo score `100/100` (`2039ms`)
-
 ### Sprint #209 — v3.5.545 (2026-11-09 21:29 UTC)
 - **New AST Shield**: `SLOP-612` (`no-async-iterator-unclosed-break-v612`, CWE-775) — `Async Generator Break Without Stream Disposal`
 - **Threat Model**: Breaking out of a for-await-of stream loop without a try/finally block or stream.destroy() leaks underlying file descriptors and database cursors.
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-625` (`no-loop-scoped-event-listener-leak-v625`, CWE-400) — `Unbounded Event Listener Registration Inside Loops`
 - **Threat Model**: AI-generated stream handlers attach emitter.on('data', ...) inside for/while loops without cleanup, exhausting V8 heap memory and triggering MaxListenersExceededWarning.
 - **Verification Suite**: `818/818` unit tests passed, `625` active AST rules, repo score `100/100` (`2278ms`)
+
+### Sprint #6 — v3.5.559 (2026-11-10 15:14 UTC)
+- **New AST Shield**: `SLOP-626` (`no-phantom-ai-sdk-slopsquatting-v626`, CWE-1357) — `Phantom AI SDK Wrapper Package Slopsquatting`
+- **Threat Model**: LLMs hallucinate plausible AI helper packages like @anthropic/tools-pro or openai-streaming-helper in package.json and requirements.txt, exposing builds to supply-chain hijacking.
+- **Verification Suite**: `819/819` unit tests passed, `626` active AST rules, repo score `100/100` (`2124ms`)
