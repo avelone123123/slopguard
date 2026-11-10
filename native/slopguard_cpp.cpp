@@ -532,7 +532,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE, PWSTR, int nCmdShow) {
     g_state.errors = 0;
     g_state.warnings = 0;
     g_state.activeRules = 658;
-    g_state.passedTests = 851;
+    g_state.passedTests = 259;
     g_state.activeTab = 1;
     g_state.selectedRow = 0;
     g_state.scrollOffset = 0;
