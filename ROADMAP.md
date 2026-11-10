@@ -1,9 +1,4 @@
 ## Autonomous Council Verification Log
-### Sprint #52 — v3.5.0 (2026-11-10 18:00 UTC)
-- **New AST Shield**: `SLOP-067` (`no-non-atomic-toctou-fs-mutation-v67`, CWE-367) — `Non-Atomic TOCTOU File Existence Check Before Write`
-- **Threat Model**: AI models routinely generate fs.existsSync(p) followed by fs.writeFileSync(p), creating a CWE-367 Time-of-Check Time-of-Use race window exploitable via symlink swapping.
-- **Verification Suite**: `259/259` unit tests passed, `66` active AST rules, repo score `100/100` (`2065ms`)
-
 ### Sprint #53 — v3.5.0 (2026-11-10 18:03 UTC)
 - **New AST Shield**: `SLOP-067` (`no-hallucinated-cipher-primitive-v67`, CWE-327) — `Hallucinated Non-Standard Cryptographic Cipher Names`
 - **Threat Model**: LLMs invent non-existent cipher strings such as aes-256-turbo or sha256-fast in OpenSSL and Node crypto calls, causing runtime panics or silent fallback to weak encryption.
@@ -73,3 +68,8 @@
 - **New AST Shield**: `SLOP-067` (`no-loop-scoped-event-listener-leak-v67`, CWE-400) — `Unbounded Event Listener Registration Inside Loops`
 - **Threat Model**: AI-generated stream handlers attach emitter.on('data', ...) inside for/while loops without cleanup, exhausting V8 heap memory and triggering MaxListenersExceededWarning.
 - **Verification Suite**: `259/259` unit tests passed, `66` active AST rules, repo score `100/100` (`3086ms`)
+
+### Sprint #66 — v3.5.0 (2026-11-10 18:38 UTC)
+- **New AST Shield**: `SLOP-067` (`no-phantom-ai-sdk-slopsquatting-v67`, CWE-1357) — `Phantom AI SDK Wrapper Package Slopsquatting`
+- **Threat Model**: LLMs hallucinate plausible AI helper packages like @anthropic/tools-pro or openai-streaming-helper in package.json and requirements.txt, exposing builds to supply-chain hijacking.
+- **Verification Suite**: `259/259` unit tests passed, `66` active AST rules, repo score `100/100` (`3259ms`)
