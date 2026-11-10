@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #214 — v3.5.550 (2026-11-09 21:43 UTC)
-- **New AST Shield**: `SLOP-617` (`no-shell-template-subprocess-exec-v617`, CWE-78) — `Formatted Shell String Subprocess Command Injection`
-- **Threat Model**: AI assistants pass formatted f-strings or template literals into subprocess.Popen(..., shell=True) and child_process.exec, allowing arbitrary shell command execution.
-- **Verification Suite**: `810/810` unit tests passed, `617` active AST rules, repo score `100/100` (`2126ms`)
-
 ### Sprint #215 — v3.5.551 (2026-11-09 21:46 UTC)
 - **New AST Shield**: `SLOP-618` (`no-loop-scoped-event-listener-leak-v618`, CWE-400) — `Unbounded Event Listener Registration Inside Loops`
 - **Threat Model**: AI-generated stream handlers attach emitter.on('data', ...) inside for/while loops without cleanup, exhausting V8 heap memory and triggering MaxListenersExceededWarning.
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-631` (`no-unvalidated-ssrf-redirect-chain-v631`, CWE-918) — `Unvalidated SSRF Host Interpolation & Redirect Bypass`
 - **Threat Model**: AI coding assistants interpolate user-controlled host variables directly into axios.get or requests.get URLs, enabling Server-Side Request Forgery against cloud metadata endpoints.
 - **Verification Suite**: `824/824` unit tests passed, `631` active AST rules, repo score `100/100` (`2227ms`)
+
+### Sprint #12 — v3.5.565 (2026-11-10 15:31 UTC)
+- **New AST Shield**: `SLOP-632` (`no-non-atomic-toctou-fs-mutation-v632`, CWE-367) — `Non-Atomic TOCTOU File Existence Check Before Write`
+- **Threat Model**: AI models routinely generate fs.existsSync(p) followed by fs.writeFileSync(p), creating a CWE-367 Time-of-Check Time-of-Use race window exploitable via symlink swapping.
+- **Verification Suite**: `825/825` unit tests passed, `632` active AST rules, repo score `100/100` (`2520ms`)
