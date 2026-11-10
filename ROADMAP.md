@@ -33,11 +33,6 @@
 - [ ] WebAssembly in-browser playground for instant live audits.
 
 ## Autonomous Council Verification Log
-### Sprint #22 — v3.5.575 (2026-11-10 16:01 UTC)
-- **New AST Shield**: `SLOP-642` (`no-non-atomic-toctou-fs-mutation-v642`, CWE-367) — `Non-Atomic TOCTOU File Existence Check Before Write`
-- **Threat Model**: AI models routinely generate fs.existsSync(p) followed by fs.writeFileSync(p), creating a CWE-367 Time-of-Check Time-of-Use race window exploitable via symlink swapping.
-- **Verification Suite**: `835/835` unit tests passed, `642` active AST rules, repo score `100/100` (`2250ms`)
-
 ### Sprint #23 — v3.5.576 (2026-11-10 16:04 UTC)
 - **New AST Shield**: `SLOP-643` (`no-hallucinated-cipher-primitive-v643`, CWE-327) — `Hallucinated Non-Standard Cryptographic Cipher Names`
 - **Threat Model**: LLMs invent non-existent cipher strings such as aes-256-turbo or sha256-fast in OpenSSL and Node crypto calls, causing runtime panics or silent fallback to weak encryption.
@@ -107,3 +102,8 @@
 - **New AST Shield**: `SLOP-656` (`no-phantom-ai-sdk-slopsquatting-v656`, CWE-1357) — `Phantom AI SDK Wrapper Package Slopsquatting`
 - **Threat Model**: 1.  **Analyze the Request:** *   **Rule Context:** Phantom AI SDK Wrapper Package Slopsquatting (CWE-1357). This means an attacker names a malicious package exactly like a legitimate, highly popular package but uses slight spelling variations (slopsquatting) to trick developers into installing it, often leveraging typos in import statements or dependency res
 - **Verification Suite**: `849/849` unit tests passed, `656` active AST rules, repo score `100/100` (`2442ms`)
+
+### Sprint #37 — v3.5.590 (2026-11-10 16:44 UTC)
+- **New AST Shield**: `SLOP-657` (`no-unbounded-mpsc-queue-sprawl-v657`, CWE-400) — `Unbounded MPSC & Asyncio Queue Memory Exhaustion`
+- **Threat Model**: AI concurrency scaffolding defaults to tokio::sync::mpsc::unbounded_channel() and unbuffered asyncio.Queue(), removing backpressure and causing OOM kills under traffic spikes.
+- **Verification Suite**: `850/850` unit tests passed, `657` active AST rules, repo score `100/100` (`2340ms`)
