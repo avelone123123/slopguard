@@ -58,3 +58,8 @@
 - **New AST Shield**: `SLOP-067` (`no-non-atomic-toctou-fs-mutation-v67`, CWE-367) — `Non-Atomic TOCTOU File Existence Check Before Write`
 - **Threat Model**: AI models routinely generate fs.existsSync(p) followed by fs.writeFileSync(p), creating a CWE-367 Time-of-Check Time-of-Use race window exploitable via symlink swapping.
 - **Verification Suite**: `259/259` unit tests passed, `66` active AST rules, repo score `100/100` (`2065ms`)
+
+### Sprint #53 — v3.5.0 (2026-11-10 18:03 UTC)
+- **New AST Shield**: `SLOP-067` (`no-hallucinated-cipher-primitive-v67`, CWE-327) — `Hallucinated Non-Standard Cryptographic Cipher Names`
+- **Threat Model**: LLMs invent non-existent cipher strings such as aes-256-turbo or sha256-fast in OpenSSL and Node crypto calls, causing runtime panics or silent fallback to weak encryption.
+- **Verification Suite**: `259/259` unit tests passed, `66` active AST rules, repo score `100/100` (`2136ms`)
