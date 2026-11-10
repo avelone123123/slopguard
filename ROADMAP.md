@@ -1,9 +1,4 @@
 ## Autonomous Council Verification Log
-### Sprint #53 — v3.5.0 (2026-11-10 18:03 UTC)
-- **New AST Shield**: `SLOP-067` (`no-hallucinated-cipher-primitive-v67`, CWE-327) — `Hallucinated Non-Standard Cryptographic Cipher Names`
-- **Threat Model**: LLMs invent non-existent cipher strings such as aes-256-turbo or sha256-fast in OpenSSL and Node crypto calls, causing runtime panics or silent fallback to weak encryption.
-- **Verification Suite**: `259/259` unit tests passed, `66` active AST rules, repo score `100/100` (`2136ms`)
-
 ### Sprint #54 — v3.5.0 (2026-11-10 18:06 UTC)
 - **New AST Shield**: `SLOP-067` (`no-shell-template-subprocess-exec-v67`, CWE-78) — `Formatted Shell String Subprocess Command Injection`
 - **Threat Model**: 1.  **Analyze the Request:** *   **Rule/Topic:** Shell-template-subprocess-exec (CWE-78 Command Injection) and a specific "blocked code" pattern `subprocess.Popen(f'tar -xzf {archive_name}', shell=True)` vs. the enforced fix `subprocess.run(['tar', '-xzf', archive_name], check=True)`. *   **Task:** Write exactly 2 technical sentences for a senior security en
@@ -73,3 +68,8 @@
 - **New AST Shield**: `SLOP-067` (`no-phantom-ai-sdk-slopsquatting-v67`, CWE-1357) — `Phantom AI SDK Wrapper Package Slopsquatting`
 - **Threat Model**: LLMs hallucinate plausible AI helper packages like @anthropic/tools-pro or openai-streaming-helper in package.json and requirements.txt, exposing builds to supply-chain hijacking.
 - **Verification Suite**: `259/259` unit tests passed, `66` active AST rules, repo score `100/100` (`3259ms`)
+
+### Sprint #67 — v3.5.0 (2026-11-10 18:42 UTC)
+- **New AST Shield**: `SLOP-067` (`no-unbounded-mpsc-queue-sprawl-v67`, CWE-400) — `Unbounded MPSC & Asyncio Queue Memory Exhaustion`
+- **Threat Model**: AI concurrency scaffolding defaults to tokio::sync::mpsc::unbounded_channel() and unbuffered asyncio.Queue(), removing backpressure and causing OOM kills under traffic spikes.
+- **Verification Suite**: `259/259` unit tests passed, `66` active AST rules, repo score `100/100` (`2335ms`)
