@@ -23,3 +23,8 @@
 - **New AST Shield**: `SLOP-067` (`no-loop-scoped-event-listener-leak-v67`, CWE-400) — `Unbounded Event Listener Registration Inside Loops`
 - **Threat Model**: AI-generated stream handlers attach emitter.on('data', ...) inside for/while loops without cleanup, exhausting V8 heap memory and triggering MaxListenersExceededWarning.
 - **Verification Suite**: `259/259` unit tests passed, `66` active AST rules, repo score `100/100` (`2213ms`)
+
+### Sprint #46 — v3.5.0 (2026-11-10 17:44 UTC)
+- **New AST Shield**: `SLOP-067` (`no-phantom-ai-sdk-slopsquatting-v67`, CWE-1357) — `Phantom AI SDK Wrapper Package Slopsquatting`
+- **Threat Model**: LLMs hallucinate plausible AI helper packages like @anthropic/tools-pro or openai-streaming-helper in package.json and requirements.txt, exposing builds to supply-chain hijacking.
+- **Verification Suite**: `259/259` unit tests passed, `66` active AST rules, repo score `100/100` (`2392ms`)
