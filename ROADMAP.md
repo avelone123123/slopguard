@@ -68,3 +68,8 @@
 - **New AST Shield**: `SLOP-067` (`no-shell-template-subprocess-exec-v67`, CWE-78) — `Formatted Shell String Subprocess Command Injection`
 - **Threat Model**: 1.  **Analyze the Request:** *   **Rule/Topic:** Shell-template-subprocess-exec (CWE-78 Command Injection) and a specific "blocked code" pattern `subprocess.Popen(f'tar -xzf {archive_name}', shell=True)` vs. the enforced fix `subprocess.run(['tar', '-xzf', archive_name], check=True)`. *   **Task:** Write exactly 2 technical sentences for a senior security en
 - **Verification Suite**: `259/259` unit tests passed, `66` active AST rules, repo score `100/100` (`2046ms`)
+
+### Sprint #55 — v3.5.0 (2026-11-10 18:08 UTC)
+- **New AST Shield**: `SLOP-067` (`no-loop-scoped-event-listener-leak-v67`, CWE-400) — `Unbounded Event Listener Registration Inside Loops`
+- **Threat Model**: AI-generated stream handlers attach emitter.on('data', ...) inside for/while loops without cleanup, exhausting V8 heap memory and triggering MaxListenersExceededWarning.
+- **Verification Suite**: `259/259` unit tests passed, `66` active AST rules, repo score `100/100` (`1970ms`)
