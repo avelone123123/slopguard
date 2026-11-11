@@ -339,6 +339,11 @@
       "cycle": 63,
       "version": "3.5.0",
       "deliverables": "Sprint 63: Documentation Synchronization & Multi-Language (66 rules, 259 tests)"
+    },
+    {
+      "cycle": 64,
+      "version": "3.5.0",
+      "deliverables": "Sprint 64: DevOps, Releases, Version Bumping & Publishing (66 rules, 259 tests)"
     }
   ],
   "current_metrics": {
