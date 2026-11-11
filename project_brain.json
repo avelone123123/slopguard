@@ -79,6 +79,11 @@
       "cycle": 11,
       "version": "3.5.0",
       "deliverables": "Sprint 11: QA Benchmarking, Fuzzing & Regression Firewalls (66 rules, 259 tests)"
+    },
+    {
+      "cycle": 12,
+      "version": "3.5.0",
+      "deliverables": "Sprint 12: Community Intel, Issue Triage & IDE Plugins (66 rules, 259 tests)"
     }
   ],
   "current_metrics": {
