@@ -1,9 +1,4 @@
 ## Autonomous Council Verification Log
-### Sprint #65 — v3.5.0 (2026-11-10 18:36 UTC)
-- **New AST Shield**: `SLOP-067` (`no-loop-scoped-event-listener-leak-v67`, CWE-400) — `Unbounded Event Listener Registration Inside Loops`
-- **Threat Model**: AI-generated stream handlers attach emitter.on('data', ...) inside for/while loops without cleanup, exhausting V8 heap memory and triggering MaxListenersExceededWarning.
-- **Verification Suite**: `259/259` unit tests passed, `66` active AST rules, repo score `100/100` (`3086ms`)
-
 ### Sprint #66 — v3.5.0 (2026-11-10 18:38 UTC)
 - **New AST Shield**: `SLOP-067` (`no-phantom-ai-sdk-slopsquatting-v67`, CWE-1357) — `Phantom AI SDK Wrapper Package Slopsquatting`
 - **Threat Model**: LLMs hallucinate plausible AI helper packages like @anthropic/tools-pro or openai-streaming-helper in package.json and requirements.txt, exposing builds to supply-chain hijacking.
@@ -72,4 +67,9 @@
 ### Sprint #11 — v3.5.0 (2026-11-11 16:21 UTC)
 - **New AST Shield**: `SLOP-067` (`no-unvalidated-ssrf-redirect-chain-v67`, CWE-918) — `Unvalidated SSRF Host Interpolation & Redirect Bypass`
 - **Threat Model**: AI coding assistants interpolate user-controlled host variables directly into axios.get or requests.get URLs, enabling Server-Side Request Forgery against cloud metadata endpoints.
+- **Verification Suite**: `259/259` unit tests passed, `66` active AST rules, repo score `100/100` (`0ms`)
+
+### Sprint #12 — v3.5.0 (2026-11-11 16:23 UTC)
+- **New AST Shield**: `SLOP-067` (`no-non-atomic-toctou-fs-mutation-v67`, CWE-367) — `Non-Atomic TOCTOU File Existence Check Before Write`
+- **Threat Model**: AI models routinely generate fs.existsSync(p) followed by fs.writeFileSync(p), creating a CWE-367 Time-of-Check Time-of-Use race window exploitable via symlink swapping.
 - **Verification Suite**: `259/259` unit tests passed, `66` active AST rules, repo score `100/100` (`0ms`)
