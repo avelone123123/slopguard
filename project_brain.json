@@ -54,6 +54,11 @@
       "cycle": 6,
       "version": "3.5.0",
       "deliverables": "Sprint 6: Community Intel, Issue Triage & IDE Plugins (66 rules, 259 tests)"
+    },
+    {
+      "cycle": 7,
+      "version": "3.5.0",
+      "deliverables": "Sprint 7: Core Rust AST Engine & Deep Hallucination Shields (66 rules, 259 tests)"
     }
   ],
   "current_metrics": {
