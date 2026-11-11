@@ -299,6 +299,11 @@
       "cycle": 55,
       "version": "3.5.0",
       "deliverables": "Sprint 55: Core Rust AST Engine & Deep Hallucination Shields (66 rules, 259 tests)"
+    },
+    {
+      "cycle": 56,
+      "version": "3.5.0",
+      "deliverables": "Sprint 56: Web Playground, Live Audits & Interactive UX (66 rules, 259 tests)"
     }
   ],
   "current_metrics": {
