@@ -134,6 +134,11 @@
       "cycle": 22,
       "version": "3.5.0",
       "deliverables": "Sprint 22: DevOps, Releases, Version Bumping & Publishing (66 rules, 259 tests)"
+    },
+    {
+      "cycle": 23,
+      "version": "3.5.0",
+      "deliverables": "Sprint 23: QA Benchmarking, Fuzzing & Regression Firewalls (66 rules, 259 tests)"
     }
   ],
   "current_metrics": {
