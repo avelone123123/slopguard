@@ -214,6 +214,11 @@
       "cycle": 38,
       "version": "3.5.0",
       "deliverables": "Sprint 38: Web Playground, Live Audits & Interactive UX (66 rules, 259 tests)"
+    },
+    {
+      "cycle": 39,
+      "version": "3.5.0",
+      "deliverables": "Sprint 39: Documentation Synchronization & Multi-Language (66 rules, 259 tests)"
     }
   ],
   "current_metrics": {
